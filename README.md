@@ -1,4 +1,4 @@
-# Clinic System
+# Clinic System - ASP.NET Core API
 
 ## 🗄️ Database Schema
 
