@@ -23,7 +23,3 @@ The database schema includes the following main entities and their relationships
 - An appointment may have one medical record (One-to-one: Appointment → Medical Records).
 - A medical record can have one prescriptions (One-to-one: Medical Records → Prescriptions).
 - An appointment can be associated with one payments (One-to-one: Appointment → Payments).
-
-
-
-Tell me whether you want me to push the change to the `main` branch or create a new branch and open a PR, and I will prepare the commit.
