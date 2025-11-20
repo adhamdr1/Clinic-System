@@ -4,7 +4,8 @@
 
 ## Entity-Relationship Diagram (ERD)
 
-![ERD - Clinic System](https://github.com/user-attachments/assets/30518b4a-ca26-416f-b620-e8b4972d2ee1)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/45399b6a-20f0-4907-b6a1-49b79027f4c1" />
+
 
 The database schema includes the following main entities and their relationships:
 
