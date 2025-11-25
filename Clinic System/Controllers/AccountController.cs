@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Controllers
+﻿using Clinic_System.Data.Helpers;
+
+namespace Clinic_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -74,10 +76,13 @@
 
 
                         //Design Token
+                        var egyptTime = EgyptTimeHelper.GetEgyptTime();
+                        var expirationTime = egyptTime.AddHours(1);
+
                         JwtSecurityToken MyToken = new JwtSecurityToken(
                             issuer: config["JWT:IssuerIP"],
                             audience: config["JWT:AudienceIP"], // Is For Anglur
-                            expires: DateTime.Now.AddHours(1),
+                            expires: expirationTime,
                             claims: UserCliams,
                             signingCredentials: singinCred
                             );
@@ -87,7 +92,7 @@
                         return Ok(new
                         {
                             Token = new JwtSecurityTokenHandler().WriteToken(MyToken),
-                            expiration = DateTime.Now.AddHours(1)
+                            expiration = expirationTime
                         });
                     }
                 }

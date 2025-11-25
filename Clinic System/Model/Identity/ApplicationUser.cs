@@ -2,6 +2,7 @@
 {
     public class ApplicationUser: IdentityUser
     {
-        public string? Address { get; set; }
+        public virtual Doctors Doctor { get; set; }
+        public virtual Patients Patient { get; set; }
     }
 }
