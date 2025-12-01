@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Clinic_System.API</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.0.1" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.0.1" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.1" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Clinic System.Application\Clinic System.Application.csproj" />
+    <ProjectReference Include="..\Clinic System.Core\Clinic System.Core.csproj" />
+    <ProjectReference Include="..\Clinic System.Data\Clinic System.Data.csproj" />
+    <ProjectReference Include="..\Clinic System.Infrastructure\Clinic System.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

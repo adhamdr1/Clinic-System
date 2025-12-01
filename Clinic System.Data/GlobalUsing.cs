@@ -1,0 +1,15 @@
+﻿global using Clinic_System.Core.Entities;
+global using Clinic_System.Core.Interfaces;
+global using Clinic_System.Core.Enums;
+global using Clinic_System.Data.Helpers;
+global using Clinic_System.Data.Seed;
+global using Clinic_System.Infrastructure.Identity;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.ChangeTracking;
+global using Microsoft.EntityFrameworkCore.Metadata;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.EntityFrameworkCore.Diagnostics;
+global using System.Linq.Expressions;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
