@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository
 {
-    public interface IAppointmentsRepository : IGenericRepository<Appointments>
+    public interface IAppointmentRepository : IGenericRepository<Appointments>
     {
         Task<IEnumerable<Appointments>> GetAppointmentsByDoctorAsync(int doctorId);
         Task<IEnumerable<Appointments>> GetAppointmentsByPatientAsync(int patientId);

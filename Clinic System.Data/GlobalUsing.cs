@@ -13,3 +13,7 @@ global using System.Linq.Expressions;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Clinic_System.Core.Interfaces.Repositories;
+global using Clinic_System.Data.Context;
+global using Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository;
+

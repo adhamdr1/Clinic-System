@@ -4,7 +4,7 @@
     {
         IPatientRepository PatientsRepository { get; }
         IDoctorRepository DoctorsRepository { get; }
-        IAppointmentsRepository AppointmentsRepository { get; }
+        IAppointmentRepository AppointmentsRepository { get; }
         IMedicalRecordRepository MedicalRecordsRepository { get; }
         IPaymentRepository PaymentsRepository { get; }
 

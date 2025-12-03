@@ -12,7 +12,6 @@
     <Folder Include="Context\" />
     <Folder Include="Extensions\" />
     <Folder Include="Seeders\" />
-    <Folder Include="Repository\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,6 +8,6 @@
 
         Task<decimal> GetTotalRevenueAsync(DateTime start, DateTime end);
 
-        Task<IEnumerable<Payments>> GetUnpaidAppointmentsAsync();
+        //Task<IEnumerable<Payments>> GetUnpaidAppointmentsAsync();
     }
 }

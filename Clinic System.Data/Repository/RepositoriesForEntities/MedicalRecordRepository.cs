@@ -1,0 +1,49 @@
+﻿namespace Clinic_System.Data.Repository.RepositoriesForEntities
+{
+    public class MedicalRecordRepository : GenericRepository<MedicalRecords>, IMedicalRecordRepository
+    {
+        public MedicalRecordRepository(AppDbContext context) : base(context)
+        {
+        }
+
+        public async Task<MedicalRecords?> GetMedicalRecordWithPrescriptionsAsync(int recordId)
+        {
+            return await context.MedicalRecords
+                .AsNoTracking()
+                .Include(mr => mr.Prescriptions)
+                .FirstOrDefaultAsync(mr => mr.Id == recordId);
+        }
+
+        public async Task<IEnumerable<MedicalRecords>> GetPatientMedicalHistoryAsync(int patientId)
+        {
+            return await context.MedicalRecords
+                .AsNoTracking()
+                .Where(mr => mr.Appointment.PatientId == patientId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<MedicalRecords>> GetRecordsByDateRangeAsync(DateTime start, DateTime end)
+        {
+            return await context.MedicalRecords
+                .AsNoTracking()
+                .Where(mr => mr.CreatedAt >= start && mr.CreatedAt <= end)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<MedicalRecords>> GetRecordsByDoctorAsync(int doctorId)
+        {
+            return await context.MedicalRecords
+                .AsNoTracking()
+                .Where(mr => mr.Appointment.DoctorId == doctorId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<MedicalRecords>> SearchByDiagnosisAsync(string diagnosis)
+        {
+            return await context.MedicalRecords
+                .AsNoTracking()
+                .Where(mr => mr.Diagnosis.Contains(diagnosis))
+                .ToListAsync();
+        }
+    }
+}

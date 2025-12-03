@@ -8,16 +8,18 @@
              Expression<Func<TEntity, bool>>? filter = null,
              Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null);
 
+        public Task<IEnumerable<TEntity>> GetAllAsync();
+
         public Task<TEntity?> GetByIdAsync(int id);
 
         public Task AddAsync(TEntity entity);
 
-        public Task UpdateAsync(TEntity entity); 
+        public void Update(TEntity entity);
 
-        public Task DeleteAsync(TEntity entity);
+        public void Delete(TEntity entity);
         public Task SoftDeleteAsync(int id);
 
-        public Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
+        public Task<TEntity?> GetByCondition(Expression<Func<TEntity, bool>> predicate);
         public Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
 
         public Task<int> CountAsync(Expression<Func<TEntity, bool>>? criteria = null);
