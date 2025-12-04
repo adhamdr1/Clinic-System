@@ -16,8 +16,10 @@
 
         public async Task<IEnumerable<MedicalRecords>> GetPatientMedicalHistoryAsync(int patientId)
         {
+            // الحل: إضافة Include للـ Appointment لتجنب N+1 Query Problem
             return await context.MedicalRecords
                 .AsNoTracking()
+                .Include(mr => mr.Appointment)
                 .Where(mr => mr.Appointment.PatientId == patientId)
                 .ToListAsync();
         }
@@ -32,17 +34,20 @@
 
         public async Task<IEnumerable<MedicalRecords>> GetRecordsByDoctorAsync(int doctorId)
         {
+            // الحل: إضافة Include للـ Appointment لتجنب N+1 Query Problem
             return await context.MedicalRecords
                 .AsNoTracking()
+                .Include(mr => mr.Appointment)
                 .Where(mr => mr.Appointment.DoctorId == doctorId)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<MedicalRecords>> SearchByDiagnosisAsync(string diagnosis)
         {
+            // الحل: استخدام EF.Functions.Like للبحث Case-Insensitive
             return await context.MedicalRecords
                 .AsNoTracking()
-                .Where(mr => mr.Diagnosis.Contains(diagnosis))
+                .Where(mr => EF.Functions.Like(mr.Diagnosis, $"%{diagnosis}%"))
                 .ToListAsync();
         }
     }

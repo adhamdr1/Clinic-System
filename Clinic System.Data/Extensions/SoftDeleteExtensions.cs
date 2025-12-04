@@ -8,7 +8,8 @@ namespace Clinic_System.Data.Extensions
         /// </summary>
         public static IQueryable<T> IncludeDeleted<T>(this IQueryable<T> query) where T : class, ISoftDelete
         {
-            return query.IgnoreQueryFilters().Where(x => x.IsDeleted || !x.IsDeleted);
+            // الحل: IgnoreQueryFilters() كافي - لا حاجة لـ Where condition
+            return query.IgnoreQueryFilters();
         }
 
         /// <summary>

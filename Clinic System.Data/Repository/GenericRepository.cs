@@ -44,7 +44,17 @@
 
         public void Update(TEntity entity)
         {
-            context.Set<TEntity>().Update(entity);
+            // الحل: التحقق من حالة الـ Entity قبل Update
+            // هذا يمنع Update غير ضروري ويحسن الأداء
+            var entry = context.Entry(entity);
+            if (entry.State == EntityState.Detached)
+            {
+                context.Set<TEntity>().Update(entity);
+            }
+            else
+            {
+                entry.State = EntityState.Modified;
+            }
         }
 
         public void Delete(TEntity entity)
@@ -62,7 +72,8 @@
             if (entity is ISoftDelete softDeletableEntity)
             {
                 softDeletableEntity.IsDeleted = true;
-                softDeletableEntity.DeletedAt = DateTime.Now;
+                // الحل: استخدام EgyptTimeHelper بدلاً من DateTime.Now
+                softDeletableEntity.DeletedAt = EgyptTimeHelper.GetEgyptTime();
 
                 // مش محتاج تنادي UpdateAsync لأن التعديل حصل على الكائن المتتبع (Tracked)
                 // ومجرد ما تعمل SaveChanges في UnitOfWork هيسمع.

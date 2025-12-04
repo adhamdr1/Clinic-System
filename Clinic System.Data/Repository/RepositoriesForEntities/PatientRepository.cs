@@ -15,9 +15,16 @@
 
         public async Task<IEnumerable<Patients>> GetPatientsWithAppointmentsAsync(Expression<Func<Appointments, bool>> appointmentPredicate)
         {
+            // الحل: استخدام Join مع Appointments مباشرة بدلاً من AsQueryable()
+            // هذا يضمن تنفيذ Query في SQL وليس في Memory
+            var patientIds = context.Appointments
+                .Where(appointmentPredicate)
+                .Select(a => a.PatientId)
+                .Distinct();
+
             return await context.Patients
                 .AsNoTracking()
-                .Where(p => p.Appointments.AsQueryable().Any(appointmentPredicate))
+                .Where(p => patientIds.Contains(p.Id))
                 .ToListAsync();
         }
     }

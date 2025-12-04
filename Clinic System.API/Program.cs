@@ -9,9 +9,11 @@ namespace Clinic_System.API
             // Add services to the container.
 
             // Database Configuration
-            var connectionString = builder.Configuration.GetSection("constr").Value;
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            {
+                var connectionString = builder.Configuration.GetSection("constr").Value;
+                options.UseLazyLoadingProxies().UseSqlServer(connectionString);
+            });
 
             // Identity Configuration
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -60,7 +62,6 @@ namespace Clinic_System.API
                     ValidIssuer = issuer,
                     ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!)),
-                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -80,6 +81,8 @@ namespace Clinic_System.API
                           .AllowAnyHeader();
                 });
             });
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 

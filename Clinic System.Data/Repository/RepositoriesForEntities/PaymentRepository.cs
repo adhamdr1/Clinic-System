@@ -8,17 +8,26 @@
 
         public async Task<IEnumerable<Payments>> GetDailyPaymentsAsync(DateTime date)
         {
+            // الحل: استخدام Date Range بدلاً من .Date في Query لتحسين الأداء
+            var startDate = date.Date;
+            var endDate = startDate.AddDays(1);
+            
             return await context.Payments
                 .AsNoTracking()
-                .Where(p => p.PaymentDate.Date == date.Date)
+                .Where(p => p.PaymentDate >= startDate && p.PaymentDate < endDate)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Payments>> GetPaymentsWithAppointmentAsync(Expression<Func<Appointments, bool>> appointmentPredicate)
         {
+            // الحل: استخدام Join بدلاً من Compile().Invoke() لضمان تنفيذ Query في SQL
             return await context.Payments
                 .AsNoTracking()
-                .Where(p => appointmentPredicate.Compile().Invoke(p.Appointment))
+                .Include(p => p.Appointment)
+                .Where(p => context.Appointments
+                    .Where(appointmentPredicate)
+                    .Select(a => a.Id)
+                    .Contains(p.AppointmentId))
                 .ToListAsync();
         }
 
