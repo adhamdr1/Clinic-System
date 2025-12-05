@@ -1,12 +1,12 @@
 ﻿namespace Clinic_System.Data.Repository.RepositoriesForEntities
 {
-    public class DoctorRepository : GenericRepository<Doctors> , IDoctorRepository
+    public class DoctorRepository : GenericRepository<Doctor> , IDoctorRepository
     {
         public DoctorRepository(AppDbContext context) : base(context)
         {
         }
 
-        public async Task<IEnumerable<Doctors>> GetAvailableDoctorsAsync(DateTime dateTime)
+        public async Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync(DateTime dateTime)
         {
             // الحل: إزالة Include غير الضروري واستخدام Subquery
             // هذا يمنع جلب كل الـ Appointments ثم الفلترة في Memory
@@ -22,14 +22,14 @@
                 .ToListAsync();
         }
 
-        public async Task<Doctors?> GetDoctorByUserIdAsync(string userId)
+        public async Task<Doctor?> GetDoctorByUserIdAsync(string userId)
         {
             return await context.Doctors
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.ApplicationUserId == userId);
         }
 
-        public async Task<IEnumerable<Doctors>> GetDoctorsBySpecializationAsync(string specialization)
+        public async Task<IEnumerable<Doctor>> GetDoctorsBySpecializationAsync(string specialization)
         {
             // الحل: استخدام EF.Functions.Like مع wildcard للبحث Case-Insensitive
             // أو استخدام Collation مناسب في SQL Server
@@ -40,7 +40,7 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Doctors>> GetDoctorsWithAppointmentsAsync(Expression<Func<Appointments, bool>> appointmentPredicate)
+        public async Task<IEnumerable<Doctor>> GetDoctorsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
         {
             // الحل: استخدام Join مع Appointments مباشرة بدلاً من AsQueryable()
             // هذا يضمن تنفيذ Query في SQL وليس في Memory

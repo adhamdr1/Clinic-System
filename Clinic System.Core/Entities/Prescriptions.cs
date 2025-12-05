@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Core.Entities
 {
-    public class Prescriptions : ISoftDelete, IAuditable
+    public class Prescription : ISoftDelete, IAuditable
     {
         public virtual int Id { get; set; }
         public virtual string Dosage { get; set; } = null!;
@@ -11,7 +11,7 @@
         public virtual DateTime EndDate { get; set; }
 
         public virtual int MedicalRecordId { get; set; }
-        public virtual MedicalRecords MedicalRecord { get; set; } = null!;
+        public virtual MedicalRecord MedicalRecord { get; set; } = null!;
 
         // Soft Delete
         public virtual bool IsDeleted { get; set; } = false;

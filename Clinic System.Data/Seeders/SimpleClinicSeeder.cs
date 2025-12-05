@@ -135,9 +135,9 @@
         // ============================================
         private static void SeedDoctors(ModelBuilder modelBuilder, DateTime now)
         {
-            modelBuilder.Entity<Doctors>().HasData(
+            modelBuilder.Entity<Doctor>().HasData(
                 // Doctor 1
-                new Doctors
+                new Doctor
                 {
                     Id = 1, // مختلف عن user-doc1
                     ApplicationUserId = "user-doc1", // مربوط بـ User
@@ -151,7 +151,7 @@
                     CreatedAt = now
                 },
                 // Doctor 2
-                new Doctors
+                new Doctor
                 {
                     Id = 2,
                     ApplicationUserId = "user-doc2",
@@ -165,7 +165,7 @@
                     CreatedAt = now
                 },
                 // Doctor 3
-                new Doctors
+                new Doctor
                 {
                     Id = 3,
                     ApplicationUserId = "user-doc3",
@@ -179,7 +179,7 @@
                     CreatedAt = now
                 },
                 // Doctor 4
-                new Doctors
+                new Doctor
                 {
                     Id = 4,
                     ApplicationUserId = "user-doc4",
@@ -193,7 +193,7 @@
                     CreatedAt = now
                 },
                 // Doctor 5
-                new Doctors
+                new Doctor
                 {
                     Id = 5,
                     ApplicationUserId = "user-doc5",
@@ -214,9 +214,9 @@
         // ============================================
         private static void SeedPatients(ModelBuilder modelBuilder, DateTime now)
         {
-            modelBuilder.Entity<Patients>().HasData(
+            modelBuilder.Entity<Patient>().HasData(
                 // Patient 1
-                new Patients
+                new Patient
                 {
                     Id = 1,
                     ApplicationUserId = "user-pat1",
@@ -229,7 +229,7 @@
                     CreatedAt = now
                 },
                 // Patient 2
-                new Patients
+                new Patient
                 {
                     Id = 2,
                     ApplicationUserId = "user-pat2",
@@ -242,7 +242,7 @@
                     CreatedAt = now
                 },
                 // Patient 3
-                new Patients
+                new Patient
                 {
                     Id = 3,
                     ApplicationUserId = "user-pat3",
@@ -255,7 +255,7 @@
                     CreatedAt = now
                 },
                 // Patient 4
-                new Patients
+                new Patient
                 {
                     Id = 4,
                     ApplicationUserId = "user-pat4",
@@ -268,7 +268,7 @@
                     CreatedAt = now
                 },
                 // Patient 5
-                new Patients
+                new Patient
                 {
                     Id = 5,
                     ApplicationUserId = "user-pat5",
@@ -281,7 +281,7 @@
                     CreatedAt = now
                 },
                 // Patient 6
-                new Patients
+                new Patient
                 {
                     Id = 6,
                     ApplicationUserId = "user-pat6",
@@ -294,7 +294,7 @@
                     CreatedAt = now
                 },
                 // Patient 7
-                new Patients
+                new Patient
                 {
                     Id = 7,
                     ApplicationUserId = "user-pat7",
@@ -314,27 +314,27 @@
         // ============================================
         private static void SeedAppointments(ModelBuilder modelBuilder, DateTime now)
         {
-            modelBuilder.Entity<Appointments>().HasData(
+            modelBuilder.Entity<Appointment>().HasData(
                 // Completed Appointments (في الماضي)
-                new Appointments { Id = 1, PatientId = 1, DoctorId = 1, AppointmentDate = now.AddDays(-10), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 2, PatientId = 2, DoctorId = 2, AppointmentDate = now.AddDays(-8), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 3, PatientId = 3, DoctorId = 3, AppointmentDate = now.AddDays(-5), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 4, PatientId = 4, DoctorId = 4, AppointmentDate = now.AddDays(-3), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 5, PatientId = 5, DoctorId = 5, AppointmentDate = now.AddDays(-2), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 6, PatientId = 6, DoctorId = 1, AppointmentDate = now.AddDays(-1), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 1, PatientId = 1, DoctorId = 1, AppointmentDate = now.AddDays(-10), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 2, PatientId = 2, DoctorId = 2, AppointmentDate = now.AddDays(-8), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 3, PatientId = 3, DoctorId = 3, AppointmentDate = now.AddDays(-5), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 4, PatientId = 4, DoctorId = 4, AppointmentDate = now.AddDays(-3), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 5, PatientId = 5, DoctorId = 5, AppointmentDate = now.AddDays(-2), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 6, PatientId = 6, DoctorId = 1, AppointmentDate = now.AddDays(-1), Status = AppointmentStatus.Completed, IsDeleted = false, CreatedAt = now },
 
                 // Confirmed Appointments (قادمة)
-                new Appointments { Id = 7, PatientId = 7, DoctorId = 2, AppointmentDate = now.AddDays(1), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 8, PatientId = 1, DoctorId = 3, AppointmentDate = now.AddDays(2), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 9, PatientId = 2, DoctorId = 4, AppointmentDate = now.AddDays(3), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 10, PatientId = 3, DoctorId = 5, AppointmentDate = now.AddDays(5), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 7, PatientId = 7, DoctorId = 2, AppointmentDate = now.AddDays(1), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 8, PatientId = 1, DoctorId = 3, AppointmentDate = now.AddDays(2), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 9, PatientId = 2, DoctorId = 4, AppointmentDate = now.AddDays(3), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 10, PatientId = 3, DoctorId = 5, AppointmentDate = now.AddDays(5), Status = AppointmentStatus.Confirmed, IsDeleted = false, CreatedAt = now },
 
                 // Pending Appointments
-                new Appointments { Id = 11, PatientId = 4, DoctorId = 1, AppointmentDate = now.AddDays(7), Status = AppointmentStatus.Pending, IsDeleted = false, CreatedAt = now },
-                new Appointments { Id = 12, PatientId = 5, DoctorId = 2, AppointmentDate = now.AddDays(10), Status = AppointmentStatus.Pending, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 11, PatientId = 4, DoctorId = 1, AppointmentDate = now.AddDays(7), Status = AppointmentStatus.Pending, IsDeleted = false, CreatedAt = now },
+                new Appointment { Id = 12, PatientId = 5, DoctorId = 2, AppointmentDate = now.AddDays(10), Status = AppointmentStatus.Pending, IsDeleted = false, CreatedAt = now },
 
                 // Cancelled
-                new Appointments { Id = 13, PatientId = 6, DoctorId = 3, AppointmentDate = now.AddDays(15), Status = AppointmentStatus.Cancelled, IsDeleted = false, CreatedAt = now }
+                new Appointment { Id = 13, PatientId = 6, DoctorId = 3, AppointmentDate = now.AddDays(15), Status = AppointmentStatus.Cancelled, IsDeleted = false, CreatedAt = now }
             );
         }
 
@@ -343,8 +343,8 @@
         // ============================================
         private static void SeedMedicalRecords(ModelBuilder modelBuilder, DateTime now)
         {
-            modelBuilder.Entity<MedicalRecords>().HasData(
-                new MedicalRecords
+            modelBuilder.Entity<MedicalRecord>().HasData(
+                new MedicalRecord
                 {
                     Id = 1,
                     AppointmentId = 1,
@@ -354,7 +354,7 @@
                     IsDeleted = false,
                     CreatedAt = now
                 },
-                new MedicalRecords
+                new MedicalRecord
                 {
                     Id = 2,
                     AppointmentId = 2,
@@ -364,7 +364,7 @@
                     IsDeleted = false,
                     CreatedAt = now
                 },
-                new MedicalRecords
+                new MedicalRecord
                 {
                     Id = 3,
                     AppointmentId = 3,
@@ -374,7 +374,7 @@
                     IsDeleted = false,
                     CreatedAt = now
                 },
-                new MedicalRecords
+                new MedicalRecord
                 {
                     Id = 4,
                     AppointmentId = 4,
@@ -384,7 +384,7 @@
                     IsDeleted = false,
                     CreatedAt = now
                 },
-                new MedicalRecords
+                new MedicalRecord
                 {
                     Id = 5,
                     AppointmentId = 5,
@@ -394,7 +394,7 @@
                     IsDeleted = false,
                     CreatedAt = now
                 },
-                new MedicalRecords
+                new MedicalRecord
                 {
                     Id = 6,
                     AppointmentId = 6,
@@ -415,30 +415,30 @@
             var startDate = now;
             var endDate = now.AddDays(14);
 
-            modelBuilder.Entity<Prescriptions>().HasData(
+            modelBuilder.Entity<Prescription>().HasData(
                 // Medical Record 1 (Hypertension)
-                new Prescriptions { Id = 1, MedicalRecordId = 1, MedicationName = "Lisinopril", Dosage = "10mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ صباحاً قبل الإفطار", StartDate = startDate, EndDate = endDate.AddDays(16), IsDeleted = false, CreatedAt = now },
-                new Prescriptions { Id = 2, MedicalRecordId = 1, MedicationName = "Aspirin", Dosage = "81mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ بعد الطعام", StartDate = startDate, EndDate = endDate.AddDays(16), IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 1, MedicalRecordId = 1, MedicationName = "Lisinopril", Dosage = "10mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ صباحاً قبل الإفطار", StartDate = startDate, EndDate = endDate.AddDays(16), IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 2, MedicalRecordId = 1, MedicationName = "Aspirin", Dosage = "81mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ بعد الطعام", StartDate = startDate, EndDate = endDate.AddDays(16), IsDeleted = false, CreatedAt = now },
 
                 // Medical Record 2 (Bronchitis)
-                new Prescriptions { Id = 3, MedicalRecordId = 2, MedicationName = "Amoxicillin", Dosage = "500mg", Frequency = "ثلاث مرات يومياً", SpecialInstructions = "يؤخذ كل 8 ساعات بعد الأكل", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
-                new Prescriptions { Id = 4, MedicalRecordId = 2, MedicationName = "Cough Syrup", Dosage = "10ml", Frequency = "ثلاث مرات يومياً", SpecialInstructions = "عند الكحة الشديدة", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 3, MedicalRecordId = 2, MedicationName = "Amoxicillin", Dosage = "500mg", Frequency = "ثلاث مرات يومياً", SpecialInstructions = "يؤخذ كل 8 ساعات بعد الأكل", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 4, MedicalRecordId = 2, MedicationName = "Cough Syrup", Dosage = "10ml", Frequency = "ثلاث مرات يومياً", SpecialInstructions = "عند الكحة الشديدة", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
 
                 // Medical Record 3 (Knee Pain)
-                new Prescriptions { Id = 5, MedicalRecordId = 3, MedicationName = "Ibuprofen", Dosage = "400mg", Frequency = "مرتين يومياً", SpecialInstructions = "يؤخذ بعد الأكل", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
-                new Prescriptions { Id = 6, MedicalRecordId = 3, MedicationName = "Glucosamine", Dosage = "1500mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ مع الوجبة", StartDate = startDate, EndDate = endDate.AddDays(46), IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 5, MedicalRecordId = 3, MedicationName = "Ibuprofen", Dosage = "400mg", Frequency = "مرتين يومياً", SpecialInstructions = "يؤخذ بعد الأكل", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 6, MedicalRecordId = 3, MedicationName = "Glucosamine", Dosage = "1500mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ مع الوجبة", StartDate = startDate, EndDate = endDate.AddDays(46), IsDeleted = false, CreatedAt = now },
 
                 // Medical Record 4 (Eczema)
-                new Prescriptions { Id = 7, MedicalRecordId = 4, MedicationName = "Hydrocortisone Cream", Dosage = "1%", Frequency = "مرتين يومياً", SpecialInstructions = "يوضع على المنطقة المصابة", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
-                new Prescriptions { Id = 8, MedicalRecordId = 4, MedicationName = "Cetirizine", Dosage = "10mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ مساءً", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 7, MedicalRecordId = 4, MedicationName = "Hydrocortisone Cream", Dosage = "1%", Frequency = "مرتين يومياً", SpecialInstructions = "يوضع على المنطقة المصابة", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 8, MedicalRecordId = 4, MedicationName = "Cetirizine", Dosage = "10mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ مساءً", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
 
                 // Medical Record 5 (Migraine)
-                new Prescriptions { Id = 9, MedicalRecordId = 5, MedicationName = "Sumatriptan", Dosage = "50mg", Frequency = "عند بداية الصداع", SpecialInstructions = "لا يزيد عن جرعتين في اليوم", StartDate = startDate, EndDate = endDate.AddDays(16), IsDeleted = false, CreatedAt = now },
-                new Prescriptions { Id = 10, MedicalRecordId = 5, MedicationName = "Propranolol", Dosage = "40mg", Frequency = "مرتين يومياً", SpecialInstructions = "للوقاية من نوبات الصداع", StartDate = startDate, EndDate = endDate.AddDays(46), IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 9, MedicalRecordId = 5, MedicationName = "Sumatriptan", Dosage = "50mg", Frequency = "عند بداية الصداع", SpecialInstructions = "لا يزيد عن جرعتين في اليوم", StartDate = startDate, EndDate = endDate.AddDays(16), IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 10, MedicalRecordId = 5, MedicationName = "Propranolol", Dosage = "40mg", Frequency = "مرتين يومياً", SpecialInstructions = "للوقاية من نوبات الصداع", StartDate = startDate, EndDate = endDate.AddDays(46), IsDeleted = false, CreatedAt = now },
 
                 // Medical Record 6 (Common Cold)
-                new Prescriptions { Id = 11, MedicalRecordId = 6, MedicationName = "Paracetamol", Dosage = "500mg", Frequency = "كل 6 ساعات عند الحاجة", SpecialInstructions = "لخفض الحرارة وتسكين الألم", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
-                new Prescriptions { Id = 12, MedicalRecordId = 6, MedicationName = "Vitamin C", Dosage = "1000mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ مع الإفطار", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now }
+                new Prescription { Id = 11, MedicalRecordId = 6, MedicationName = "Paracetamol", Dosage = "500mg", Frequency = "كل 6 ساعات عند الحاجة", SpecialInstructions = "لخفض الحرارة وتسكين الألم", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now },
+                new Prescription { Id = 12, MedicalRecordId = 6, MedicationName = "Vitamin C", Dosage = "1000mg", Frequency = "مرة واحدة يومياً", SpecialInstructions = "يؤخذ مع الإفطار", StartDate = startDate, EndDate = endDate, IsDeleted = false, CreatedAt = now }
             );
         }
 
@@ -447,13 +447,13 @@
         // ============================================
         private static void SeedPayments(ModelBuilder modelBuilder, DateTime now)
         {
-            modelBuilder.Entity<Payments>().HasData(
-                new Payments { Id = 1, AppointmentId = 1, AmountPaid = 350.00m, PaymentMethod = PaymentMethod.Cash, PaymentDate = now.AddDays(-10), AdditionalNotes = "Paid in full", IsDeleted = false, CreatedAt = now },
-                new Payments { Id = 2, AppointmentId = 2, AmountPaid = 250.00m, PaymentMethod = PaymentMethod.CreditCard, PaymentDate = now.AddDays(-8), AdditionalNotes = "Visa card payment", IsDeleted = false, CreatedAt = now },
-                new Payments { Id = 3, AppointmentId = 3, AmountPaid = 400.00m, PaymentMethod = PaymentMethod.Insurance, PaymentDate = now.AddDays(-5), AdditionalNotes = "Insurance coverage", IsDeleted = false, CreatedAt = now },
-                new Payments { Id = 4, AppointmentId = 4, AmountPaid = 200.00m, PaymentMethod = PaymentMethod.InstaPay, PaymentDate = now.AddDays(-3), AdditionalNotes = "InstaPay transfer", IsDeleted = false, CreatedAt = now },
-                new Payments { Id = 5, AppointmentId = 5, AmountPaid = 300.00m, PaymentMethod = PaymentMethod.Cash, PaymentDate = now.AddDays(-2), AdditionalNotes = "Cash payment", IsDeleted = false, CreatedAt = now },
-                new Payments { Id = 6, AppointmentId = 6, AmountPaid = 180.00m, PaymentMethod = PaymentMethod.CreditCard, PaymentDate = now.AddDays(-1), AdditionalNotes = "Mastercard payment", IsDeleted = false, CreatedAt = now }
+            modelBuilder.Entity<Payment>().HasData(
+                new Payment { Id = 1, AppointmentId = 1, AmountPaid = 350.00m, PaymentMethod = PaymentMethod.Cash, PaymentDate = now.AddDays(-10), AdditionalNotes = "Paid in full", IsDeleted = false, CreatedAt = now },
+                new Payment { Id = 2, AppointmentId = 2, AmountPaid = 250.00m, PaymentMethod = PaymentMethod.CreditCard, PaymentDate = now.AddDays(-8), AdditionalNotes = "Visa card payment", IsDeleted = false, CreatedAt = now },
+                new Payment { Id = 3, AppointmentId = 3, AmountPaid = 400.00m, PaymentMethod = PaymentMethod.Insurance, PaymentDate = now.AddDays(-5), AdditionalNotes = "Insurance coverage", IsDeleted = false, CreatedAt = now },
+                new Payment { Id = 4, AppointmentId = 4, AmountPaid = 200.00m, PaymentMethod = PaymentMethod.InstaPay, PaymentDate = now.AddDays(-3), AdditionalNotes = "InstaPay transfer", IsDeleted = false, CreatedAt = now },
+                new Payment { Id = 5, AppointmentId = 5, AmountPaid = 300.00m, PaymentMethod = PaymentMethod.Cash, PaymentDate = now.AddDays(-2), AdditionalNotes = "Cash payment", IsDeleted = false, CreatedAt = now },
+                new Payment { Id = 6, AppointmentId = 6, AmountPaid = 180.00m, PaymentMethod = PaymentMethod.CreditCard, PaymentDate = now.AddDays(-1), AdditionalNotes = "Mastercard payment", IsDeleted = false, CreatedAt = now }
             );
         }
     }

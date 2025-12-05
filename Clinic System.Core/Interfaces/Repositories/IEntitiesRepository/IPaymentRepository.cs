@@ -1,10 +1,10 @@
 ﻿namespace Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository
 {
-    public interface IPaymentRepository : IGenericRepository<Payments>
+    public interface IPaymentRepository : IGenericRepository<Payment>
     {
-        Task<IEnumerable<Payments>> GetPaymentsWithAppointmentAsync(Expression<Func<Appointments, bool>> appointmentPredicate);
+        Task<IEnumerable<Payment>> GetPaymentsWithAppointmentAsync(Expression<Func<Appointment, bool>> appointmentPredicate);
 
-        Task<IEnumerable<Payments>> GetDailyPaymentsAsync(DateTime date);
+        Task<IEnumerable<Payment>> GetDailyPaymentsAsync(DateTime date);
 
         Task<decimal> GetTotalRevenueAsync(DateTime start, DateTime end);
 

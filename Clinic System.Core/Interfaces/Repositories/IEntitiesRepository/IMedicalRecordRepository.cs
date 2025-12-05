@@ -1,15 +1,15 @@
 ﻿namespace Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository
 {
-    public interface IMedicalRecordRepository : IGenericRepository<MedicalRecords>
+    public interface IMedicalRecordRepository : IGenericRepository<MedicalRecord>
     {
-        Task<MedicalRecords?> GetMedicalRecordWithPrescriptionsAsync(int recordId);
+        Task<MedicalRecord?> GetMedicalRecordWithPrescriptionsAsync(int recordId);
 
-        Task<IEnumerable<MedicalRecords>> GetPatientMedicalHistoryAsync(int patientId);
+        Task<IEnumerable<MedicalRecord>> GetPatientMedicalHistoryAsync(int patientId);
 
-        Task<IEnumerable<MedicalRecords>> SearchByDiagnosisAsync(string diagnosis);
+        Task<IEnumerable<MedicalRecord>> SearchByDiagnosisAsync(string diagnosis);
 
-        Task<IEnumerable<MedicalRecords>> GetRecordsByDoctorAsync(int doctorId);
+        Task<IEnumerable<MedicalRecord>> GetRecordsByDoctorAsync(int doctorId);
 
-        Task<IEnumerable<MedicalRecords>> GetRecordsByDateRangeAsync(DateTime start, DateTime end);
+        Task<IEnumerable<MedicalRecord>> GetRecordsByDateRangeAsync(DateTime start, DateTime end);
     }
 }

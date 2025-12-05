@@ -8,9 +8,9 @@ namespace Clinic_System.Data.Configurations
     /// 2. العلاقة مع Prescriptions (One-to-Many)
     /// 3. Constraints على الحقول النصية
     /// </summary>
-    public class MedicalRecordsConfiguration : IEntityTypeConfiguration<MedicalRecords>
+    public class MedicalRecordsConfiguration : IEntityTypeConfiguration<MedicalRecord>
     {
-        public void Configure(EntityTypeBuilder<MedicalRecords> builder)
+        public void Configure(EntityTypeBuilder<MedicalRecord> builder)
         {
             // ============================================
             // Primary Key
@@ -52,7 +52,7 @@ namespace Clinic_System.Data.Configurations
             // ============================================
             builder.HasOne(m => m.Appointment)
                 .WithOne(a => a.MedicalRecord)
-                .HasForeignKey<MedicalRecords>(m => m.AppointmentId)
+                .HasForeignKey<MedicalRecord>(m => m.AppointmentId)
                 .OnDelete(DeleteBehavior.Cascade);
             // OnDelete(DeleteBehavior.Cascade): عند حذف Appointment، يتم حذف MedicalRecord
             // لأن MedicalRecord مرتبط بـ Appointment واحد فقط

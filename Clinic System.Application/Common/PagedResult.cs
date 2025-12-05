@@ -1,4 +1,4 @@
-﻿namespace Clinic_System.Application.Commen
+﻿namespace Clinic_System.Application.Common
 {
     public class PagedResult<T>
     {

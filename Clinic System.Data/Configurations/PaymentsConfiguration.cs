@@ -8,9 +8,9 @@ namespace Clinic_System.Data.Configurations
     /// 2. Constraints على AmountPaid (يجب أن يكون > 0)
     /// 3. PaymentMethod Enum Configuration
     /// </summary>
-    public class PaymentsConfiguration : IEntityTypeConfiguration<Payments>
+    public class PaymentsConfiguration : IEntityTypeConfiguration<Payment>
     {
-        public void Configure(EntityTypeBuilder<Payments> builder)
+        public void Configure(EntityTypeBuilder<Payment> builder)
         {
             // ============================================
             // Primary Key
@@ -77,7 +77,7 @@ namespace Clinic_System.Data.Configurations
             // ============================================
             builder.HasOne(p => p.Appointment)
                 .WithOne(a => a.Payment)
-                .HasForeignKey<Payments>(p => p.AppointmentId)
+                .HasForeignKey<Payment>(p => p.AppointmentId)
                 .OnDelete(DeleteBehavior.Cascade);
             // OnDelete(DeleteBehavior.Cascade): عند حذف Appointment، يتم حذف Payment تلقائياً
             // هذا متسق مع AppointmentsConfiguration حيث Payment لا معنى له بدون Appointment

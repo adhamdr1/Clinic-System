@@ -1,12 +1,12 @@
 ﻿namespace Clinic_System.Data.Repository.RepositoriesForEntities
 {
-    public class PaymentRepository : GenericRepository<Payments>, IPaymentRepository
+    public class PaymentRepository : GenericRepository<Payment>, IPaymentRepository
     {
         public PaymentRepository(AppDbContext context) : base(context)
         {
         }
 
-        public async Task<IEnumerable<Payments>> GetDailyPaymentsAsync(DateTime date)
+        public async Task<IEnumerable<Payment>> GetDailyPaymentsAsync(DateTime date)
         {
             // الحل: استخدام Date Range بدلاً من .Date في Query لتحسين الأداء
             var startDate = date.Date;
@@ -18,7 +18,7 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Payments>> GetPaymentsWithAppointmentAsync(Expression<Func<Appointments, bool>> appointmentPredicate)
+        public async Task<IEnumerable<Payment>> GetPaymentsWithAppointmentAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
         {
             // الحل: استخدام Join بدلاً من Compile().Invoke() لضمان تنفيذ Query في SQL
             return await context.Payments

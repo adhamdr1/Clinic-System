@@ -6,9 +6,9 @@ namespace Clinic_System.Data.Configurations
     /// نفس المبادئ المستخدمة في PatientsConfiguration
     /// مع إضافة Specialization Field
     /// </summary>
-    public class DoctorsConfiguration : IEntityTypeConfiguration<Doctors>
+    public class DoctorsConfiguration : IEntityTypeConfiguration<Doctor>
     {
-        public void Configure(EntityTypeBuilder<Doctors> builder)
+        public void Configure(EntityTypeBuilder<Doctor> builder)
         {
             // ============================================
             // Primary Key
@@ -68,7 +68,7 @@ namespace Clinic_System.Data.Configurations
             // تكوين العلاقة باستخدام Fluent API
             builder.HasOne<ApplicationUser>()
                 .WithOne(u => u.Doctor)
-                .HasForeignKey<Doctors>(d => d.ApplicationUserId)
+                .HasForeignKey<Doctor>(d => d.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Cascade);
             // HasOne<ApplicationUser>(): Doctor له ApplicationUser واحد
             // WithOne(u => u.Doctor): ApplicationUser له Doctor واحد

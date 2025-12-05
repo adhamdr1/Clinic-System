@@ -1,19 +1,19 @@
 ﻿namespace Clinic_System.Core.Entities
 {
-    public class Appointments : ISoftDelete, IAuditable
+    public class Appointment : ISoftDelete, IAuditable
     {
         public virtual int Id { get; set; }
         public virtual DateTime AppointmentDate { get; set; }
         public virtual AppointmentStatus Status { get; set; }
 
         public virtual int PatientId { get; set; }
-        public virtual Patients Patient { get; set; } = null!;
+        public virtual Patient Patient { get; set; } = null!;
 
         public virtual int DoctorId { get; set; }
-        public virtual Doctors Doctor { get; set; } = null!;
+        public virtual Doctor Doctor { get; set; } = null!;
 
-        public virtual MedicalRecords? MedicalRecord { get; set; }
-        public virtual Payments? Payment { get; set; }
+        public virtual MedicalRecord? MedicalRecord { get; set; }
+        public virtual Payment? Payment { get; set; }
 
         // Soft Delete
         public virtual bool IsDeleted { get; set; } = false;

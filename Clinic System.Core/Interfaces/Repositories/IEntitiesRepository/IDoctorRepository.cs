@@ -1,12 +1,12 @@
 ﻿namespace Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository
 {
-    public interface IDoctorRepository : IGenericRepository<Doctors>
+    public interface IDoctorRepository : IGenericRepository<Doctor>
     {
-        Task<IEnumerable<Doctors>> GetDoctorsBySpecializationAsync(string specialization);
-        Task<IEnumerable<Doctors>> GetAvailableDoctorsAsync(DateTime dateTime);
-        Task<Doctors?> GetDoctorByUserIdAsync(string userId);
+        Task<IEnumerable<Doctor>> GetDoctorsBySpecializationAsync(string specialization);
+        Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync(DateTime dateTime);
+        Task<Doctor?> GetDoctorByUserIdAsync(string userId);
 
-        Task<IEnumerable<Doctors>> GetDoctorsWithAppointmentsAsync(
-            Expression<Func<Appointments, bool>> appointmentPredicate);
+        Task<IEnumerable<Doctor>> GetDoctorsWithAppointmentsAsync(
+            Expression<Func<Appointment, bool>> appointmentPredicate);
     }
 }

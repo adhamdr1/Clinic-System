@@ -8,9 +8,9 @@ namespace Clinic_System.Data.Configurations
     /// 2. Constraints على الحقول (Dosage, MedicationName, etc.)
     /// 3. Check Constraints على StartDate و EndDate
     /// </summary>
-    public class PrescriptionsConfiguration : IEntityTypeConfiguration<Prescriptions>
+    public class PrescriptionsConfiguration : IEntityTypeConfiguration<Prescription>
     {
-        public void Configure(EntityTypeBuilder<Prescriptions> builder)
+        public void Configure(EntityTypeBuilder<Prescription> builder)
         {
             // ============================================
             // Primary Key

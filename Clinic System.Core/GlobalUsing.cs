@@ -4,6 +4,7 @@ global using System.Linq.Expressions;
 global using Clinic_System.Core.Entities;
 global using Clinic_System.Core.Interfaces.Repositories;
 global using Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository;
+global using System.Text.Json.Serialization;
 
 
 

@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Core.Entities
 {
-    public class MedicalRecords : ISoftDelete, IAuditable
+    public class MedicalRecord : ISoftDelete, IAuditable
     {
         public virtual int Id { get; set; }
         public virtual string Diagnosis { get; set; } = null!;
@@ -8,9 +8,9 @@
         public virtual string DescriptionOfTheVisit { get; set; } = null!;
 
         public virtual int AppointmentId { get; set; }
-        public virtual Appointments Appointment { get; set; } = null!;
+        public virtual Appointment Appointment { get; set; } = null!;
 
-        public virtual ICollection<Prescriptions> Prescriptions { get; set; } = new List<Prescriptions>();
+        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 
         // Soft Delete
         public virtual bool IsDeleted { get; set; } = false;

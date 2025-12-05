@@ -1,19 +1,19 @@
 ﻿namespace Clinic_System.Data.Repository.RepositoriesForEntities
 {
-    public class PatientRepository : GenericRepository<Patients>, IPatientRepository
+    public class PatientRepository : GenericRepository<Patient>, IPatientRepository
     {
         public PatientRepository(AppDbContext context) : base(context)
         {
         }
 
-        public async Task<Patients?> GetPatientByUserIdAsync(string userId)
+        public async Task<Patient?> GetPatientByUserIdAsync(string userId)
         {
             return await context.Patients
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.ApplicationUserId == userId);
         }
 
-        public async Task<IEnumerable<Patients>> GetPatientsWithAppointmentsAsync(Expression<Func<Appointments, bool>> appointmentPredicate)
+        public async Task<IEnumerable<Patient>> GetPatientsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
         {
             // الحل: استخدام Join مع Appointments مباشرة بدلاً من AsQueryable()
             // هذا يضمن تنفيذ Query في SQL وليس في Memory

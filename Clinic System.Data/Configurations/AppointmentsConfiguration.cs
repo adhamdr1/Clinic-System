@@ -8,9 +8,9 @@ namespace Clinic_System.Data.Configurations
     /// 2. يحدد Indexes على AppointmentDate للبحث السريع
     /// 3. يحدد Constraints على Status
     /// </summary>
-    public class AppointmentsConfiguration : IEntityTypeConfiguration<Appointments>
+    public class AppointmentsConfiguration : IEntityTypeConfiguration<Appointment>
     {
-        public void Configure(EntityTypeBuilder<Appointments> builder)
+        public void Configure(EntityTypeBuilder<Appointment> builder)
         {
             // ============================================
             // Primary Key

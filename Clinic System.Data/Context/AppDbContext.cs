@@ -2,12 +2,12 @@
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
-        public DbSet<Patients> Patients { get; set; }
-        public DbSet<Doctors> Doctors { get; set; }
-        public DbSet<Appointments> Appointments { get; set; }
-        public DbSet<MedicalRecords> MedicalRecords { get; set; }
-        public DbSet<Prescriptions> Prescriptions { get; set; }
-        public DbSet<Payments> Payments { get; set; }
+        public DbSet<Patient> Patients { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<MedicalRecord> MedicalRecords { get; set; }
+        public DbSet<Prescription> Prescriptions { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         public AppDbContext()
         {
@@ -53,7 +53,7 @@
             }
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-            modelBuilder.Seed();
+            //modelBuilder.Seed();
         }
 
         public override int SaveChanges()

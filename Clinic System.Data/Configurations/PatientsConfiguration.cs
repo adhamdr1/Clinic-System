@@ -14,9 +14,9 @@ namespace Clinic_System.Data.Configurations
     /// - EF Core يقرأ هذه الـ Configurations تلقائياً من خلال modelBuilder.ApplyConfigurationsFromAssembly()
     /// - يتم تطبيقها عند إنشاء الـ Database أو Migration
     /// </summary>
-    public class PatientsConfiguration : IEntityTypeConfiguration<Patients>
+    public class PatientsConfiguration : IEntityTypeConfiguration<Patient>
     {
-        public void Configure(EntityTypeBuilder<Patients> builder)
+        public void Configure(EntityTypeBuilder<Patient> builder)
         {
             // ============================================
             // Primary Key Configuration
@@ -79,7 +79,7 @@ namespace Clinic_System.Data.Configurations
             // تكوين العلاقة باستخدام Fluent API
             builder.HasOne<ApplicationUser>()
                 .WithOne(u => u.Patient)
-                .HasForeignKey<Patients>(p => p.ApplicationUserId)
+                .HasForeignKey<Patient>(p => p.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Cascade);
             // HasOne<ApplicationUser>(): Patient له ApplicationUser واحد
             // WithOne(u => u.Patient): ApplicationUser له Patient واحد

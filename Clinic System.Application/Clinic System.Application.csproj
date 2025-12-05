@@ -20,14 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Doctors\" />
     <Folder Include="DTOs\Appointments\" />
     <Folder Include="DTOs\Common\" />
     <Folder Include="DTOs\Patients\" />
-    <Folder Include="Handler\Commands\" />
-    <Folder Include="Handler\Queries\" />
-    <Folder Include="Mappings\" />
-    <Folder Include="Validators\" />
+    <Folder Include="Features\Doctors\Commands\" />
+    <Folder Include="Features\Doctors\Validators\" />
+    <Folder Include="Mapping\Doctors\CommandMapping\" />
   </ItemGroup>
 
 </Project>

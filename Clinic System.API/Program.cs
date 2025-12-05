@@ -82,7 +82,13 @@ namespace Clinic_System.API
                 });
             });
 
+
+            builder.Services.AddAutoMapper(typeof(ApplicationAssemblyReference).Assembly);
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(ApplicationAssemblyReference).Assembly));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IDoctorService, DoctorService>();
+
+
 
             var app = builder.Build();
 

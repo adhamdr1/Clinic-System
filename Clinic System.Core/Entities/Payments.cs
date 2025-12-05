@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Core.Entities
 {
-    public class Payments : ISoftDelete, IAuditable
+    public class Payment : ISoftDelete, IAuditable
     {
         public virtual int Id { get; set; }
         public virtual decimal AmountPaid { get; set; }
@@ -9,7 +9,7 @@
         public virtual PaymentMethod PaymentMethod { get; set; }
 
         public virtual int AppointmentId { get; set; }
-        public virtual Appointments Appointment { get; set; } = null!;
+        public virtual Appointment Appointment { get; set; } = null!;
 
         // Soft Delete
         public virtual bool IsDeleted { get; set; } = false;

@@ -1,12 +1,12 @@
 ﻿namespace Clinic_System.Data.Repository.RepositoriesForEntities
 {
-    public class MedicalRecordRepository : GenericRepository<MedicalRecords>, IMedicalRecordRepository
+    public class MedicalRecordRepository : GenericRepository<MedicalRecord>, IMedicalRecordRepository
     {
         public MedicalRecordRepository(AppDbContext context) : base(context)
         {
         }
 
-        public async Task<MedicalRecords?> GetMedicalRecordWithPrescriptionsAsync(int recordId)
+        public async Task<MedicalRecord?> GetMedicalRecordWithPrescriptionsAsync(int recordId)
         {
             return await context.MedicalRecords
                 .AsNoTracking()
@@ -14,7 +14,7 @@
                 .FirstOrDefaultAsync(mr => mr.Id == recordId);
         }
 
-        public async Task<IEnumerable<MedicalRecords>> GetPatientMedicalHistoryAsync(int patientId)
+        public async Task<IEnumerable<MedicalRecord>> GetPatientMedicalHistoryAsync(int patientId)
         {
             // الحل: إضافة Include للـ Appointment لتجنب N+1 Query Problem
             return await context.MedicalRecords
@@ -24,7 +24,7 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<MedicalRecords>> GetRecordsByDateRangeAsync(DateTime start, DateTime end)
+        public async Task<IEnumerable<MedicalRecord>> GetRecordsByDateRangeAsync(DateTime start, DateTime end)
         {
             return await context.MedicalRecords
                 .AsNoTracking()
@@ -32,7 +32,7 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<MedicalRecords>> GetRecordsByDoctorAsync(int doctorId)
+        public async Task<IEnumerable<MedicalRecord>> GetRecordsByDoctorAsync(int doctorId)
         {
             // الحل: إضافة Include للـ Appointment لتجنب N+1 Query Problem
             return await context.MedicalRecords
@@ -42,7 +42,7 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<MedicalRecords>> SearchByDiagnosisAsync(string diagnosis)
+        public async Task<IEnumerable<MedicalRecord>> SearchByDiagnosisAsync(string diagnosis)
         {
             // الحل: استخدام EF.Functions.Like للبحث Case-Insensitive
             return await context.MedicalRecords
