@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Features.Doctors.Queries.Handlers
 {
-    internal class DoctorHandler : IRequestHandler<GetDoctorListQuery, List<GetDoctorList>>
+    public class DoctorHandler :ResponseHandler, IRequestHandler<GetDoctorListQuery, Response<List<GetDoctorList>>>
     {
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
@@ -11,11 +11,16 @@
             this.mapper = mapper;
         }
 
-        public async Task<List<GetDoctorList>> Handle(GetDoctorListQuery request, CancellationToken cancellationToken)
+        public async Task<Response<List<GetDoctorList>>> Handle(GetDoctorListQuery request, CancellationToken cancellationToken)
         {
-            var doctors =await doctorService.GetDoctorsListAsync();
+            var doctors = await doctorService.GetDoctorsListAsync();
+            if (doctors == null)
+                return NotFound<List<GetDoctorList>>();
+
+
+
             var doctorsMapper = mapper.Map<List<GetDoctorList>>(doctors);
-            return doctorsMapper;
+            return Success(doctorsMapper);
         }
     }
 }

@@ -12,5 +12,12 @@
         {
             return (List<Doctor>)await unitOfWork.DoctorsRepository.GetAllAsync();
         }
+
+        //public async Task<PagedResult<Doctor>> GetDoctorsListPagingAsync(int pageNumber, int pageSize)
+        //{
+        //    var (items,totalCount) = await unitOfWork.DoctorsRepository.GetPaginatedAsync(pageNumber, pageSize);
+
+        //    return new PagedResult<Doctor>(items, totalCount, pageNumber, pageSize);
+        //}
     }
 }
