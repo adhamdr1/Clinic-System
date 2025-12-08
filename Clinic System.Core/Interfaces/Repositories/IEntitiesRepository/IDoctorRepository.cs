@@ -2,11 +2,11 @@
 {
     public interface IDoctorRepository : IGenericRepository<Doctor>
     {
-        Task<IEnumerable<Doctor>> GetDoctorsBySpecializationAsync(string specialization);
-        Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync(DateTime dateTime);
-        Task<Doctor?> GetDoctorByUserIdAsync(string userId);
-
+        Task<IEnumerable<Doctor>> GetDoctorsBySpecializationAsync(string specialization, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync(DateTime dateTime, CancellationToken cancellationToken = default);
+        Task<Doctor?> GetDoctorByUserIdAsync(string userId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Doctor>> GetDoctorsWithAppointmentsAsync(
-            Expression<Func<Appointment, bool>> appointmentPredicate);
+            Expression<Func<Appointment, bool>> appointmentPredicate, CancellationToken cancellationToken = default);
+        Task<Doctor?> GetDoctorWithAppointmentsByIdAsync(int Id, CancellationToken cancellationToken = default);
     }
 }

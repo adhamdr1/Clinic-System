@@ -88,6 +88,7 @@
                     NormalizedUserName = doc.Email.ToUpper(),
                     Email = doc.Email,
                     NormalizedEmail = doc.Email.ToUpper(),
+                    IsDeleted = false,
                     EmailConfirmed = true
                 };
                 user.PasswordHash = hasher.HashPassword(user, "Doctor@123");
@@ -119,6 +120,7 @@
                     NormalizedUserName = pat.Email.ToUpper(),
                     Email = pat.Email,
                     NormalizedEmail = pat.Email.ToUpper(),
+                    IsDeleted = false,
                     EmailConfirmed = true
                 };
                 user.PasswordHash = hasher.HashPassword(user, "Patient@123");

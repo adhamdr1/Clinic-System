@@ -4,7 +4,8 @@
     {
         public DoctorProfile()
         {
-            GetStudentListMapping();
+            GetDoctorListMapping();
+            GetDoctorWithAppointmentsByIdMapping();
         }
     }
 }

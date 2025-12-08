@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.DTOs.Doctors
 {
-    public class GetDoctorList
+    public class GetDoctorDTO
     {
         public int Id { get; set; }
         public string FullName { get; set; } = null!;
@@ -11,5 +11,8 @@
         public string CreatedAt { get; set; }
         public string Specialization { get; set; } = null!;
         public string ApplicationUserId { get; set; } = null!;
+        public string Email { get; set; }
+        public int TotalAppointments => Appointments.Count;
+        public List<GetAppointmentForDoctorDTO> Appointments { get; set; } = new();
     }
 }

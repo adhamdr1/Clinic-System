@@ -2,9 +2,9 @@
 {
     public partial class DoctorProfile
     {
-        public void GetStudentListMapping()
+        public void GetDoctorListMapping()
         {
-            CreateMap<Doctor, GetDoctorList>()
+            CreateMap<Doctor, GetDoctorListDTO>()
 
                 .ForMember(dest => dest.Gender
                 , option => option.MapFrom(src => src.Gender.ToString()))

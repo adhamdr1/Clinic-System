@@ -6,7 +6,7 @@
         {
         }
 
-        public async Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync(DateTime dateTime)
+        public async Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync(DateTime dateTime, CancellationToken cancellationToken = default)
         {
             // الحل: إزالة Include غير الضروري واستخدام Subquery
             // هذا يمنع جلب كل الـ Appointments ثم الفلترة في Memory
@@ -22,14 +22,14 @@
                 .ToListAsync();
         }
 
-        public async Task<Doctor?> GetDoctorByUserIdAsync(string userId)
+        public async Task<Doctor?> GetDoctorByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await context.Doctors
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.ApplicationUserId == userId);
         }
 
-        public async Task<IEnumerable<Doctor>> GetDoctorsBySpecializationAsync(string specialization)
+        public async Task<IEnumerable<Doctor>> GetDoctorsBySpecializationAsync(string specialization, CancellationToken cancellationToken = default)
         {
             // الحل: استخدام EF.Functions.Like مع wildcard للبحث Case-Insensitive
             // أو استخدام Collation مناسب في SQL Server
@@ -40,7 +40,7 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Doctor>> GetDoctorsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
+        public async Task<IEnumerable<Doctor>> GetDoctorsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate, CancellationToken cancellationToken = default)
         {
             // الحل: استخدام Join مع Appointments مباشرة بدلاً من AsQueryable()
             // هذا يضمن تنفيذ Query في SQL وليس في Memory
@@ -53,6 +53,14 @@
                 .AsNoTracking()
                 .Where(d => appointmentIds.Contains(d.Id))
                 .ToListAsync();
+        }
+
+        public async Task<Doctor?> GetDoctorWithAppointmentsByIdAsync(int Id, CancellationToken cancellationToken = default)
+        {
+            return await context.Doctors
+                .AsNoTracking()
+                .Include(d => d.Appointments)
+                .FirstOrDefaultAsync(d => d.Id == Id);
         }
     }
 }

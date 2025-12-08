@@ -8,7 +8,7 @@
             this.context = context;
         }
 
-        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPaginatedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
+        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPaginatedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, CancellationToken cancellationToken = default)
         {
             IQueryable<TEntity> query = context.Set<TEntity>();
             if (filter != null)
@@ -27,22 +27,22 @@
             return (items, totalCount);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await context.Set<TEntity>().AsNoTracking().ToListAsync();
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id)
+        public async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await context.Set<TEntity>().FindAsync(id);
         }
 
-        public async Task AddAsync(TEntity entity)
+        public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             await context.Set<TEntity>().AddAsync(entity);
         }
 
-        public void Update(TEntity entity)
+        public void Update(TEntity entity, CancellationToken cancellationToken = default)
         {
             // الحل: التحقق من حالة الـ Entity قبل Update
             // هذا يمنع Update غير ضروري ويحسن الأداء
@@ -57,11 +57,11 @@
             }
         }
 
-        public void Delete(TEntity entity)
+        public void Delete(TEntity entity, CancellationToken cancellationToken = default)
         {
             context.Set<TEntity>().Remove(entity);
         }
-        public async Task SoftDeleteAsync(int id)
+        public async Task SoftDeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             var entity = await GetByIdAsync(id);
 
@@ -82,17 +82,17 @@
             }
         }
 
-        public async Task<TEntity?> GetByCondition(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity?> GetByCondition(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
             return await context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
             return await context.Set<TEntity>().AsNoTracking().Where(predicate).ToListAsync();
         }
 
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? criteria = null)
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? criteria = null, CancellationToken cancellationToken = default)
         {
             if (criteria != null)
             {

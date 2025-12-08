@@ -8,16 +8,22 @@
         {
             this.unitOfWork = unitOfWork;
         }
-        public async Task<List<Doctor>> GetDoctorsListAsync()
+
+        public async Task<List<Doctor>> GetDoctorsListAsync(CancellationToken cancellationToken = default)
         {
-            return (List<Doctor>)await unitOfWork.DoctorsRepository.GetAllAsync();
+            return (List<Doctor>)await unitOfWork.DoctorsRepository.GetAllAsync(cancellationToken: cancellationToken);
         }
 
-        //public async Task<PagedResult<Doctor>> GetDoctorsListPagingAsync(int pageNumber, int pageSize)
-        //{
-        //    var (items,totalCount) = await unitOfWork.DoctorsRepository.GetPaginatedAsync(pageNumber, pageSize);
+        public async Task<PagedResult<Doctor>> GetDoctorsListPagingAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var (items, totalCount) = await unitOfWork.DoctorsRepository.GetPaginatedAsync(pageNumber, pageSize, cancellationToken: cancellationToken);
 
-        //    return new PagedResult<Doctor>(items, totalCount, pageNumber, pageSize);
-        //}
+            return new PagedResult<Doctor>(items, totalCount, pageNumber, pageSize);
+        }
+
+        public async Task<Doctor?> GetDoctorWithAppointmentsByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.DoctorsRepository.GetDoctorWithAppointmentsByIdAsync(id, cancellationToken);
+        }
     }
 }
