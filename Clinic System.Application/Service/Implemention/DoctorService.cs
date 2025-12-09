@@ -25,5 +25,9 @@
         {
             return await unitOfWork.DoctorsRepository.GetDoctorWithAppointmentsByIdAsync(id, cancellationToken);
         }
+        public async Task CreateDoctorAsync(Doctor doctor, CancellationToken cancellationToken = default)
+        {
+            await unitOfWork.DoctorsRepository.AddAsync(doctor, cancellationToken);
+        }
     }
 }

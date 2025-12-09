@@ -86,6 +86,16 @@ namespace Clinic_System.Infrastructure.Services
             var user = await _userManager.FindByIdAsync(userId);
             return user?.Email;
         }
+
+        public async Task<bool> ExistingEmail(string Email)
+        {
+            return await _userManager.Users.AnyAsync(u => u.Email == Email);
+        }
+
+        public async Task<bool> ExistingUserName(string UserName)
+        {
+            return await _userManager.Users.AnyAsync(u => u.UserName == UserName);
+        }
     }
 }
 

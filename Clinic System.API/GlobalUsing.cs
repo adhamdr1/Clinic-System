@@ -16,5 +16,6 @@ global using Microsoft.AspNetCore.Mvc;
 global using Clinic_System.Application.Service.Implemention;
 global using Clinic_System.Application.Service.Interface;
 global using Clinic_System.Infrastructure.Services;
+global using Clinic_System.Application.Features.Doctors.Commands.Models;
 
 

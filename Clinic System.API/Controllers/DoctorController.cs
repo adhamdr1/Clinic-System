@@ -23,10 +23,10 @@
         [HttpGet]
         public async Task<IActionResult> GetDoctorListPaging([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var response = await mediator.Send(new GetDoctorListPagingQuery 
-            { 
-                PageNumber = pageNumber, 
-                PageSize = pageSize 
+            var response = await mediator.Send(new GetDoctorListPagingQuery
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
             });
             return Ok(response);
         }
@@ -35,10 +35,18 @@
         [HttpGet]
         public async Task<IActionResult> GetDoctorWithAppointmentsById(int id)
         {
-            var response = await mediator.Send(new GetDoctorWithAppointmentsByIdQuery 
-            { 
-                Id = id 
+            var response = await mediator.Send(new GetDoctorWithAppointmentsByIdQuery
+            {
+                Id = id
             });
+            return Ok(response);
+        }
+
+        [Route("api/CreateDoctor")]
+        [HttpPost]
+        public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)
+        {
+            var response = await mediator.Send(command);
             return Ok(response);
         }
     }
