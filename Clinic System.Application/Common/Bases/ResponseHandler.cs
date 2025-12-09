@@ -16,14 +16,14 @@
                 Message = "Deleted Successfully"
             };
         }
-        public Response<T> Success<T>(T entity, object Meta = null)
+        public Response<T> Success<T>(T entity, string message = "Show Successfully", object Meta = null)
         {
             return new Response<T>()
             {
                 Data = entity,
                 StatusCode = System.Net.HttpStatusCode.OK,
                 Succeeded = true,
-                Message = "Show Successfully",
+                Message = message,
                 Meta = Meta
             };
         }
@@ -56,7 +56,7 @@
             };
         }
 
-        public Response<T> Created<T>(T entity, object Meta = null)
+        public Response<T> Created<T>(T entity, string locationUri, object Meta = null)
         {
             return new Response<T>()
             {
@@ -64,6 +64,7 @@
                 StatusCode = System.Net.HttpStatusCode.Created,
                 Succeeded = true,
                 Message = "Created",
+                Location = locationUri,
                 Meta = Meta
             };
         }

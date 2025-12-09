@@ -2,13 +2,10 @@
 {
     //[Route("api/[controller]")]
     [ApiController]
-    public class DoctorController : ControllerBase
+    public class DoctorController : AppControllerBase
     {
-        private readonly IMediator mediator;
-
-        public DoctorController(IMediator mediator)
+        public DoctorController(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator;
         }
 
         [Route("api/GetDoctorList")]
@@ -39,7 +36,7 @@
             {
                 Id = id
             });
-            return Ok(response);
+            return NewResult(response);
         }
 
         [Route("api/CreateDoctor")]
@@ -47,7 +44,7 @@
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)
         {
             var response = await mediator.Send(command);
-            return Ok(response);
+            return NewResult(response);
         }
     }
 }

@@ -17,5 +17,7 @@ global using Clinic_System.Application.Service.Implemention;
 global using Clinic_System.Application.Service.Interface;
 global using Clinic_System.Infrastructure.Services;
 global using Clinic_System.Application.Features.Doctors.Commands.Models;
-
+global using Clinic_System.API.Bases;
+global using Clinic_System.Application.Common.Bases;
+global using System.Net;
 

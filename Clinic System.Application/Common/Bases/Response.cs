@@ -2,6 +2,7 @@
 {
     public class Response<T>
     {
+        public string? Location { get; set; }
         public Response()
         {
 
