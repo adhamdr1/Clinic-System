@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Clinic_System.Application.Features.Doctors.Commands.Models
+﻿namespace Clinic_System.Application.Features.Doctors.Commands.Models
 {
     public class CreateDoctorCommand : IRequest<Response<CreateDoctorDTO>>
     {

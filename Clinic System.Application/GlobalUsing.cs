@@ -9,9 +9,14 @@ global using AutoMapper;
 global using System.Net;
 global using Clinic_System.Application.Common.Bases;
 global using Clinic_System.Application.Common;
-global using Clinic_System.Application.Common;
 global using Clinic_System.Application.Features.Doctors.Commands.Models;
 global using System.Transactions;
+global using System.Text.Json.Serialization;
+global using FluentValidation;
+global using Clinic_System.Core.Exceptions;
+
+
+
 
 
 

@@ -7,7 +7,6 @@ global using Microsoft.IdentityModel.Tokens;
 global using System.Text;
 global using Clinic_System.Core.Interfaces.UnitOfWork;
 global using Clinic_System.Data.Repository.UnitOfWork;
-global using System.Reflection;
 global using Clinic_System.Application.Common;
 global using Clinic_System.Application.Features.Doctors.Queries.Models;
 global using MediatR;
@@ -20,4 +19,11 @@ global using Clinic_System.Application.Features.Doctors.Commands.Models;
 global using Clinic_System.API.Bases;
 global using Clinic_System.Application.Common.Bases;
 global using System.Net;
+global using FluentValidation;
+global using System.Text.Json;
+global using Clinic_System.API.Middlewares;
+global using Clinic_System.Application.Common.Behaviors;
+global using Clinic_System.Core.Exceptions;
+
+
 

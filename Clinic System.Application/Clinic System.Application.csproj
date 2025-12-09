@@ -23,7 +23,7 @@
     <Folder Include="DTOs\Appointments\" />
     <Folder Include="DTOs\Common\" />
     <Folder Include="DTOs\Patients\" />
-    <Folder Include="Features\Doctors\Validators\" />
+    <Folder Include="Features\Doctors\Queries\Validators\" />
   </ItemGroup>
 
 </Project>

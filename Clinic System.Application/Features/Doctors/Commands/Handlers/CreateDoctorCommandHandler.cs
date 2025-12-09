@@ -18,21 +18,6 @@
 
         public async Task<Response<CreateDoctorDTO>> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
         {
-            if (request.Password != request.ConfirmPassword)
-            {
-                return BadRequest<CreateDoctorDTO>("Passwords do not match");
-            }
-
-            if(await identityService.ExistingUserName(request.UserName))
-            {
-                return BadRequest<CreateDoctorDTO>("Username already exists");
-            }
-
-            if (await identityService.ExistingEmail(request.Email))
-            {
-                return BadRequest<CreateDoctorDTO>("Email already exists");
-            }
-
             Doctor doctor = null;
 
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
