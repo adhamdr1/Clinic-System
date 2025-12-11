@@ -86,7 +86,15 @@ namespace Clinic_System.Infrastructure.Services
             var user = await _userManager.FindByIdAsync(userId);
             return user?.Email;
         }
+        public async Task<string?> GetUserNameAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return null;
 
+            var user = await _userManager.FindByIdAsync(userId);
+            return user?.UserName;
+        }
+       
         public async Task<bool> ExistingEmail(string Email)
         {
             return await _userManager.Users.AnyAsync(u => u.Email == Email);
@@ -96,6 +104,71 @@ namespace Clinic_System.Infrastructure.Services
         {
             return await _userManager.Users.AnyAsync(u => u.UserName == UserName);
         }
+
+        public async Task<bool> UpdateEmailUserAsync(string userId, string newEmail, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(newEmail))
+                throw new DomainException("Email cannot be empty");
+
+
+            var emailResult = await _userManager.SetEmailAsync(user , newEmail);
+
+            if (!emailResult.Succeeded)
+            {
+                var errors = string.Join(", ", emailResult.Errors.Select(e => e.Description));
+                throw new DomainException($"Failed to Update Email User: {errors}");
+            }
+
+            return emailResult.Succeeded;
+        }
+
+        public async Task<bool> UpdatePasswordUserAsync(string userId, string newpassword, string currentPassword, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(newpassword))
+                throw new DomainException("Password cannot be empty");
+
+            var passwordResult = await _userManager.ChangePasswordAsync(user, currentPassword, newpassword);
+
+            if (!passwordResult.Succeeded)
+            {
+                var errors = string.Join(", ", passwordResult.Errors.Select(e => e.Description));
+                throw new DomainException($"Failed to Update Password User: {errors}");
+            }
+
+            return passwordResult.Succeeded;
+        }
+
+        public async Task<bool> UpdateUserNameAsync(string userId, string newUserName, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(newUserName))
+                throw new DomainException("User name cannot be empty");
+
+            var userNameResult = await _userManager.SetUserNameAsync(user, newUserName);
+
+            if (!userNameResult.Succeeded)
+            {
+                var errors = string.Join(", ", userNameResult.Errors.Select(e => e.Description));
+                throw new DomainException($"Failed to Update User Name User: {errors}");
+            }
+
+            return userNameResult.Succeeded;
+        }
+   
     }
 }
 

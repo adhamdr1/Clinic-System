@@ -15,7 +15,7 @@
                     opt => opt.MapFrom(src => src.Patient.FullName));
 
 
-            CreateMap<Doctor, GetDoctorDTO>()
+            CreateMap<Doctor, GetDoctorWhitAppointmentDTO>()
 
                 .ForMember(dest => dest.Gender
                 , option => option.MapFrom(src => src.Gender.ToString()))

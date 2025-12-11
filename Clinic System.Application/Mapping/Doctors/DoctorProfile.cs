@@ -6,7 +6,10 @@
         {
             GetDoctorListMapping();
             GetDoctorWithAppointmentsByIdMapping();
+            GetDoctorByIdMapping();
             CreateDoctorMapping();
+            UpdateDoctorMapping();
+            UpdateIdentityDoctorMapping();
         }
     }
 }

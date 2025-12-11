@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Features.Doctors.Queries.Handlers
 {
-    public class DoctorWithAppointmentsByIdQueryHandler : ResponseHandler, IRequestHandler<GetDoctorWithAppointmentsByIdQuery, Response<GetDoctorDTO>>
+    public class DoctorWithAppointmentsByIdQueryHandler : ResponseHandler, IRequestHandler<GetDoctorWithAppointmentsByIdQuery, Response<GetDoctorWhitAppointmentDTO>>
     {
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
@@ -16,16 +16,16 @@
             this.identityService = identityService;
         }
 
-        public async Task<Response<GetDoctorDTO>> Handle(GetDoctorWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Response<GetDoctorWhitAppointmentDTO>> Handle(GetDoctorWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
         {
             if (request.Id < 1)
-                return BadRequest<GetDoctorDTO>("ID must be greater than 0");
+                return BadRequest<GetDoctorWhitAppointmentDTO>("ID must be greater than 0");
 
             var doctor = await doctorService.GetDoctorWithAppointmentsByIdAsync(request.Id, cancellationToken);
             if (doctor == null)
-                return NotFound<GetDoctorDTO>();
+                return NotFound<GetDoctorWhitAppointmentDTO>();
 
-            var doctorsMapper = mapper.Map<GetDoctorDTO>(doctor);
+            var doctorsMapper = mapper.Map<GetDoctorWhitAppointmentDTO>(doctor);
 
             // Get Email from UserService using ApplicationUserId
             if (!string.IsNullOrEmpty(doctor.ApplicationUserId))

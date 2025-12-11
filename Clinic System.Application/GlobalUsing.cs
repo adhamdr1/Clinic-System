@@ -14,17 +14,5 @@ global using System.Transactions;
 global using System.Text.Json.Serialization;
 global using FluentValidation;
 global using Clinic_System.Core.Exceptions;
-
-
-
-
-
-
-
-
-
-
-
-
-
+global using Clinic_System.Application.DTOs;
 

@@ -39,10 +39,47 @@
             return NewResult(response);
         }
 
+        [Route("api/GetDoctorById/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetDoctorById(int id)
+        {
+            var response = await mediator.Send(new GetDoctorByIdQuery
+            {
+                Id = id
+            });
+            return NewResult(response);
+        }
+
         [Route("api/CreateDoctor")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)
         {
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
+        [Route("api/UpdateDoctor/{id}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Mismatched Doctor ID");
+            }
+
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
+        [Route("api/UpdateIdentityDoctor/{id}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateIdentityDoctor(int id, [FromBody] UpdateIdentityDoctorCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Mismatched Doctor ID");
+            }
+
             var response = await mediator.Send(command);
             return NewResult(response);
         }

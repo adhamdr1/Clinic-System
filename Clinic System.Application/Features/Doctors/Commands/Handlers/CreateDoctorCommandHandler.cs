@@ -56,7 +56,7 @@
                 doctorsMapper.Email = await identityService.GetUserEmailAsync(doctor.ApplicationUserId, cancellationToken) ?? string.Empty;
             }
 
-            var locationUri = $"/api/Doctors/{doctor.Id}";
+            var locationUri = $"/api/GetDoctorById/{doctor.Id}";
 
             return Created<CreateDoctorDTO>(doctorsMapper, locationUri, "Doctor created successfully");
         }

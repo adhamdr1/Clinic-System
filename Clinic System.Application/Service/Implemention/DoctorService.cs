@@ -29,5 +29,15 @@
         {
             await unitOfWork.DoctorsRepository.AddAsync(doctor, cancellationToken);
         }
+
+        public async Task UpdateDoctor(Doctor doctor, CancellationToken cancellationToken = default)
+        {
+            unitOfWork.DoctorsRepository.Update(doctor, cancellationToken);
+        }
+
+        public async Task<Doctor?> GetDoctorByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.DoctorsRepository.GetByIdAsync(id, cancellationToken);
+        }
     }
 }
