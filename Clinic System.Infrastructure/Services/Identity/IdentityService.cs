@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace Clinic_System.Infrastructure.Services
 {
     public class IdentityService : IIdentityService
@@ -73,6 +75,13 @@ namespace Clinic_System.Infrastructure.Services
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return false;
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (userRoles.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(user, userRoles);
+            }
 
             var result = await _userManager.DeleteAsync(user);
             return result.Succeeded;

@@ -1,7 +1,6 @@
 ﻿global using Clinic_System.Core.Entities;
 global using Clinic_System.Core.Interfaces;
 global using Clinic_System.Core.Enums;
-global using Clinic_System.Data.Helpers;
 global using Clinic_System.Data.Seed;
 global using Clinic_System.Infrastructure.Identity;
 global using Microsoft.EntityFrameworkCore;

@@ -6,7 +6,7 @@
         {
             // من Command لـ Entity (عشان الحفظ)
             CreateMap<UpdateDoctorCommand, Doctor>()
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now));
 
             CreateMap<Doctor, UpdateDoctorDTO>();
         }

@@ -6,7 +6,7 @@
         {
             // من Command لـ Entity (عشان الحفظ)
             CreateMap<CreateDoctorCommand, Doctor>()
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false))
                 .ForMember(dest => dest.ApplicationUserId, opt => opt.Ignore()) // اليوزر ID هنجيبه يدوي
                 .ForMember(dest => dest.Appointments, opt => opt.Ignore()); // نتجاهل الليستات

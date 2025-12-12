@@ -83,5 +83,27 @@
             var response = await mediator.Send(command);
             return NewResult(response);
         }
+
+        [Route("api/SoftDeleteDoctor/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> SoftDeleteDoctor(int id)
+        {
+            var response = await mediator.Send(new SoftDeleteDoctorCommand
+            {
+                Id = id
+            });
+            return NewResult(response);
+        }
+
+        [Route("api/HardDeleteDoctor/{id}")]
+        [HttpDelete]
+        public async Task<IActionResult> HardDeleteDoctor(int id)
+        {
+            var response = await mediator.Send(new HardDeleteDoctorCommand
+            {
+                Id = id
+            });
+            return NewResult(response);
+        }
     }
 }

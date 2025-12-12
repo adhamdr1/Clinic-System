@@ -72,14 +72,13 @@
 
         /// <summary>
         /// Automatically set CreatedAt and UpdatedAt for entities implementing IAuditable
-        /// Uses Egypt timezone (Cairo)
         /// </summary>
         private void ApplyAuditFields()
         {
             var entries = ChangeTracker.Entries()
                 .Where(e => e.Entity is IAuditable && (e.State == EntityState.Added || e.State == EntityState.Modified));
 
-            var egyptTime = EgyptTimeHelper.GetEgyptTime();
+            var currentTime = DateTime.Now;
 
             foreach (var entry in entries)
             {
@@ -87,13 +86,13 @@
 
                 if (entry.State == EntityState.Added)
                 {
-                    // Set CreatedAt only when adding new entity (Egypt time)
-                    entity.CreatedAt = egyptTime;
+                    // Set CreatedAt only when adding new entity
+                    entity.CreatedAt = currentTime;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
-                    // Set UpdatedAt when modifying existing entity (Egypt time)
-                    entity.UpdatedAt = egyptTime;
+                    // Set UpdatedAt when modifying existing entity
+                    entity.UpdatedAt = currentTime;
                     
                     // Prevent CreatedAt from being changed
                     entry.Property(nameof(IAuditable.CreatedAt)).IsModified = false;
@@ -103,17 +102,18 @@
 
         private void ApplySoftDelete()
         {
-            var entries = ChangeTracker.Entries()
-                .Where(e => e.Entity is ISoftDelete && e.State == EntityState.Deleted);
 
-            var egyptTime = EgyptTimeHelper.GetEgyptTime();
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is ISoftDelete && e.State == EntityState.Modified);
+
+            var currentTime = DateTime.Now;
 
             foreach (var entry in entries)
             {
                 var entity = (ISoftDelete)entry.Entity;
                 entry.State = EntityState.Modified;
                 entity.IsDeleted = true;
-                entity.DeletedAt = egyptTime; // Egypt time
+                entity.DeletedAt = currentTime;
             }
         }
     }

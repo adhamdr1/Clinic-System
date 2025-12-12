@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Data.Repository
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Clinic_System.Data.Repository
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
@@ -61,24 +63,36 @@
         {
             context.Set<TEntity>().Remove(entity);
         }
-        public async Task SoftDeleteAsync(int id, CancellationToken cancellationToken = default)
+        public void SoftDelete(TEntity entity, CancellationToken cancellationToken = default)
         {
-            var entity = await GetByIdAsync(id);
-
-            if (entity == null) 
-                return;
-
-            // التحقق باستخدام الانترفيس بدل الـ Reflection السحري
             if (entity is ISoftDelete softDeletableEntity)
             {
+                var entry = context.Entry(entity);
+                
+                // الحل: إذا كانت الـ Entity متتبعة، نفصلها أولاً
+                if (entry.State != EntityState.Detached)
+                {
+                    entry.State = EntityState.Detached;
+                }
+                
+                // رفع الـ Entity أولاً (قبل تعديل القيم) - هذا يحفظ القيم الأصلية
+                context.Set<TEntity>().Attach(entity);
+                
+                // تعديل القيم بعد Attach - هذا يضمن أن EF Core يكتشف التغييرات
                 softDeletableEntity.IsDeleted = true;
-                // الحل: استخدام EgyptTimeHelper بدلاً من DateTime.Now
-                softDeletableEntity.DeletedAt = EgyptTimeHelper.GetEgyptTime();
+                softDeletableEntity.DeletedAt = DateTime.Now;
 
-                // مش محتاج تنادي UpdateAsync لأن التعديل حصل على الكائن المتتبع (Tracked)
-                // ومجرد ما تعمل SaveChanges في UnitOfWork هيسمع.
-                // لكن لو عايز تأكيد:
-                Update(entity);
+                // تعيين الحالة إلى Modified يدوياً
+                entry = context.Entry(entity);
+                entry.State = EntityState.Modified;
+
+                // التأكد من أن الخصائص محددة كـ Modified
+                entry.Property(nameof(ISoftDelete.IsDeleted)).IsModified = true;
+                entry.Property(nameof(ISoftDelete.DeletedAt)).IsModified = true;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Entity of type {typeof(TEntity).Name} does not support Soft Delete.");
             }
         }
 

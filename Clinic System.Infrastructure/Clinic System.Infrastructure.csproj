@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="Helpers\" />
-    <Folder Include="Services\Identity\" />
     <Folder Include="Services\Email\" />
   </ItemGroup>
 

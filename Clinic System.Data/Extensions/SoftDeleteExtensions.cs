@@ -29,12 +29,12 @@ namespace Clinic_System.Data.Extensions
         }
 
         /// <summary>
-        /// Soft delete an entity (uses Egypt timezone)
+        /// Soft delete an entity
         /// </summary>
         public static void SoftDelete<T>(this DbSet<T> dbSet, T entity) where T : class, ISoftDelete
         {
             entity.IsDeleted = true;
-            entity.DeletedAt = EgyptTimeHelper.GetEgyptTime();
+            entity.DeletedAt = DateTime.Now;
             dbSet.Update(entity);
         }
 

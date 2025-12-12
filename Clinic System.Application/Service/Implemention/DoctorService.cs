@@ -39,5 +39,15 @@
         {
             return await unitOfWork.DoctorsRepository.GetByIdAsync(id, cancellationToken);
         }
+
+        public async Task SoftDeleteDoctor(Doctor doctor, CancellationToken cancellationToken = default)
+        {
+            unitOfWork.DoctorsRepository.SoftDelete(doctor, cancellationToken);
+        }
+
+        public async Task HardDeleteDoctor(Doctor doctor, CancellationToken cancellationToken = default)
+        {
+            unitOfWork.DoctorsRepository.Delete(doctor, cancellationToken);
+        }
     }
 }

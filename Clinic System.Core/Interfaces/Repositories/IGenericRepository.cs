@@ -18,7 +18,7 @@
         public void Update(TEntity entity, CancellationToken cancellationToken = default);
 
         public void Delete(TEntity entity, CancellationToken cancellationToken = default);
-        public Task SoftDeleteAsync(int id, CancellationToken cancellationToken = default);
+        public void SoftDelete(TEntity entity, CancellationToken cancellationToken = default);
 
         public Task<TEntity?> GetByCondition(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
         public Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
