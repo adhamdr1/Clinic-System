@@ -8,7 +8,8 @@
         {
         }
 
-        [Route("api/GetDoctorList")]
+        //Specialization
+        [Route("GetDoctorList")]
         [HttpGet]
         public async Task<IActionResult> GetDoctorList()
         {
@@ -16,7 +17,18 @@
             return Ok(response);
         }
 
-        [Route("api/GetDoctorListPaging")]
+        [Route("GetDoctorListBySpecialization")]
+        [HttpGet]
+        public async Task<IActionResult> GetDoctorListBySpecialization(string Specialization)
+        {
+            var response = await mediator.Send(new GetDoctorListBySpecializationQuery
+            {
+                Specialization = Specialization
+            });
+            return NewResult(response);
+        }
+
+        [Route("GetDoctorListPaging")]
         [HttpGet]
         public async Task<IActionResult> GetDoctorListPaging([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -28,7 +40,7 @@
             return Ok(response);
         }
 
-        [Route("api/GetDoctorWithAppointmentsById/{id}")]
+        [Route("GetDoctorWithAppointmentsById/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetDoctorWithAppointmentsById(int id)
         {
@@ -39,7 +51,7 @@
             return NewResult(response);
         }
 
-        [Route("api/GetDoctorById/{id}")]
+        [Route("GetDoctorById/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetDoctorById(int id)
         {
@@ -50,7 +62,7 @@
             return NewResult(response);
         }
 
-        [Route("api/CreateDoctor")]
+        [Route("CreateDoctor")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)
         {
@@ -58,7 +70,7 @@
             return NewResult(response);
         }
 
-        [Route("api/UpdateDoctor/{id}")]
+        [Route("UpdateDoctor/{id}")]
         [HttpPut]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorCommand command)
         {
@@ -71,7 +83,7 @@
             return NewResult(response);
         }
 
-        [Route("api/UpdateIdentityDoctor/{id}")]
+        [Route("UpdateIdentityDoctor/{id}")]
         [HttpPut]
         public async Task<IActionResult> UpdateIdentityDoctor(int id, [FromBody] UpdateIdentityDoctorCommand command)
         {
@@ -84,7 +96,7 @@
             return NewResult(response);
         }
 
-        [Route("api/SoftDeleteDoctor/{id}")]
+        [Route("SoftDeleteDoctor/{id}")]
         [HttpDelete]
         public async Task<IActionResult> SoftDeleteDoctor(int id)
         {
@@ -95,7 +107,7 @@
             return NewResult(response);
         }
 
-        [Route("api/HardDeleteDoctor/{id}")]
+        [Route("HardDeleteDoctor/{id}")]
         [HttpDelete]
         public async Task<IActionResult> HardDeleteDoctor(int id)
         {

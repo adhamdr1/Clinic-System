@@ -49,5 +49,10 @@
         {
             unitOfWork.DoctorsRepository.Delete(doctor, cancellationToken);
         }
+
+        public async Task<List<Doctor>> GetDoctorsListBySpecializationAsync(string Specialization, CancellationToken cancellationToken = default)
+        {
+            return (List<Doctor>)await unitOfWork.DoctorsRepository.GetDoctorsBySpecializationAsync(Specialization, cancellationToken);
+        }
     }
 }
