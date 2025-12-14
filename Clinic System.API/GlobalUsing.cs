@@ -24,6 +24,10 @@ global using System.Text.Json;
 global using Clinic_System.API.Middlewares;
 global using Clinic_System.Application.Common.Behaviors;
 global using Clinic_System.Core.Exceptions;
+global using Clinic_System.Application.Features.Appointments.Queries.Models;
+global using Clinic_System.Application.Features.Appointments.Commands.Models;
+
+
 
 
 

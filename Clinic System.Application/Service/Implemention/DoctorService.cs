@@ -11,7 +11,8 @@
 
         public async Task<List<Doctor>> GetDoctorsListAsync(CancellationToken cancellationToken = default)
         {
-            return (List<Doctor>)await unitOfWork.DoctorsRepository.GetAllAsync(cancellationToken: cancellationToken);
+            return (await unitOfWork.DoctorsRepository
+                .GetAllAsync(cancellationToken: cancellationToken)).ToList();
         }
 
         public async Task<PagedResult<Doctor>> GetDoctorsListPagingAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
@@ -52,7 +53,8 @@
 
         public async Task<List<Doctor>> GetDoctorsListBySpecializationAsync(string Specialization, CancellationToken cancellationToken = default)
         {
-            return (List<Doctor>)await unitOfWork.DoctorsRepository.GetDoctorsBySpecializationAsync(Specialization, cancellationToken);
+            return (await unitOfWork.DoctorsRepository
+                .GetDoctorsBySpecializationAsync(Specialization, cancellationToken)).ToList();
         }
     }
 }

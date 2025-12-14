@@ -15,4 +15,9 @@ global using System.Text.Json.Serialization;
 global using FluentValidation;
 global using Clinic_System.Core.Exceptions;
 global using Clinic_System.Application.DTOs;
+global using Clinic_System.Application.DTOs.Appointments;
+global using Clinic_System.Application.Features.Appointments.Queries.Models;
+global using Clinic_System.Application.Features.Appointments.Commands.Models;
+
+
 

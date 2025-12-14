@@ -87,6 +87,7 @@ namespace Clinic_System.API
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(ApplicationAssemblyReference).Assembly));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IDoctorService, DoctorService>();
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IIdentityService, IdentityService>();
             builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyReference).Assembly);
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
