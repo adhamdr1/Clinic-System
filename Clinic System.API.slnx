@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Clinic System.API/Clinic System.API.csproj" />
+  <Project Path="Clinic System.Application.Tests/Clinic System.Application.Tests.csproj" Id="f8442c65-a6cd-4065-ade1-0dbe3a75822e" />
   <Project Path="Clinic System.Application/Clinic System.Application.csproj" />
   <Project Path="Clinic System.Core/Clinic System.Core.csproj" />
   <Project Path="Clinic System.Data/Clinic System.Data.csproj" />
