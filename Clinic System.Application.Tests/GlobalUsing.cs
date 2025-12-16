@@ -12,6 +12,19 @@ global using Clinic_System.Core.Entities;
 global using Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository;
 global using Clinic_System.Core.Interfaces.UnitOfWork;
 global using FluentValidation.TestHelper;
+global using Clinic_System.Application.Service.Implemention;
+global using Clinic_System.Core.Enums;
+global using Clinic_System.Application.Features.Doctors.Commands.Models;
+global using Clinic_System.Application.Features.Doctors.Commands.Validators;
+global using Clinic_System.Application.Service.Interface;
+global using System.Linq.Expressions;
+global using AutoMapper;
+global using Clinic_System.Application.DTOs.Appointments;
+global using Clinic_System.Application.Features.Appointments.Commands.Handlers;
+global using Clinic_System.Application.DTOs.Doctors;
+global using Clinic_System.Application.Features.Doctors.Commands.Handlers;
+
+
 
 
 

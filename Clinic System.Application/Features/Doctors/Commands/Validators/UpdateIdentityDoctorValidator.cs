@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace Clinic_System.Application.Features.Doctors.Commands.Validators
+﻿namespace Clinic_System.Application.Features.Doctors.Commands.Validators
 {
     public class UpdateIdentityDoctorValidator : AbstractValidator<UpdateIdentityDoctorCommand>
     {
@@ -48,15 +46,14 @@ namespace Clinic_System.Application.Features.Doctors.Commands.Validators
         private void ApplyCrossFieldRules()
         {
             // شرط تحديث الايميل
+            // شرط تحديث الايميل: إذا كان الإيميل مكتوباً، يجب أن يكون اليوزر مكتوباً أيضاً
             RuleFor(x => x.Email)
-                .NotEmpty()
-                .When(x => !string.IsNullOrEmpty(x.Email) && string.IsNullOrEmpty(x.UserName))
+                .Must((command, email) => !(!string.IsNullOrEmpty(email) && string.IsNullOrEmpty(command.UserName)))
                 .WithMessage("To change Email, you must provide Username");
 
-            // شرط تحديث اليوزر
+            // شرط تحديث اليوزر: إذا كان اليوزر مكتوباً، يجب أن يكون الإيميل مكتوباً أيضاً
             RuleFor(x => x.UserName)
-                .NotEmpty()
-                .When(x => !string.IsNullOrEmpty(x.UserName) && string.IsNullOrEmpty(x.Email))
+                .Must((command, userName) => !(!string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(command.Email)))
                 .WithMessage("To change Username, you must provide Email");
 
             // شرط تحديث الباسورد

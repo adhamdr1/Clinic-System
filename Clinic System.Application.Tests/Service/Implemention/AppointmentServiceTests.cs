@@ -1,7 +1,4 @@
-﻿using Clinic_System.Application.Service.Implemention;
-using Clinic_System.Core.Enums;
-
-namespace Clinic_System.Application.Tests.Service.Implemention
+﻿namespace Clinic_System.Application.Tests.Service.Implemention
 {
     public class AppointmentServiceTests
     {
@@ -18,29 +15,6 @@ namespace Clinic_System.Application.Tests.Service.Implemention
             _mockUnitOfWork.SetupGet(u => u.AppointmentsRepository).Returns(_mockAppointmentRepository.Object);
             _appointmentService = new AppointmentService(_mockUnitOfWork.Object);
         }
-
-        //[Fact]
-        //public async Task GetAvailableSlotsAsync_ShouldReturnAvailableSlots()
-        //{
-        //    // Arrange
-        //    int doctorId = 1;
-        //    DateTime date = DateTime.Today;
-        //    var bookedAppointments = new List<Appointment>
-        //    {
-        //        new Appointment { AppointmentDate = date.AddHours(12).AddMinutes(15) }, // 12:15 PM
-        //        new Appointment { AppointmentDate = date.AddHours(13).AddMinutes(0) }   // 1:00 PM
-        //    };
-        //    _mockUnitOfWork.Setup(u => u.AppointmentsRepository
-        //        .GetBookedAppointmentsAsync(doctorId, date, It.IsAny<CancellationToken>()))
-        //        .ReturnsAsync(bookedAppointments);
-        //    // Act
-        //    var availableSlots = await _appointmentService.GetAvailableSlotsAsync(doctorId, date);
-        //    // Assert
-        //    Assert.DoesNotContain(new TimeSpan(12, 15, 0), availableSlots); // 12:15 PM should be booked
-        //    Assert.DoesNotContain(new TimeSpan(13, 0, 0), availableSlots);   // 1:00 PM should be booked
-        //    Assert.Contains(new TimeSpan(12, 0, 0), availableSlots);         // 12:00 PM should be available
-        //    Assert.Contains(new TimeSpan(13, 15, 0), availableSlots);       // 1:15 PM should be available
-        //}
 
         [Fact]
         public async Task BookAppointmentAsync_SlotAvailable_SavesAndReturnsAppointment()
