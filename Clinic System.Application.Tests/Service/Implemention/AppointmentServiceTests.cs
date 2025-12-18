@@ -2,9 +2,9 @@
 {
     public class AppointmentServiceTests
     {
-        
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IAppointmentRepository> _mockAppointmentRepository;
+        private readonly Mock<ILogger<AppointmentService>> _mockLogger;
         private readonly AppointmentService _appointmentService;
 
 
@@ -12,8 +12,9 @@
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockAppointmentRepository = new Mock<IAppointmentRepository>();
+            _mockLogger = new Mock<ILogger<AppointmentService>>();
             _mockUnitOfWork.SetupGet(u => u.AppointmentsRepository).Returns(_mockAppointmentRepository.Object);
-            _appointmentService = new AppointmentService(_mockUnitOfWork.Object);
+            _appointmentService = new AppointmentService(_mockUnitOfWork.Object , _mockLogger.Object);
         }
 
         [Fact]

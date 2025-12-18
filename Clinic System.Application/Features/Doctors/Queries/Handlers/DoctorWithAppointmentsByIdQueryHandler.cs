@@ -5,25 +5,35 @@
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
         private readonly IIdentityService identityService;
+        private readonly ILogger<DoctorWithAppointmentsByIdQueryHandler> logger;
 
         public DoctorWithAppointmentsByIdQueryHandler(
             IDoctorService doctorService, 
             IMapper mapper,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            ILogger<DoctorWithAppointmentsByIdQueryHandler> logger)
         {
             this.doctorService = doctorService;
             this.mapper = mapper;
             this.identityService = identityService;
+            this.logger = logger;
         }
 
         public async Task<Response<GetDoctorWhitAppointmentDTO>> Handle(GetDoctorWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
         {
             if (request.Id < 1)
+            {
+                logger.LogWarning("GetDoctorWithAppointmentsByIdQueryHandler: Invalid ID {Id}", request.Id);
                 return BadRequest<GetDoctorWhitAppointmentDTO>("ID must be greater than 0");
+            }
 
             var doctor = await doctorService.GetDoctorWithAppointmentsByIdAsync(request.Id, cancellationToken);
+
             if (doctor == null)
-                return NotFound<GetDoctorWhitAppointmentDTO>();
+            {
+                logger.LogInformation("GetDoctorWithAppointmentsByIdQueryHandler: Doctor with ID {Id} not found", request.Id);
+                return NotFound<GetDoctorWhitAppointmentDTO>($"Doctor with ID {request.Id} not found");
+            }
 
             var doctorsMapper = mapper.Map<GetDoctorWhitAppointmentDTO>(doctor);
 
@@ -31,8 +41,15 @@
             if (!string.IsNullOrEmpty(doctor.ApplicationUserId))
             {
                 doctorsMapper.Email = await identityService.GetUserEmailAsync(doctor.ApplicationUserId, cancellationToken) ?? string.Empty;
+            
+                if (string.IsNullOrEmpty(doctorsMapper.Email))
+                {
+                    logger.LogWarning("GetDoctorWithAppointmentsByIdQueryHandler: Email not found for ApplicationUserId {ApplicationUserId}", doctor.ApplicationUserId);
+                }
             }
 
+            logger.LogInformation("GetDoctorWithAppointmentsByIdQueryHandler: Successfully retrieved doctor with ID {Id}", request.Id);
+            
             return Success(doctorsMapper);
         }
     }

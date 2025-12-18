@@ -3,14 +3,16 @@
     public class AppointmentService : IAppointmentService
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly ILogger<AppointmentService> logger;
 
         private readonly TimeSpan DefaultStartTime = new TimeSpan(12, 0, 0); // 12:00 PM
         private readonly TimeSpan DefaultEndTime = new TimeSpan(22, 0, 0);   // 10:00 PM
         private const int SlotDurationInMinutes = 15;
 
-        public AppointmentService(IUnitOfWork unitOfWork)
+        public AppointmentService(IUnitOfWork unitOfWork, ILogger<AppointmentService> logger)
         {
             this.unitOfWork = unitOfWork;
+            this.logger = logger;
         }
 
         public async Task<List<Appointment>> GetBookedAppointmentsAsync(int doctorId, DateTime date, CancellationToken cancellationToken = default)
@@ -21,6 +23,8 @@
 
         public async Task<List<TimeSpan>> GetAvailableSlotsAsync(int doctorId, DateTime date, CancellationToken cancellationToken = default)
         {
+            logger.LogInformation("Fetching available slots for DoctorId: {DoctorId} on Date: {Date}", doctorId, date.ToShortDateString());
+
             var bookedAppointments = await GetBookedAppointmentsAsync(doctorId, date, cancellationToken);
 
             var bookedTimes = bookedAppointments
@@ -33,12 +37,18 @@
             .Where(slot => !bookedTimes.Contains(slot))
             .ToList();
 
+            logger.LogInformation("Available slots for DoctorId: {DoctorId} on Date: {Date}: {AvailableSlots}",
+                doctorId, date.ToShortDateString(), string.Join(", ", availableSlots));
+
             return availableSlots;
         }
 
         // في AppointmentService.cs
         public async Task<Appointment> BookAppointmentAsync(BookAppointmentCommand command, CancellationToken cancellationToken = default)
         {
+            logger.LogInformation("Attempting to book appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDate} at {AppointmentTime}",
+                command.PatientId, command.DoctorId, command.AppointmentDate.ToShortDateString(), command.AppointmentTime);
+
             var appointmentDateTime = command.AppointmentDate.Date.Add(command.AppointmentTime);
 
             // 1. *** التحقق الأمني النهائي والمباشر من قاعدة البيانات (Anti-Concurrency) ***
@@ -50,6 +60,8 @@
 
             if (isSlotBooked)
             {
+                logger.LogError("Failed to book appointment: Slot already booked for DoctorId: {DoctorId} on {AppointmentDateTime}",
+                    command.DoctorId, appointmentDateTime);
                 throw new Exception("The selected time slot is no longer available. Please select another time.");
             }
 
@@ -69,10 +81,14 @@
 
             if (result == 0)
             {
+                logger.LogError("Failed to save the new appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
+                    command.PatientId, command.DoctorId, appointmentDateTime);
                 // إذا فشل الحفظ دون استثناء، يجب رفع استثناء هنا
                 throw new Exception("Failed to save the new appointment to the database.");
             }
 
+            logger.LogInformation("Successfully booked appointment with ID: {AppointmentId} for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
+                appointment.Id, command.PatientId, command.DoctorId, appointmentDateTime);
             // 5. إرجاع الكيان المحفوظ (الذي يحمل الـ ID الآن)
             return appointment;
         }
@@ -127,6 +143,9 @@
         /// </summary>
         private List<TimeSpan> GenerateSlots(TimeSpan startTime, TimeSpan endTime, int durationMinutes)
         {
+            logger.LogInformation("Generating slots from {StartTime} to {EndTime} with duration {DurationMinutes} minutes",
+                startTime, endTime, durationMinutes);
+
             var slots = new List<TimeSpan>();
             var currentSlot = startTime;
 
@@ -136,6 +155,8 @@
                 slots.Add(currentSlot);
                 currentSlot = currentSlot.Add(TimeSpan.FromMinutes(durationMinutes));
             }
+
+            logger.LogInformation("Generated {SlotCount} slots", slots.Count);
 
             return slots;
         }

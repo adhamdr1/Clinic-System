@@ -23,6 +23,7 @@ global using Clinic_System.Application.DTOs.Appointments;
 global using Clinic_System.Application.Features.Appointments.Commands.Handlers;
 global using Clinic_System.Application.DTOs.Doctors;
 global using Clinic_System.Application.Features.Doctors.Commands.Handlers;
+global using Microsoft.Extensions.Logging;
 
 
 

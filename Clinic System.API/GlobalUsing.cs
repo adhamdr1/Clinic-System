@@ -26,6 +26,8 @@ global using Clinic_System.Application.Common.Behaviors;
 global using Clinic_System.Core.Exceptions;
 global using Clinic_System.Application.Features.Appointments.Queries.Models;
 global using Clinic_System.Application.Features.Appointments.Commands.Models;
+global using Serilog;
+
 
 
 

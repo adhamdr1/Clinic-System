@@ -6,6 +6,7 @@
         private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<IIdentityService> _mockIdentityService;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<ILogger<CreateDoctorCommandHandler>> _mockLogger;
         private readonly CreateDoctorCommandHandler _handler;
         public CreateDoctorCommandHandlerTests()
         {
@@ -13,9 +14,13 @@
             _mockDoctorService = new Mock<IDoctorService>();
             _mockIdentityService = new Mock<IIdentityService>();
             _mockMapper = new Mock<IMapper>();
+            _mockLogger = new Mock<ILogger<CreateDoctorCommandHandler>>();
 
-            _handler = new CreateDoctorCommandHandler(_mockDoctorService.Object, _mockMapper.Object,
-                _mockIdentityService.Object, _mockUnitOfWork.Object);
+            _handler = new CreateDoctorCommandHandler(_mockDoctorService.Object,
+                _mockMapper.Object,
+                _mockIdentityService.Object,
+                _mockUnitOfWork.Object,
+                _mockLogger.Object);
         }
 
         [Fact]

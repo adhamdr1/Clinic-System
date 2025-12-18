@@ -2,6 +2,7 @@
 {
     public class BookAppointmentCommand : IRequest<Response<CreateAppointmentDTO>>
     {
+        [JsonIgnore]
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
         public DateTime AppointmentDate { get; set; }

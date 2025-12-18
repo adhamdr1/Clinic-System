@@ -31,6 +31,7 @@
 
             // 3. محاكاة الـ Validators
             var validatorMock = new Mock<IValidator<TestCommand>>();
+            var loggerMock = new Mock<ILogger<ValidationBehavior<TestCommand, bool>>>();
 
             validatorMock.Setup(v => v.ValidateAsync(
                 It.IsAny<ValidationContext<TestCommand>>(),
@@ -39,7 +40,8 @@
 
             // 4. إنشاء الـ Behavior، وتمرير قائمة الـ Validators المحاكية
             var behavior = new ValidationBehavior<TestCommand, bool>(
-                new List<IValidator<TestCommand>> { validatorMock.Object }
+                new List<IValidator<TestCommand>> { validatorMock.Object },
+                loggerMock.Object
             );
 
             //Act
@@ -72,6 +74,7 @@
 
             // 3. محاكاة الـ Validators
             var validatorMock = new Mock<IValidator<TestCommand>>();
+            var loggerMock = new Mock<ILogger<ValidationBehavior<TestCommand, bool>>>();
 
             validatorMock.Setup(v => v.ValidateAsync(
                 It.IsAny<ValidationContext<TestCommand>>(),
@@ -80,7 +83,8 @@
 
             // 4. إنشاء الـ Behavior، وتمرير قائمة الـ Validators المحاكية
             var behavior = new ValidationBehavior<TestCommand, bool>(
-                new List<IValidator<TestCommand>> { validatorMock.Object }
+                new List<IValidator<TestCommand>> { validatorMock.Object },
+                loggerMock.Object
             );
 
             //Act
