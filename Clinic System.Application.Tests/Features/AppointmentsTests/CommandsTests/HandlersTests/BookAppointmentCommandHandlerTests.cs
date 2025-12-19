@@ -73,6 +73,9 @@
                 AppointmentDate = DateTime.Now.AddDays(1)
             };
 
+            _mockUnitOfWork.Setup(u => u.PatientsRepository.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new Patient { Id = 1 });
+
             // محاكاة رمي استثناء برسائل مختلفة بناءً على الـ InlineData
             _mockAppointmentService
                 .Setup(s => s.BookAppointmentAsync(It.IsAny<BookAppointmentCommand>(), It.IsAny<CancellationToken>()))
@@ -90,6 +93,27 @@
 
             // 3. التأكد من حماية قاعدة البيانات: عدم استدعاء الحفظ عند حدوث خطأ في الخدمة
             _mockUnitOfWork.Verify(u => u.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task Handle_PatientNotFound_ShouldReturnBadRequest()
+        {
+            // Arrange
+            var command = new BookAppointmentCommand { PatientId = 999 };
+
+            // محاكاة إرجاع null عند البحث عن المريض
+            _mockUnitOfWork.Setup(u => u.PatientsRepository.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Patient)null);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.Succeeded);
+            Assert.Equal("Patient account not found.", result.Message);
+
+            // التأكد أن الـ Service لم يتم استدعاؤه أبداً توفيراً للأداء وحماية للمنطق
+            _mockAppointmentService.Verify(s => s.BookAppointmentAsync(It.IsAny<BookAppointmentCommand>(), It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }

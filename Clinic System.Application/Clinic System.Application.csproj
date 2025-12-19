@@ -24,7 +24,6 @@
   <ItemGroup>
     <Folder Include="DTOs\Common\" />
     <Folder Include="DTOs\Patients\" />
-    <Folder Include="Features\Appointments\Queries\Validators\" />
   </ItemGroup>
 
 </Project>

@@ -28,14 +28,4 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\AppointmentsTests\Queries\HandlersTests\" />
-    <Folder Include="Features\AppointmentsTests\Queries\ModelsTests\" />
-    <Folder Include="Features\AppointmentsTests\Queries\ValidatorsTests\" />
-    <Folder Include="Features\Doctors\CommandsTests\ModelsTests\" />
-    <Folder Include="Features\Doctors\QueriesTests\HandlersTests\" />
-    <Folder Include="Features\Doctors\QueriesTests\ModelsTests\" />
-    <Folder Include="Features\Doctors\QueriesTests\ValidatorsTests\" />
-  </ItemGroup>
-
 </Project>

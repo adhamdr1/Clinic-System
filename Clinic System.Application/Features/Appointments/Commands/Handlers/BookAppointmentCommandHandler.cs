@@ -24,6 +24,7 @@
             try
             {
                 var patient = await unitOfWork.PatientsRepository.GetByIdAsync(request.PatientId, cancellationToken);
+
                 if (patient == null)
                 {
                     logger.LogWarning("Patient with ID {PatientId} not found.", request.PatientId);

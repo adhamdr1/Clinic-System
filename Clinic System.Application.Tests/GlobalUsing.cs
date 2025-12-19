@@ -24,6 +24,15 @@ global using Clinic_System.Application.Features.Appointments.Commands.Handlers;
 global using Clinic_System.Application.DTOs.Doctors;
 global using Clinic_System.Application.Features.Doctors.Commands.Handlers;
 global using Microsoft.Extensions.Logging;
+global using System.Net;
+global using Clinic_System.Application.Features.Doctors.Queries.Handlers;
+global using Clinic_System.Application.Features.Doctors.Queries.Models;
+global using Clinic_System.Application.Features.Appointments.Queries.Handlers;
+global using Clinic_System.Application.Features.Appointments.Queries.Models;
+
+
+
+
 
 
 
