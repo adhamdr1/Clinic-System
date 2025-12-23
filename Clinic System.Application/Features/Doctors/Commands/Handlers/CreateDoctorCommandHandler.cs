@@ -74,3 +74,17 @@
         }
     }
 }
+/*
+ {
+  "fullName": "Dr.Nour Farag",
+  "gender": "female",
+  "dateOfBirth": "1979-07-22",
+  "phone": "01070689484",
+  "address": "Alex",
+  "specialization": "string",
+  "userName": "Nourdr7",
+  "email": "Nour7@g.c",
+  "password": "Doma.dr1",
+  "confirmPassword": "Doma.dr1"
+}
+ */

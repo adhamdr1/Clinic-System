@@ -27,5 +27,13 @@
                 .Where(p => patientIds.Contains(p.Id))
                 .ToListAsync();
         }
+
+        public async Task<Patient?> GetPatientWithAppointmentsByIdAsync(int Id, CancellationToken cancellationToken = default)
+        {
+            return await context.Patients
+                .AsNoTracking()
+                .Include(d => d.Appointments.OrderBy(a => a.AppointmentDate))
+                .FirstOrDefaultAsync(d => d.Id == Id);
+        }
     }
 }

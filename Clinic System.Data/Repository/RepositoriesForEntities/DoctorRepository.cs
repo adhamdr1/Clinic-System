@@ -37,6 +37,7 @@
             return await context.Doctors
                 .AsNoTracking()
                 .Where(d => EF.Functions.Like(d.Specialization, $"%{specialization}%"))
+                .OrderBy(d => d.FullName)
                 .ToListAsync();
         }
 
@@ -59,7 +60,7 @@
         {
             return await context.Doctors
                 .AsNoTracking()
-                .Include(d => d.Appointments)
+                .Include(d => d.Appointments.OrderBy(a => a.AppointmentDate))
                 .FirstOrDefaultAsync(d => d.Id == Id);
         }
     }

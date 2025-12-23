@@ -59,14 +59,14 @@
         public override int SaveChanges()
         {
             ApplyAuditFields();
-            ApplySoftDelete();
+            //ApplySoftDelete();
             return base.SaveChanges();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             ApplyAuditFields();
-            ApplySoftDelete();
+            //ApplySoftDelete();
             return base.SaveChangesAsync(cancellationToken);
         }
 
@@ -100,21 +100,21 @@
             }
         }
 
-        private void ApplySoftDelete()
-        {
+        //private void ApplySoftDelete()
+        //{
 
-            var entries = ChangeTracker.Entries()
-                .Where(e => e.Entity is ISoftDelete && e.State == EntityState.Modified);
+        //    var entries = ChangeTracker.Entries()
+        //        .Where(e => e.Entity is ISoftDelete && e.State == EntityState.Modified);
 
-            var currentTime = DateTime.Now;
+        //    var currentTime = DateTime.Now;
 
-            foreach (var entry in entries)
-            {
-                var entity = (ISoftDelete)entry.Entity;
-                entry.State = EntityState.Modified;
-                entity.IsDeleted = true;
-                entity.DeletedAt = currentTime;
-            }
-        }
+        //    foreach (var entry in entries)
+        //    {
+        //        var entity = (ISoftDelete)entry.Entity;
+        //        entry.State = EntityState.Modified;
+        //        entity.IsDeleted = true;
+        //        entity.DeletedAt = currentTime;
+        //    }
+        //}
     }
 }

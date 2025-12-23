@@ -19,6 +19,12 @@ global using Clinic_System.Application.DTOs.Appointments;
 global using Clinic_System.Application.Features.Appointments.Queries.Models;
 global using Clinic_System.Application.Features.Appointments.Commands.Models;
 global using Microsoft.Extensions.Logging;
+global using Clinic_System.Application.DTOs.Patients;
+global using Clinic_System.Application.Features.Patients.Queries.Models;
+global using Clinic_System.Application.Features.Patients.Commands.Models;
+
+
+
 
 
 

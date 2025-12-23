@@ -1,6 +1,6 @@
-﻿namespace Clinic_System.Application.Features.Doctors.Commands.Models
+﻿namespace Clinic_System.Application.Features.Patients.Commands.Models
 {
-    public class UpdateIdentityDoctorCommand : IRequest<Response<UserDTO>>
+    public class UpdateIdentityPatientCommand : IRequest<Response<UserDTO>>
     {
         public int Id { get; set; }
         public string? UserName { get; set; }

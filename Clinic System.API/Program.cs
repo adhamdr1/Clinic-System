@@ -5,9 +5,8 @@ namespace Clinic_System.API
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
                 .WriteTo.Console()
-                .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("Logs/bootstrap-.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             try
@@ -16,10 +15,12 @@ namespace Clinic_System.API
 
                 var builder = WebApplication.CreateBuilder(args);
 
-                builder.Host.UseSerilog((context, services, configuration) => configuration
-                         .ReadFrom.Configuration(context.Configuration)
-                         .ReadFrom.Services(services));
-
+                // Serilog
+                builder.Host.UseSerilog((context, services, config) =>
+                {
+                    config.ReadFrom.Configuration(context.Configuration)
+                          .ReadFrom.Services(services);
+                });
 
                 // Database Configuration
                 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -52,7 +53,7 @@ namespace Clinic_System.API
                 
                 // JWT Authentication
                 var jwtSettings = builder.Configuration.GetSection("JWT");
-                var secretKey = jwtSettings["SecritKey"];
+                var secritKey = jwtSettings["SecritKey"];
                 var audience = jwtSettings["AudienceIP"];
                 var issuer = jwtSettings["IssuerIP"];
                 
@@ -74,7 +75,7 @@ namespace Clinic_System.API
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = issuer,
                         ValidAudience = audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!)),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secritKey!)),
                     };
                 });
                 
@@ -100,12 +101,21 @@ namespace Clinic_System.API
                 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(ApplicationAssemblyReference).Assembly));
                 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
                 builder.Services.AddScoped<IDoctorService, DoctorService>();
+                builder.Services.AddScoped<IPatientService, PatientService>();
                 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
                 builder.Services.AddScoped<IIdentityService, IdentityService>();
                 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyReference).Assembly);
                 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-                
-                
+
+                if (string.IsNullOrWhiteSpace(secritKey))
+                    throw new Exception("JWT SecretKey is missing in appsettings.json");
+
+                if (string.IsNullOrWhiteSpace(issuer))
+                    throw new Exception("JWT IssuerIP is missing");
+
+                if (string.IsNullOrWhiteSpace(audience))
+                    throw new Exception("JWT AudienceIP is missing");
+
                 var app = builder.Build();
                 
                 // Configure the HTTP request pipeline.

@@ -1,17 +1,17 @@
-﻿namespace Clinic_System.Application.Mapping.Doctors
+﻿namespace Clinic_System.Application.Mapping.Patients
 {
-    public partial class DoctorProfile
+    public partial class PatientProfile
     {
-        public void UpdateDoctorMapping()
+        public void UpdatePatientMapping()
         {
             // من Command لـ Entity (عشان الحفظ)
-            CreateMap<UpdateDoctorCommand, Doctor>()
+            CreateMap<UpdatePatientCommand, Patient>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now))
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) =>
-            // الشرط المعدل: لا تنقل القيمة إذا كانت null أو فراغ
+                     // الشرط المعدل: لا تنقل القيمة إذا كانت null أو فراغ
                      srcMember != null && (!(srcMember is string s) || !string.IsNullOrWhiteSpace(s))
                 ));
-            CreateMap<Doctor, UpdateDoctorDTO>();
+            CreateMap<Patient, UpdatePatientDTO>();
         }
     }
 }

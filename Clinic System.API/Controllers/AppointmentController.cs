@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-
-namespace Clinic_System.API.Controllers
+﻿namespace Clinic_System.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

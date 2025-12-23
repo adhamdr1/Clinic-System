@@ -1,11 +1,11 @@
-﻿namespace Clinic_System.Application.Features.Doctors.Commands.Validators
+﻿namespace Clinic_System.Application.Features.Patients.Commands.Validators
 {
-    public class UpdateIdentityDoctorValidator : AbstractValidator<UpdateIdentityDoctorCommand>
+    public class UpdateIdentityPatientValidator : AbstractValidator<UpdateIdentityPatientCommand>
     {
         private readonly IIdentityService _identityService;
         private readonly IUnitOfWork unitOfWork;
 
-        public UpdateIdentityDoctorValidator(IIdentityService identityService , IUnitOfWork unitOfWork)
+        public UpdateIdentityPatientValidator(IIdentityService identityService , IUnitOfWork unitOfWork)
         {
             _identityService = identityService;
             this.unitOfWork = unitOfWork;
@@ -108,12 +108,12 @@
             RuleFor(x => x.Email)
                 .MustAsync(async (command, email, cancellationToken) =>
                 {
-                    var doctor = await unitOfWork.DoctorsRepository.GetByIdAsync(command.Id);
+                    var patient = await unitOfWork.PatientsRepository.GetByIdAsync(command.Id);
 
-                    if (doctor == null)
+                    if (patient == null)
                         return true; // Doctor not found, skip validation
 
-                    var oldEmail = await _identityService.GetUserEmailAsync(doctor.ApplicationUserId, cancellationToken);
+                    var oldEmail = await _identityService.GetUserEmailAsync(patient.ApplicationUserId, cancellationToken);
 
                     // Check if email exists
                     if (string.IsNullOrEmpty(email))
@@ -132,12 +132,12 @@
             RuleFor(x => x.UserName)
                 .MustAsync(async (command, userName, cancellationToken) =>
                 {
-                    var doctor = await unitOfWork.DoctorsRepository.GetByIdAsync(command.Id);
+                    var patient = await unitOfWork.PatientsRepository.GetByIdAsync(command.Id);
 
-                    if (doctor == null)
+                    if (patient == null)
                         return true; // Doctor not found, skip validation
 
-                    var oldUserName = await _identityService.GetUserNameAsync(doctor.ApplicationUserId, cancellationToken);
+                    var oldUserName = await _identityService.GetUserNameAsync(patient.ApplicationUserId, cancellationToken);
 
 
                     if (string.IsNullOrEmpty(userName))

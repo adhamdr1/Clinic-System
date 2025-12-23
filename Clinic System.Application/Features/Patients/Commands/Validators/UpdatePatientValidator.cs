@@ -1,14 +1,14 @@
-﻿namespace Clinic_System.Application.Features.Doctors.Commands.Validators
+﻿namespace Clinic_System.Application.Features.Patients.Commands.Validators
 {
-    public class UpdateDoctorValidator : AbstractValidator<UpdateDoctorCommand>
+    public class UpdatePatientValidator : AbstractValidator<UpdatePatientCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateDoctorValidator(IUnitOfWork unitOfWork)
+        public UpdatePatientValidator(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
 
-            RuleFor(x => x.Id).NotEmpty().WithMessage("Doctor ID is required for update.");
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Patient ID is required for update.");
 
 
             // تقسيم القواعد لتكون منظمة
@@ -26,10 +26,6 @@
             RuleFor(x => x.Address)
                 .MaximumLength(200).WithMessage("Address must not exceed 100 characters")
                 .When(x => !string.IsNullOrEmpty(x.Address));
-
-            RuleFor(x => x.Specialization)
-                .MaximumLength(100).WithMessage("Specialization must not exceed 100 characters")
-                .When(x => !string.IsNullOrEmpty(x.Specialization));
 
             // Phone (Format Only)
             RuleFor(x => x.Phone)
@@ -50,8 +46,8 @@
                     var existingPatient = await _unitOfWork.PatientsRepository.FindAsync(d => d.Phone == phone);
                     
                     bool phoneUsedByOther =
-                        existingDoctor.Any(d => d.Id != command.Id)
-                        || existingPatient.Any();
+                        existingDoctor.Any()
+                        || existingPatient.Any(d => d.Id != command.Id);
 
                     return !phoneUsedByOther; // Valid if no one else uses it
                 })

@@ -5,5 +5,6 @@
         Task<Patient?> GetPatientByUserIdAsync(string userId);
         Task<IEnumerable<Patient>> GetPatientsWithAppointmentsAsync(
             Expression<Func<Appointment, bool>> appointmentPredicate);
+        Task<Patient?> GetPatientWithAppointmentsByIdAsync(int Id, CancellationToken cancellationToken = default);
     }
 }
