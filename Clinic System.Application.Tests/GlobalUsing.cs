@@ -29,6 +29,15 @@ global using Clinic_System.Application.Features.Doctors.Queries.Handlers;
 global using Clinic_System.Application.Features.Doctors.Queries.Models;
 global using Clinic_System.Application.Features.Appointments.Queries.Handlers;
 global using Clinic_System.Application.Features.Appointments.Queries.Models;
+global using Clinic_System.Application.DTOs.Patients;
+global using Clinic_System.Application.Features.Patients.Queries.Handlers;
+global using Clinic_System.Application.Features.Patients.Queries.Models;
+global using Clinic_System.Application.Features.Patients.Commands.Handlers;
+global using Clinic_System.Application.Features.Patients.Commands.Models;
+global using Clinic_System.Application.Features.Patients.Commands.Validators;
+
+
+
 
 
 
