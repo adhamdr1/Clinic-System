@@ -9,13 +9,13 @@
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Doctor>> GetDoctorsListAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Doctor?>> GetDoctorsListAsync(CancellationToken cancellationToken = default)
         {
             return (await unitOfWork.DoctorsRepository
                 .GetAllAsync(cancellationToken: cancellationToken)).ToList();
         }
 
-        public async Task<PagedResult<Doctor>> GetDoctorsListPagingAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Doctor?>> GetDoctorsListPagingAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
             var (items, totalCount) = await unitOfWork.DoctorsRepository.GetPaginatedAsync(pageNumber, pageSize, cancellationToken: cancellationToken);
 
@@ -51,10 +51,16 @@
             unitOfWork.DoctorsRepository.Delete(doctor, cancellationToken);
         }
 
-        public async Task<List<Doctor>> GetDoctorsListBySpecializationAsync(string Specialization, CancellationToken cancellationToken = default)
+        public async Task<List<Doctor?>> GetDoctorsListBySpecializationAsync(string Specialization, CancellationToken cancellationToken = default)
         {
             return (await unitOfWork.DoctorsRepository
                 .GetDoctorsBySpecializationAsync(Specialization, cancellationToken)).ToList();
+        }
+
+        public async Task<List<Doctor?>> GetDoctorsListByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            return (await unitOfWork.DoctorsRepository
+                .GetDoctorsByNameAsync(name, cancellationToken)).ToList();
         }
     }
 }

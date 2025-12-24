@@ -11,7 +11,8 @@
         public string CreatedAt { get; set; }
         public string ApplicationUserId { get; set; } = null!;
         public string Email { get; set; }
+        public string UserName { get; set; }
         public int TotalAppointments => Appointments.Count;
-        public List<GetAppointmentForDoctorDTO> Appointments { get; set; } = new();
+        public List<GetAppointmentForPatientDTO> Appointments { get; set; } = new();
     }
 }

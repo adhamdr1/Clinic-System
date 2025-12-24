@@ -39,6 +39,28 @@
             return NewResult(response);
         }
 
+        [Route("GetPatientByPhone")]
+        [HttpGet]
+        public async Task<IActionResult> GetPatientByPhone([FromQuery] string phone)
+        {
+            var response = await mediator.Send(new GetPatientByPhoneQuery
+            {
+                Phone = phone
+            });
+            return NewResult(response);
+        }
+
+        [Route("GetPatientListByName")]
+        [HttpGet]
+        public async Task<IActionResult> GetPatientListByName([FromQuery] string name)
+        {
+            var response = await mediator.Send(new GetPatientListByNameQuery
+            {
+                FullName = name
+            });
+            return NewResult(response);
+        }
+
         [Route("GetPatientWithAppointmentsById/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetPatientWithAppointmentsById(int id)

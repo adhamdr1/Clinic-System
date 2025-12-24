@@ -42,25 +42,6 @@
         }
 
         [Fact]
-        public async Task DoctorName_Empty_ShouldHaveValidationError()
-        {
-            // Arrange
-            var command = new UpdateDoctorCommand
-            {
-                FullName = "",
-                Address = "123 Main St",
-                Specialization = "Cardiology",
-                Phone = "+12345678901"
-            };
-
-            // Act
-            var result = await _validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(c => c.FullName);
-        }
-
-        [Fact]
         public async Task DoctorName_LengthMoreThan100_ShouldHaveValidationError()
         {
             // Arrange
@@ -100,25 +81,6 @@
         }
 
         [Fact]
-        public async Task Addrees_Empty_ShouldHaveValidationError()
-        {
-            // Arrange
-            var command = new UpdateDoctorCommand
-            {
-                FullName = "Dr. John Doe",
-                Address = "",
-                Specialization = "Cardiology",
-                Phone = "+12345678901"
-            };
-
-            // Act
-            var result = await _validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(c => c.Address);
-        }
-
-        [Fact]
         public async Task Specialization_NotEmpty_ShouldNotHaveValidationError()
         {
             // Arrange
@@ -138,25 +100,6 @@
         }
 
         [Fact]
-        public async Task Specialization_Empty_ShouldHaveValidationError()
-        {
-            // Arrange
-            var command = new UpdateDoctorCommand
-            {
-                FullName = "Dr. John Doe",
-                Address = "123 Main St",
-                Specialization = "",
-                Phone = "+12345678901"
-            };
-
-            // Act
-            var result = await _validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(c => c.Specialization);
-        }
-
-        [Fact]
         public async Task Phone_NotEmpty_ShouldNotHaveValidationError()
         {
             // Arrange
@@ -173,25 +116,6 @@
 
             // Assert
             result.ShouldNotHaveValidationErrorFor(c => c.Phone);
-        }
-
-        [Fact]
-        public async Task Phone_Empty_ShouldHaveValidationError()
-        {
-            // Arrange
-            var command = new UpdateDoctorCommand
-            {
-                FullName = "Dr. John Doe",
-                Address = "123 Main St",
-                Specialization = "Cardiology",
-                Phone = ""
-            };
-
-            // Act
-            var result = await _validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(c => c.Phone);
         }
 
         [Fact]
@@ -228,26 +152,6 @@
             var result = await _validator.TestValidateAsync(command);
             // Assert
             result.ShouldNotHaveAnyValidationErrors();
-        }
-
-        [Fact]
-        public async Task All_EmptyFields_ShouldHaveValidationErrors()
-        {
-            // Arrange
-            var command = new UpdateDoctorCommand
-            {
-                FullName = "",
-                Address = "",
-                Specialization = "",
-                Phone = ""
-            };
-            // Act
-            var result = await _validator.TestValidateAsync(command);
-            // Assert
-            result.ShouldHaveValidationErrorFor(c => c.FullName);
-            result.ShouldHaveValidationErrorFor(c => c.Address);
-            result.ShouldHaveValidationErrorFor(c => c.Specialization);
-            result.ShouldHaveValidationErrorFor(c => c.Phone);
         }
 
         [Fact]

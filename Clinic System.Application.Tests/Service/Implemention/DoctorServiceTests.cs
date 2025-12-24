@@ -263,5 +263,23 @@
             result.Should().NotBeNull(); // 👈 القائمة موجودة ككائن
             result.Should().BeEmpty();   // 👈 ولكنها لا تحتوي على عناصر
         }
+
+        [Fact]
+        public async Task GetDoctorsListByNameAsync_NotExistingName_ReturnNull()
+        {
+            // Arrange
+            string Name = "Ahdham";
+
+            _mockDoctorRepository
+                .Setup(r => r.GetDoctorsByNameAsync(Name, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Doctor>());
+
+            // Act
+            var result = await _doctorService.GetDoctorsListByNameAsync(Name);
+
+            // Assert
+            result.Should().NotBeNull(); // 👈 القائمة موجودة ككائن
+            result.Should().BeEmpty();   // 👈 ولكنها لا تحتوي على عناصر
+        }
     }
 }

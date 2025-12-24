@@ -1,6 +1,4 @@
-﻿using Clinic_System.Application.Features.Doctors.Queries.Models;
-
-namespace Clinic_System.Application.Tests.Features.Doctors.QueriesTests.HandlersTests
+﻿namespace Clinic_System.Application.Tests.Features.Doctors.QueriesTests.HandlersTests
 {
     public class DoctorWithAppointmentsByIdQueryHandlerTests
     {
@@ -138,6 +136,51 @@ namespace Clinic_System.Application.Tests.Features.Doctors.QueriesTests.Handlers
                     LogLevel.Warning,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Email not found")),
+                    null,
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task Handle_UserNameNotFound_LogsWarning()
+        {
+            // Arrange
+            var query = new GetDoctorWithAppointmentsByIdQuery { Id = 1 };
+
+            var doctor = new Doctor
+            {
+                Id = 1,
+                FullName = "Dr. Smith",
+                ApplicationUserId = "user-123"
+            };
+
+            var doctorDto = new GetDoctorWhitAppointmentDTO
+            {
+                Id = 1,
+                FullName = "Dr. Smith",
+                Appointments = new List<GetAppointmentForDoctorDTO>()
+            };
+
+            _mockDoctorService.Setup(s => s.GetDoctorWithAppointmentsByIdAsync(1, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _mockMapper
+                .Setup(m => m.Map<GetDoctorWhitAppointmentDTO>(doctor))
+                .Returns(doctorDto);
+
+            _mockIdentityService.Setup(s => s.GetUserNameAsync("user-123", It.IsAny<CancellationToken>()))
+                .ReturnsAsync((string?)null);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            _mockLogger.Verify(
+                x => x.Log(
+                    LogLevel.Warning,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("UserName not found")),
                     null,
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

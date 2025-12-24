@@ -13,7 +13,7 @@
                 .FirstOrDefaultAsync(p => p.ApplicationUserId == userId);
         }
 
-        public async Task<IEnumerable<Patient>> GetPatientsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
+        public async Task<IEnumerable<Patient?>> GetPatientsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
         {
             // الحل: استخدام Join مع Appointments مباشرة بدلاً من AsQueryable()
             // هذا يضمن تنفيذ Query في SQL وليس في Memory
@@ -34,6 +34,22 @@
                 .AsNoTracking()
                 .Include(d => d.Appointments.OrderBy(a => a.AppointmentDate))
                 .FirstOrDefaultAsync(d => d.Id == Id);
+        }
+
+        public async Task<IEnumerable<Patient?>> GetPatientsByNameAsync(string fullName, CancellationToken cancellationToken = default)
+        {
+            return await context.Patients
+                .AsNoTracking()
+                .Where(d => EF.Functions.Like(d.FullName, $"%{fullName}%"))
+                .OrderBy(d => d.FullName)
+                .ToListAsync();
+        }
+
+        public async Task<Patient?> GetPatientByPhoneAsync(string Phone, CancellationToken cancellationToken = default)
+        {
+            return await context.Patients
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Phone == Phone, cancellationToken);
         }
     }
 }

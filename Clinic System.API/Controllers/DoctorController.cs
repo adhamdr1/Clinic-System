@@ -62,6 +62,17 @@
             return NewResult(response);
         }
 
+        [Route("GetDoctorListByName")]
+        [HttpGet]
+        public async Task<IActionResult> GetDoctorListByName([FromQuery] string name)
+        {
+            var response = await mediator.Send(new GetDoctorListByNameQuery
+            {
+                FullName = name
+            });
+            return NewResult(response);
+        }
+
         [Route("CreateDoctor")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)

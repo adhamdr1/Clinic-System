@@ -12,6 +12,7 @@
         public string Specialization { get; set; } = null!;
         public string ApplicationUserId { get; set; } = null!;
         public string Email { get; set; }
+        public string UserName { get; set; }
         public int TotalAppointments => Appointments.Count;
         public List<GetAppointmentForDoctorDTO> Appointments { get; set; } = new();
     }

@@ -48,6 +48,17 @@
                 }
             }
 
+            // Get UserName from UserService using ApplicationUserId
+            if (!string.IsNullOrEmpty(doctor.ApplicationUserId))
+            {
+                doctorsMapper.UserName = await identityService.GetUserNameAsync(doctor.ApplicationUserId, cancellationToken) ?? string.Empty;
+
+                if (string.IsNullOrEmpty(doctorsMapper.UserName))
+                {
+                    logger.LogWarning("GetDoctorWithAppointmentsByIdQueryHandler: UserName not found for ApplicationUserId {ApplicationUserId}", doctor.ApplicationUserId);
+                }
+            }
+
             logger.LogInformation("GetDoctorWithAppointmentsByIdQueryHandler: Successfully retrieved doctor with ID {Id}", request.Id);
             
             return Success(doctorsMapper);

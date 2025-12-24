@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Application.Features.Patients.Queries.Handlers
+﻿using Clinic_System.Core.Entities;
+
+namespace Clinic_System.Application.Features.Patients.Queries.Handlers
 {
     public class PatientWithAppointmentsByIdQueryHandler : ResponseHandler, IRequestHandler<GetPatientWithAppointmentsByIdQuery, Response<GetPatientWhitAppointmentDTO>>
     {
@@ -45,6 +47,17 @@
                 if (string.IsNullOrEmpty(patientsMapper.Email))
                 {
                     logger.LogWarning("GetPatientWithAppointmentsByIdQueryHandler: Email not found for ApplicationUserId {ApplicationUserId}", patient.ApplicationUserId);
+                }
+            }
+
+            // Get UserName from UserService using ApplicationUserId
+            if (!string.IsNullOrEmpty(patient.ApplicationUserId))
+            {
+                patientsMapper.UserName = await identityService.GetUserNameAsync(patient.ApplicationUserId, cancellationToken) ?? string.Empty;
+
+                if (string.IsNullOrEmpty(patientsMapper.UserName))
+                {
+                    logger.LogWarning("GetPatientWithAppointmentsByIdQueryHandler: UserName not found for ApplicationUserId {ApplicationUserId}", patient.ApplicationUserId);
                 }
             }
 

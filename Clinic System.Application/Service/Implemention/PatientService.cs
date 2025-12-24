@@ -9,13 +9,13 @@
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Patient>> GetPatientsListAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Patient?>> GetPatientsListAsync(CancellationToken cancellationToken = default)
         {
             return (await unitOfWork.PatientsRepository
                 .GetAllAsync(cancellationToken: cancellationToken)).ToList();
         }
 
-        public async Task<PagedResult<Patient>> GetPatientsListPagingAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Patient?>> GetPatientsListPagingAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
             var (items, totalCount) = await unitOfWork.PatientsRepository.GetPaginatedAsync(pageNumber, pageSize, cancellationToken: cancellationToken);
 
@@ -49,6 +49,16 @@
         public async Task HardDeletePatient(Patient patient, CancellationToken cancellationToken = default)
         {
             unitOfWork.PatientsRepository.Delete(patient, cancellationToken);
+        }
+
+        public async Task<Patient?> GetPatientByPhoneAsync(string phone, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.PatientsRepository.GetPatientByPhoneAsync(phone, cancellationToken);
+        }
+
+        public async Task<List<Patient?>> GetPatientListByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            return (await unitOfWork.PatientsRepository.GetPatientsByNameAsync(name, cancellationToken)).ToList();
         }
     }
 }
