@@ -19,7 +19,7 @@
             return await context.Doctors
                 .AsNoTracking()
                 .Where(d => !busyDoctorIds.Contains(d.Id))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<Doctor?> GetDoctorByUserIdAsync(string userId, CancellationToken cancellationToken = default)
@@ -35,7 +35,7 @@
                 .AsNoTracking()
                 .Where(d => EF.Functions.Like(d.FullName, $"%{fullName}%"))
                 .OrderBy(d => d.FullName)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Doctor?>> GetDoctorsBySpecializationAsync(string specialization, CancellationToken cancellationToken = default)
@@ -47,7 +47,7 @@
                 .AsNoTracking()
                 .Where(d => EF.Functions.Like(d.Specialization, $"%{specialization}%"))
                 .OrderBy(d => d.FullName)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<Doctor?>> GetDoctorsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate, CancellationToken cancellationToken = default)
@@ -62,7 +62,7 @@
             return await context.Doctors
                 .AsNoTracking()
                 .Where(d => appointmentIds.Contains(d.Id))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<Doctor?> GetDoctorWithAppointmentsByIdAsync(int Id, CancellationToken cancellationToken = default)

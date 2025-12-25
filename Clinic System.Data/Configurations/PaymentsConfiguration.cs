@@ -40,7 +40,7 @@ namespace Clinic_System.Data.Configurations
             // PaymentDate Property
             // ============================================
             builder.Property(p => p.PaymentDate)
-                .IsRequired()
+                .IsRequired(false)
                 .HasColumnName("PaymentDate");
 
             // Index على PaymentDate للبحث السريع
@@ -51,7 +51,7 @@ namespace Clinic_System.Data.Configurations
             // PaymentMethod Property
             // ============================================
             builder.Property(p => p.PaymentMethod)
-                .IsRequired()
+                .IsRequired(false)
                 .HasConversion<string>()
                 .HasMaxLength(50)
                 .HasColumnName("PaymentMethod");
@@ -62,6 +62,20 @@ namespace Clinic_System.Data.Configurations
             // Index على PaymentMethod للبحث السريع
             builder.HasIndex(p => p.PaymentMethod)
                 .HasDatabaseName("IX_Payments_PaymentMethod");
+
+
+            // ============================================
+            // PaymentStatus Property
+            // ============================================
+            builder.Property(p => p.PaymentStatus)
+                .IsRequired()
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .HasColumnName("PaymentStatus");
+
+            // Index على PaymentMethod للبحث السريع
+            builder.HasIndex(p => p.PaymentStatus)
+                .HasDatabaseName("IX_Payments_PaymentStatus");
 
             // ============================================
             // AdditionalNotes Property (Optional)

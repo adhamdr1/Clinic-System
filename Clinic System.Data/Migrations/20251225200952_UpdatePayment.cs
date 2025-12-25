@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Clinic_System.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Clinic : Migration
+    public partial class UpdatePayment : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,6 +32,8 @@ namespace Clinic_System.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -281,8 +283,9 @@ namespace Clinic_System.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AmountPaid = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AdditionalNotes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PaymentStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     AppointmentId = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -336,29 +339,29 @@ namespace Clinic_System.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "role-admin", "1a3e836c-c707-483d-900a-a2b4ffe54406", "Admin", "ADMIN" },
-                    { "role-doctor", "51e3a6db-c70a-4465-b461-c828281153ac", "Doctor", "DOCTOR" },
-                    { "role-patient", "5649fdc8-cc0e-4f45-a98f-4aeb75c9cd56", "Patient", "PATIENT" }
+                    { "role-admin", "22444086-99db-403f-b007-0d41c3b9c577", "Admin", "ADMIN" },
+                    { "role-doctor", "2b753f14-46eb-4036-9ff7-33a638c36866", "Doctor", "DOCTOR" },
+                    { "role-patient", "0add5e7d-4dcb-40f1-b4b8-da22e8a90846", "Patient", "PATIENT" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "DeletedAt", "Email", "EmailConfirmed", "IsDeleted", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "user-admin", 0, "03a669e0-9360-4eb4-a600-5d1d8e4b8408", "admin@clinic.com", true, false, null, "ADMIN@CLINIC.COM", "ADMIN@CLINIC.COM", "AQAAAAIAAYagAAAAEIguLIMO1T7IkS3rKPvq/q7dF/ym5Op2DJGa4kX7rSipfxjUwEAYxlDFhiPHDyhmqw==", null, false, "102923b1-257d-40f5-8587-88efd3a0a546", false, "admin@clinic.com" },
-                    { "user-doc1", 0, "b6ca5b81-74ac-42dc-a0f6-713f2b76b2f1", "dr.ahmed@clinic.com", true, false, null, "DR.AHMED@CLINIC.COM", "DR.AHMED@CLINIC.COM", "AQAAAAIAAYagAAAAELkz0slYrYJ8f7R9j6Z2UBuGUe3gDETgOKBR9QhHoIlakZklnlqscDmiEOm8hJZLHA==", null, false, "3b44544e-7b7e-4d12-898a-d0fc740d0683", false, "dr.ahmed@clinic.com" },
-                    { "user-doc2", 0, "0eaf01c8-8789-49bc-85ec-fcf548e78bc0", "dr.sara@clinic.com", true, false, null, "DR.SARA@CLINIC.COM", "DR.SARA@CLINIC.COM", "AQAAAAIAAYagAAAAECY1251lLAFW//+p064R4dN9TcWr+E0HA/Kn/qQ5C606k+m0ypCLT/VaKal6hKd7Jw==", null, false, "80c1f858-a53d-4c4f-a98c-7452e2761597", false, "dr.sara@clinic.com" },
-                    { "user-doc3", 0, "49ba24af-e01e-4deb-bc88-e9787e232d12", "dr.mohamed@clinic.com", true, false, null, "DR.MOHAMED@CLINIC.COM", "DR.MOHAMED@CLINIC.COM", "AQAAAAIAAYagAAAAEKNJ9EgxqCQMu+0D7k9FwdhU6lnwb7hLC3IWQKKPZ8PgqkVQ0mS38uGxds/UDiMF/Q==", null, false, "6bcd168f-455b-46f2-8ce1-5f113cec1b83", false, "dr.mohamed@clinic.com" },
-                    { "user-doc4", 0, "52a4f570-3610-4ef6-b458-1542785cf19d", "dr.layla@clinic.com", true, false, null, "DR.LAYLA@CLINIC.COM", "DR.LAYLA@CLINIC.COM", "AQAAAAIAAYagAAAAEMlstXAIwwuLZZZIBWLN9XKHByF70/wa02Cri+W04Nm4pbD/rr3u//5faYpws6USvQ==", null, false, "1a373905-1846-4989-a736-990643a00f79", false, "dr.layla@clinic.com" },
-                    { "user-doc5", 0, "98e8b64b-8398-4ee3-9dc8-572efd9bb0d4", "dr.omar@clinic.com", true, false, null, "DR.OMAR@CLINIC.COM", "DR.OMAR@CLINIC.COM", "AQAAAAIAAYagAAAAEMenjJdnFjONiY2PBm3XSyinThLVQdoCQkUie0ohkC9Cn8tBxfOzb3rt8n4ZCdBvVA==", null, false, "c7a71207-7907-4ff1-b387-b0c2c7899c64", false, "dr.omar@clinic.com" },
-                    { "user-pat1", 0, "8bad088a-fbad-4064-8983-cdff77e3b490", "mahmoud.ali@gmail.com", true, false, null, "MAHMOUD.ALI@GMAIL.COM", "MAHMOUD.ALI@GMAIL.COM", "AQAAAAIAAYagAAAAEH6X1xd8xzgBfJUsVoVHiiwbrMTwm6R6EAYgwKntvPPORSU+uYDdND+DYBAPK2KvFQ==", null, false, "6586afed-428f-47fc-8b82-c06f55ad1597", false, "mahmoud.ali@gmail.com" },
-                    { "user-pat2", 0, "1e96ea37-46a3-45ed-a8ca-cfc772b63044", "fatima.hassan@gmail.com", true, false, null, "FATIMA.HASSAN@GMAIL.COM", "FATIMA.HASSAN@GMAIL.COM", "AQAAAAIAAYagAAAAEFABX9byKyc+aXKlk878Ff/DaOnaBW7IGkkX24ObwdcN7eW+L9lYLB2ij21LI+oa8w==", null, false, "3d556c03-3430-4ca2-a661-0c7b40bd6ab8", false, "fatima.hassan@gmail.com" },
-                    { "user-pat3", 0, "7da4e5a0-71e5-43f0-8e1b-582c23a4feab", "omar.khalid@gmail.com", true, false, null, "OMAR.KHALID@GMAIL.COM", "OMAR.KHALID@GMAIL.COM", "AQAAAAIAAYagAAAAEFFvvGe0kP+40HnNLIFe4VLExZD6zCRM2ee2gu0zUwNeVD6NjbuqUbMJnVmbkszROg==", null, false, "62fae885-e700-4186-8c6b-a319394ac402", false, "omar.khalid@gmail.com" },
-                    { "user-pat4", 0, "41a7ed24-55fb-4fa5-8769-d3813d6f38c0", "nour.mohamed@gmail.com", true, false, null, "NOUR.MOHAMED@GMAIL.COM", "NOUR.MOHAMED@GMAIL.COM", "AQAAAAIAAYagAAAAEMgb5bg+z00kg7Ot8nTWWlMG1uJMMdJVfuPvEnzHX/M1DvEPk4lo3MKIInwKcZJC3A==", null, false, "b1ba4f59-4b9a-4b89-998f-a5ac8c5727de", false, "nour.mohamed@gmail.com" },
-                    { "user-pat5", 0, "2acdec06-b7e8-4358-952a-bb3e8f321a00", "karim.youssef@gmail.com", true, false, null, "KARIM.YOUSSEF@GMAIL.COM", "KARIM.YOUSSEF@GMAIL.COM", "AQAAAAIAAYagAAAAEIIJF6fqqIDRxcqtPpEU0XDCCfyalYzCzfUZ/OylD6UmY/qwvwcUT2/M4RoYTrKmlA==", null, false, "b23bb556-34e7-4817-bafe-6096d2c1a19a", false, "karim.youssef@gmail.com" },
-                    { "user-pat6", 0, "567a44c3-5482-4373-85f9-546ed1f0b715", "mona.ahmed@gmail.com", true, false, null, "MONA.AHMED@GMAIL.COM", "MONA.AHMED@GMAIL.COM", "AQAAAAIAAYagAAAAEJznXQIcZ4aFhXkHRTRIzOH5f02AKpgNaZGPuDHX9tuORs6iBld/Df2HmuBU5nIm9A==", null, false, "44c7394f-b058-434d-a6c9-3a4c78dfe8c0", false, "mona.ahmed@gmail.com" },
-                    { "user-pat7", 0, "9d03799a-bbe9-4e8f-a260-098b53855e9d", "ali.ibrahim@gmail.com", true, false, null, "ALI.IBRAHIM@GMAIL.COM", "ALI.IBRAHIM@GMAIL.COM", "AQAAAAIAAYagAAAAEJwSxEtcPE4DvJDXjbGpsR7kcD8QLkFCX80kzHvTIR5NuAqff0KM/XxWKnyzwOSQ3w==", null, false, "984c64a0-2c97-4ead-94e9-2899c7fcf142", false, "ali.ibrahim@gmail.com" }
+                    { "user-admin", 0, "57b0ec93-b945-4600-b3a6-c3eda50325ff", null, "admin@clinic.com", true, false, false, null, "ADMIN@CLINIC.COM", "ADMIN@CLINIC.COM", "AQAAAAIAAYagAAAAEDaGkrwgMUaewFoCLkctXqWGEMhik9rw4QxJ6S5uVXlLw7r0lyHORpCBkFLMT4bFdw==", null, false, "26d3cfac-7bad-4234-9fb9-675cc0503e70", false, "admin@clinic.com" },
+                    { "user-doc1", 0, "0c8bf8cd-d1b3-4511-992e-82fcb44f1a89", null, "dr.ahmed@clinic.com", true, false, false, null, "DR.AHMED@CLINIC.COM", "DR.AHMED@CLINIC.COM", "AQAAAAIAAYagAAAAEHEOOjdczSQm66fPvTnsh1YUqlOJykZc3wRAGeCIlSd0eVR2pZ/cSMo6miiq/2L51A==", null, false, "8ffab16d-03c5-40aa-82e3-c0c46f64137d", false, "dr.ahmed@clinic.com" },
+                    { "user-doc2", 0, "08b89fa7-9e91-4ea8-b514-7b1fce95d19e", null, "dr.sara@clinic.com", true, false, false, null, "DR.SARA@CLINIC.COM", "DR.SARA@CLINIC.COM", "AQAAAAIAAYagAAAAENDQImACiTTDrg4p2LBcJmN04IWeP54pMtc6jTNztricuTDZ20FEO0r+SzG0buksKg==", null, false, "f3edaca3-e5d7-4610-853a-430115ba0e5c", false, "dr.sara@clinic.com" },
+                    { "user-doc3", 0, "b29c7229-72ff-46bb-a314-e87641ea6caa", null, "dr.mohamed@clinic.com", true, false, false, null, "DR.MOHAMED@CLINIC.COM", "DR.MOHAMED@CLINIC.COM", "AQAAAAIAAYagAAAAEN4wwQlL/3uYjFQ1BsKzObUCOHZKwE4QblORwjFa4jJe2dEqTIj8WcKZd4DCGaev7A==", null, false, "e1f7dd68-d1f5-421e-81c5-f0d0e46d6d32", false, "dr.mohamed@clinic.com" },
+                    { "user-doc4", 0, "2b35febc-1306-4e1a-a555-4f42835fe0d0", null, "dr.layla@clinic.com", true, false, false, null, "DR.LAYLA@CLINIC.COM", "DR.LAYLA@CLINIC.COM", "AQAAAAIAAYagAAAAEDTIgD5/Ot/j6MwYyzkFX/ww0YuHc2Q4/IaaHlASPk3rL9iSnLa0pf6638StIHRzlQ==", null, false, "c90a1e2e-e8a9-47b9-8f5d-1e4c066a05e9", false, "dr.layla@clinic.com" },
+                    { "user-doc5", 0, "9db808e1-df22-4337-927f-512e87aa4379", null, "dr.omar@clinic.com", true, false, false, null, "DR.OMAR@CLINIC.COM", "DR.OMAR@CLINIC.COM", "AQAAAAIAAYagAAAAEClv+V7cDZnPUwwfHlJxkEu+njwU7Jr2xKYJMxkhFwp2otBFOapiasTNaca81ZHkbQ==", null, false, "c862f258-8a56-4602-939f-fca51ad61040", false, "dr.omar@clinic.com" },
+                    { "user-pat1", 0, "7365bd8e-a05f-4c46-bc53-32d42c5c0f00", null, "mahmoud.ali@gmail.com", true, false, false, null, "MAHMOUD.ALI@GMAIL.COM", "MAHMOUD.ALI@GMAIL.COM", "AQAAAAIAAYagAAAAEOE608b07nU1cS8IcxrGUtX70K0hxVIBBl9eysxffmSuKh/ivCjJ8KE4nWAy9TR9Zg==", null, false, "16fbbc58-00a4-4ea3-9626-199b0dcaa425", false, "mahmoud.ali@gmail.com" },
+                    { "user-pat2", 0, "472b92bf-8cf6-47a4-8556-927fb67f36a8", null, "fatima.hassan@gmail.com", true, false, false, null, "FATIMA.HASSAN@GMAIL.COM", "FATIMA.HASSAN@GMAIL.COM", "AQAAAAIAAYagAAAAEON8Jt6xEwpbtIcWElFzOzKELBZ/6K7xjMmOTqx42MsN2zUGbJzEQJoTKem0KkC2Ng==", null, false, "02619588-9b4f-426c-b6a8-fa68b2954dd6", false, "fatima.hassan@gmail.com" },
+                    { "user-pat3", 0, "4d1c5d36-606a-462b-bdda-795c82adea92", null, "omar.khalid@gmail.com", true, false, false, null, "OMAR.KHALID@GMAIL.COM", "OMAR.KHALID@GMAIL.COM", "AQAAAAIAAYagAAAAEEqR78CF6T3nXob1oWq9VF1x9UlEa4adfmtGkVMBx6Wh0mYveO9RkIG7Xyc2nHDJOw==", null, false, "73b63957-f453-47e5-9e41-61bc2803d0f9", false, "omar.khalid@gmail.com" },
+                    { "user-pat4", 0, "5f425f9d-ef02-4d93-a1f4-d7b1299c2009", null, "nour.mohamed@gmail.com", true, false, false, null, "NOUR.MOHAMED@GMAIL.COM", "NOUR.MOHAMED@GMAIL.COM", "AQAAAAIAAYagAAAAEKzVz92Bt229TodGcgtBc0XySktU4UbfU2c+4ZRca7v2GGPuiodxLUmdRrqd1TwFHA==", null, false, "1974114a-2bc5-47ca-8dbc-3a58136dc86f", false, "nour.mohamed@gmail.com" },
+                    { "user-pat5", 0, "bd311e45-a81e-46d7-86d0-71f9d6cd3e29", null, "karim.youssef@gmail.com", true, false, false, null, "KARIM.YOUSSEF@GMAIL.COM", "KARIM.YOUSSEF@GMAIL.COM", "AQAAAAIAAYagAAAAEClmBuu/ul0EvTJWvTdQwCR+f0USJdIT/eBINdGELfWIrD73GRCtOqJA1lrCXDAtSA==", null, false, "860a041a-91d6-4997-96e2-b9794b9362ae", false, "karim.youssef@gmail.com" },
+                    { "user-pat6", 0, "85202e4c-98d5-4f58-8f29-da1b32803be5", null, "mona.ahmed@gmail.com", true, false, false, null, "MONA.AHMED@GMAIL.COM", "MONA.AHMED@GMAIL.COM", "AQAAAAIAAYagAAAAEKFb7SBDCEkNKXCba19Pi2WzN6VjyPbk2xkWygAg8aH3H53zMg4WX1Z2wmUf2e1e0g==", null, false, "6aacf5a7-fd98-4cf8-a30b-22075483c896", false, "mona.ahmed@gmail.com" },
+                    { "user-pat7", 0, "c40dbdae-988b-40f3-a2b6-88914defd943", null, "ali.ibrahim@gmail.com", true, false, false, null, "ALI.IBRAHIM@GMAIL.COM", "ALI.IBRAHIM@GMAIL.COM", "AQAAAAIAAYagAAAAEHLPTUjW5/TfOH8LbDoJSwSdMwSYJnSHAh6AqqIOijwoqAe5wF2Z0bBiuzOV0C42HQ==", null, false, "5abf1b6d-eb38-4d4e-b86a-18de023cbb02", false, "ali.ibrahim@gmail.com" }
                 });
 
             migrationBuilder.InsertData(
@@ -442,15 +445,15 @@ namespace Clinic_System.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Payments",
-                columns: new[] { "Id", "AdditionalNotes", "AmountPaid", "AppointmentId", "CreatedAt", "DeletedAt", "PaymentDate", "PaymentMethod", "UpdatedAt" },
+                columns: new[] { "Id", "AdditionalNotes", "AmountPaid", "AppointmentId", "CreatedAt", "DeletedAt", "PaymentDate", "PaymentMethod", "PaymentStatus", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, "Paid in full", 350.00m, 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cash", null },
-                    { 2, "Visa card payment", 250.00m, 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), "CreditCard", null },
-                    { 3, "Insurance coverage", 400.00m, 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), "Insurance", null },
-                    { 4, "InstaPay transfer", 200.00m, 4, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified), "InstaPay", null },
-                    { 5, "Cash payment", 300.00m, 5, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cash", null },
-                    { 6, "Mastercard payment", 180.00m, 6, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "CreditCard", null }
+                    { 1, "Paid in full", 350.00m, 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cash", "Paid", null },
+                    { 2, "Visa card payment", 250.00m, 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 24, 0, 0, 0, 0, DateTimeKind.Unspecified), "CreditCard", "Paid", null },
+                    { 3, "Insurance coverage", 400.00m, 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), "InstaPay", "Paid", null },
+                    { 4, "Failed transfer", 200.00m, 4, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Failed", null },
+                    { 5, "Cash payment", 300.00m, 5, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2024, 12, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "Cash", "Paid", null },
+                    { 6, "Pending payment", 180.00m, 6, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "Pending", null }
                 });
 
             migrationBuilder.InsertData(
@@ -609,6 +612,11 @@ namespace Clinic_System.Data.Migrations
                 name: "IX_Payments_PaymentMethod",
                 table: "Payments",
                 column: "PaymentMethod");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_PaymentStatus",
+                table: "Payments",
+                column: "PaymentStatus");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prescriptions_CreatedAt",

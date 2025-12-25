@@ -42,7 +42,7 @@
                 .AsNoTracking()
                 .Where(d => EF.Functions.Like(d.FullName, $"%{fullName}%"))
                 .OrderBy(d => d.FullName)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         public async Task<Patient?> GetPatientByPhoneAsync(string Phone, CancellationToken cancellationToken = default)

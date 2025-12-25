@@ -18,6 +18,12 @@
                 .ToListAsync();
         }
 
+        public async Task<Payment?> GetPaymentByAppointmentIdAsync(int appointmentId)
+        {
+            return await context.Payments
+                .FirstOrDefaultAsync(p => p.AppointmentId == appointmentId);
+        }
+
         public async Task<IEnumerable<Payment>> GetPaymentsWithAppointmentAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
         {
             // الحل: استخدام Join بدلاً من Compile().Invoke() لضمان تنفيذ Query في SQL

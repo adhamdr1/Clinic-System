@@ -4,7 +4,6 @@
     {
         Cash = 1,
         CreditCard = 2,
-        Insurance = 3,
-        InstaPay = 4
+        InstaPay = 3
     }
 }

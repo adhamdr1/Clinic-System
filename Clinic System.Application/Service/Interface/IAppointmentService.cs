@@ -5,14 +5,11 @@
         Task<List<Appointment>> GetBookedAppointmentsAsync(int doctorId, DateTime date, CancellationToken cancellationToken = default);
         Task<List<TimeSpan>> GetAvailableSlotsAsync(int doctorId, DateTime date, CancellationToken cancellationToken = default);
         Task<Appointment> BookAppointmentAsync(BookAppointmentCommand command,CancellationToken cancellationToken = default);
-
-        //Task<List<Doctor>> GetDoctorsListAsync(CancellationToken cancellationToken = default);
-        //Task<PagedResult<Doctor>> GetDoctorsListPagingAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default);
-        //Task<List<Doctor>> GetDoctorsListBySpecializationAsync(string Specialization, CancellationToken cancellationToken = default);
-        //Task<Doctor?> GetDoctorWithAppointmentsByIdAsync(int id, CancellationToken cancellationToken = default);
-        //Task<Doctor?> GetDoctorByIdAsync(int id, CancellationToken cancellationToken = default);
-        //Task UpdateDoctor(Doctor doctor, CancellationToken cancellationToken = default);
-        //Task SoftDeleteDoctor(Doctor doctor, CancellationToken cancellationToken = default);
-        //Task HardDeleteDoctor(Doctor doctor, CancellationToken cancellationToken = default);
+        Task<Appointment> RescheduleAppointmentAsync(RescheduleAppointmentCommand command, CancellationToken cancellationToken = default);
+        Task<Appointment> CancelAppointment(int AppointmentId, int PatientId, CancellationToken cancellationToken = default);
+        Task<Appointment> ConfirmAppointment(int AppointmentId, int PatientId, PaymentMethod? method = null
+            , decimal? amount = null, CancellationToken cancellationToken = default);
+        Task<Appointment> NoShowAppointment(int AppointmentId, int DoctorId, CancellationToken cancellationToken = default);
+        Task<Appointment> CompleteAppointment(CompleteAppointmentCommand command, CancellationToken cancellationToken = default);
     }
 }

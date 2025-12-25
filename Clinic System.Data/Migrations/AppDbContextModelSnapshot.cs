@@ -687,15 +687,20 @@ namespace Clinic_System.Data.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
-                    b.Property<DateTime>("PaymentDate")
+                    b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("PaymentDate");
 
                     b.Property<string>("PaymentMethod")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("PaymentMethod");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("PaymentStatus");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
@@ -716,6 +721,9 @@ namespace Clinic_System.Data.Migrations
                     b.HasIndex("PaymentMethod")
                         .HasDatabaseName("IX_Payments_PaymentMethod");
 
+                    b.HasIndex("PaymentStatus")
+                        .HasDatabaseName("IX_Payments_PaymentStatus");
+
                     b.HasIndex("PaymentDate", "PaymentMethod")
                         .HasDatabaseName("IX_Payments_Date_Method");
 
@@ -734,7 +742,8 @@ namespace Clinic_System.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PaymentDate = new DateTime(2024, 12, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentMethod = "Cash"
+                            PaymentMethod = "Cash",
+                            PaymentStatus = "Paid"
                         },
                         new
                         {
@@ -745,7 +754,8 @@ namespace Clinic_System.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PaymentDate = new DateTime(2024, 12, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentMethod = "CreditCard"
+                            PaymentMethod = "CreditCard",
+                            PaymentStatus = "Paid"
                         },
                         new
                         {
@@ -756,18 +766,18 @@ namespace Clinic_System.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PaymentDate = new DateTime(2024, 12, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentMethod = "Insurance"
+                            PaymentMethod = "InstaPay",
+                            PaymentStatus = "Paid"
                         },
                         new
                         {
                             Id = 4,
-                            AdditionalNotes = "InstaPay transfer",
+                            AdditionalNotes = "Failed transfer",
                             AmountPaid = 200.00m,
                             AppointmentId = 4,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
-                            PaymentDate = new DateTime(2024, 12, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentMethod = "InstaPay"
+                            PaymentStatus = "Failed"
                         },
                         new
                         {
@@ -778,18 +788,18 @@ namespace Clinic_System.Data.Migrations
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
                             PaymentDate = new DateTime(2024, 12, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentMethod = "Cash"
+                            PaymentMethod = "Cash",
+                            PaymentStatus = "Paid"
                         },
                         new
                         {
                             Id = 6,
-                            AdditionalNotes = "Mastercard payment",
+                            AdditionalNotes = "Pending payment",
                             AmountPaid = 180.00m,
                             AppointmentId = 6,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsDeleted = false,
-                            PaymentDate = new DateTime(2024, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentMethod = "CreditCard"
+                            PaymentStatus = "Pending"
                         });
                 });
 
@@ -1104,16 +1114,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-admin",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fcc6a631-824c-4b3a-af69-0287f75110c2",
+                            ConcurrencyStamp = "57b0ec93-b945-4600-b3a6-c3eda50325ff",
                             Email = "admin@clinic.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@CLINIC.COM",
                             NormalizedUserName = "ADMIN@CLINIC.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECkXpa6slaJvl/Y0sJTG/swK3iPQujBuyrwdz7/8nPk5KRcvfVf06edR9bcMmSg9jA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDaGkrwgMUaewFoCLkctXqWGEMhik9rw4QxJ6S5uVXlLw7r0lyHORpCBkFLMT4bFdw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "774a6d7d-2a29-461b-9c4b-4c9842b58d86",
+                            SecurityStamp = "26d3cfac-7bad-4234-9fb9-675cc0503e70",
                             TwoFactorEnabled = false,
                             UserName = "admin@clinic.com"
                         },
@@ -1121,16 +1131,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-doc1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "09a1e6f7-82aa-44a4-b969-a66eb556129d",
+                            ConcurrencyStamp = "0c8bf8cd-d1b3-4511-992e-82fcb44f1a89",
                             Email = "dr.ahmed@clinic.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DR.AHMED@CLINIC.COM",
                             NormalizedUserName = "DR.AHMED@CLINIC.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBCvE5cy20gdJr08VeMqiX+g0A4kaXB7ss5M43RMnRQ1lJjlHqw82EP0f0BMGYrbSA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHEOOjdczSQm66fPvTnsh1YUqlOJykZc3wRAGeCIlSd0eVR2pZ/cSMo6miiq/2L51A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1f373ab9-c2a8-4049-8da3-f32d3a582533",
+                            SecurityStamp = "8ffab16d-03c5-40aa-82e3-c0c46f64137d",
                             TwoFactorEnabled = false,
                             UserName = "dr.ahmed@clinic.com"
                         },
@@ -1138,16 +1148,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-doc2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "30883ae2-d250-4c7b-9ca1-02a18a326459",
+                            ConcurrencyStamp = "08b89fa7-9e91-4ea8-b514-7b1fce95d19e",
                             Email = "dr.sara@clinic.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DR.SARA@CLINIC.COM",
                             NormalizedUserName = "DR.SARA@CLINIC.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENCKcgnPJKwLg9+OwXy9NJ2Pf+Kk2CIe9/KNdOYHiG980M+9h+5/dD3jahcNtzp3BA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENDQImACiTTDrg4p2LBcJmN04IWeP54pMtc6jTNztricuTDZ20FEO0r+SzG0buksKg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5218a735-6375-44d9-9faa-a45efa75bc93",
+                            SecurityStamp = "f3edaca3-e5d7-4610-853a-430115ba0e5c",
                             TwoFactorEnabled = false,
                             UserName = "dr.sara@clinic.com"
                         },
@@ -1155,16 +1165,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-doc3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6b3c4a00-5db1-4c47-990d-862e9d15375d",
+                            ConcurrencyStamp = "b29c7229-72ff-46bb-a314-e87641ea6caa",
                             Email = "dr.mohamed@clinic.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DR.MOHAMED@CLINIC.COM",
                             NormalizedUserName = "DR.MOHAMED@CLINIC.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENITSoz6Y8xO0nwC3vR7jOFCZDhZ0G3QJ+SIjjMClRNA75Ou1RUpgqroY+c4BH4fMg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEN4wwQlL/3uYjFQ1BsKzObUCOHZKwE4QblORwjFa4jJe2dEqTIj8WcKZd4DCGaev7A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9dcdb360-0917-487a-be15-918aad8de7da",
+                            SecurityStamp = "e1f7dd68-d1f5-421e-81c5-f0d0e46d6d32",
                             TwoFactorEnabled = false,
                             UserName = "dr.mohamed@clinic.com"
                         },
@@ -1172,16 +1182,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-doc4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "48134770-b3db-4d67-92ac-b48102b68e76",
+                            ConcurrencyStamp = "2b35febc-1306-4e1a-a555-4f42835fe0d0",
                             Email = "dr.layla@clinic.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DR.LAYLA@CLINIC.COM",
                             NormalizedUserName = "DR.LAYLA@CLINIC.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJX35+cm/Csa0GOp7tMk27KvyILAifQdExesSakBmBK74fNG3+LaDtSJRJwJckwHQA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDTIgD5/Ot/j6MwYyzkFX/ww0YuHc2Q4/IaaHlASPk3rL9iSnLa0pf6638StIHRzlQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "07e9f936-6047-45b0-855a-bdcbe5abf92a",
+                            SecurityStamp = "c90a1e2e-e8a9-47b9-8f5d-1e4c066a05e9",
                             TwoFactorEnabled = false,
                             UserName = "dr.layla@clinic.com"
                         },
@@ -1189,16 +1199,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-doc5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "82446926-73b4-4d66-82b5-77c1f715af95",
+                            ConcurrencyStamp = "9db808e1-df22-4337-927f-512e87aa4379",
                             Email = "dr.omar@clinic.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DR.OMAR@CLINIC.COM",
                             NormalizedUserName = "DR.OMAR@CLINIC.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEhBqHUnGVS3RTDGwEpFZaXWu2LDmcSgx66mStX/j3o3KmC9A7yZ2fx98rkmpfO6pw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEClv+V7cDZnPUwwfHlJxkEu+njwU7Jr2xKYJMxkhFwp2otBFOapiasTNaca81ZHkbQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8d24bdaf-5f41-4c8e-8ea9-9e8c75352074",
+                            SecurityStamp = "c862f258-8a56-4602-939f-fca51ad61040",
                             TwoFactorEnabled = false,
                             UserName = "dr.omar@clinic.com"
                         },
@@ -1206,16 +1216,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-pat1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9c62d8d2-46e0-4b72-a904-49638324dfbe",
+                            ConcurrencyStamp = "7365bd8e-a05f-4c46-bc53-32d42c5c0f00",
                             Email = "mahmoud.ali@gmail.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "MAHMOUD.ALI@GMAIL.COM",
                             NormalizedUserName = "MAHMOUD.ALI@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBuxEy1q3Z1RrvYD0zCdb/Yk2+pYj9JYh1wheUiCK/mUqz3lFsLY4IvOeEC8CLRfhQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOE608b07nU1cS8IcxrGUtX70K0hxVIBBl9eysxffmSuKh/ivCjJ8KE4nWAy9TR9Zg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2a667f9d-dbfa-4846-ac3d-54ac08dd0ea1",
+                            SecurityStamp = "16fbbc58-00a4-4ea3-9626-199b0dcaa425",
                             TwoFactorEnabled = false,
                             UserName = "mahmoud.ali@gmail.com"
                         },
@@ -1223,16 +1233,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-pat2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "af71b16d-ad24-4f4b-9d6b-96bce097c986",
+                            ConcurrencyStamp = "472b92bf-8cf6-47a4-8556-927fb67f36a8",
                             Email = "fatima.hassan@gmail.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "FATIMA.HASSAN@GMAIL.COM",
                             NormalizedUserName = "FATIMA.HASSAN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAadIAWwcQAcagXjzQ+SC5SbSyjAgKqzduTJhrMCDCN+1Pp05y/M2md3U7zd1rRv7Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEON8Jt6xEwpbtIcWElFzOzKELBZ/6K7xjMmOTqx42MsN2zUGbJzEQJoTKem0KkC2Ng==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "846d5a62-33d1-4579-8036-0f5ba4bae68d",
+                            SecurityStamp = "02619588-9b4f-426c-b6a8-fa68b2954dd6",
                             TwoFactorEnabled = false,
                             UserName = "fatima.hassan@gmail.com"
                         },
@@ -1240,16 +1250,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-pat3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b2af3a72-4a99-4d09-b2f9-0d07863998a2",
+                            ConcurrencyStamp = "4d1c5d36-606a-462b-bdda-795c82adea92",
                             Email = "omar.khalid@gmail.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "OMAR.KHALID@GMAIL.COM",
                             NormalizedUserName = "OMAR.KHALID@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEICXV6KOPVEbCV4DF8MMUaRsAbif98IkhDCNItV22bWqXkkVM27wHm5Sy2l8BE9j9Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEqR78CF6T3nXob1oWq9VF1x9UlEa4adfmtGkVMBx6Wh0mYveO9RkIG7Xyc2nHDJOw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4f6b8ff0-8f0f-4564-9f73-e2a7b645dce6",
+                            SecurityStamp = "73b63957-f453-47e5-9e41-61bc2803d0f9",
                             TwoFactorEnabled = false,
                             UserName = "omar.khalid@gmail.com"
                         },
@@ -1257,16 +1267,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-pat4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "67fb9938-7771-4394-a55f-ad8b8feed9d5",
+                            ConcurrencyStamp = "5f425f9d-ef02-4d93-a1f4-d7b1299c2009",
                             Email = "nour.mohamed@gmail.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "NOUR.MOHAMED@GMAIL.COM",
                             NormalizedUserName = "NOUR.MOHAMED@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOZx2wzjkl0cxTXe3UIAy+6sX+jfNIIwRVmdmzvBy+ZqDad6UFS+OPhEC+1upPPQ6Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKzVz92Bt229TodGcgtBc0XySktU4UbfU2c+4ZRca7v2GGPuiodxLUmdRrqd1TwFHA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fe9922a4-6fc4-4c96-8987-68ec91ef8a3d",
+                            SecurityStamp = "1974114a-2bc5-47ca-8dbc-3a58136dc86f",
                             TwoFactorEnabled = false,
                             UserName = "nour.mohamed@gmail.com"
                         },
@@ -1274,16 +1284,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-pat5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "85634411-070c-4425-9475-e883059a3d47",
+                            ConcurrencyStamp = "bd311e45-a81e-46d7-86d0-71f9d6cd3e29",
                             Email = "karim.youssef@gmail.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "KARIM.YOUSSEF@GMAIL.COM",
                             NormalizedUserName = "KARIM.YOUSSEF@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBHXG+rw3FOtQIBRYygcmbloxKfJ7Nc3xUn+l4Q6vQ7WWTPTuybUIPk75grInggDQA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEClmBuu/ul0EvTJWvTdQwCR+f0USJdIT/eBINdGELfWIrD73GRCtOqJA1lrCXDAtSA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8c919ca6-08b1-4047-b8fd-91801ee84bef",
+                            SecurityStamp = "860a041a-91d6-4997-96e2-b9794b9362ae",
                             TwoFactorEnabled = false,
                             UserName = "karim.youssef@gmail.com"
                         },
@@ -1291,16 +1301,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-pat6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "eef291f1-6c43-4451-82d0-d580f637deca",
+                            ConcurrencyStamp = "85202e4c-98d5-4f58-8f29-da1b32803be5",
                             Email = "mona.ahmed@gmail.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "MONA.AHMED@GMAIL.COM",
                             NormalizedUserName = "MONA.AHMED@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECS9kujRgEAwrBuMKCDjQgOhrnD92W+Dk66Oa1u99bcko1AFoA3+TtJYJ+27pHnceA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKFb7SBDCEkNKXCba19Pi2WzN6VjyPbk2xkWygAg8aH3H53zMg4WX1Z2wmUf2e1e0g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8fd9300f-f5db-4866-a66d-4f0c12bec16f",
+                            SecurityStamp = "6aacf5a7-fd98-4cf8-a30b-22075483c896",
                             TwoFactorEnabled = false,
                             UserName = "mona.ahmed@gmail.com"
                         },
@@ -1308,16 +1318,16 @@ namespace Clinic_System.Data.Migrations
                         {
                             Id = "user-pat7",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dcb8f153-9a08-4da3-868d-34526a83f35f",
+                            ConcurrencyStamp = "c40dbdae-988b-40f3-a2b6-88914defd943",
                             Email = "ali.ibrahim@gmail.com",
                             EmailConfirmed = true,
                             IsDeleted = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ALI.IBRAHIM@GMAIL.COM",
                             NormalizedUserName = "ALI.IBRAHIM@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOmj83kgyJ8bdqA5a71LAU2zW+sZGLBrAw09jBXLY7YdsZ4WkO4/hVq/ApJHo9uC2A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHLPTUjW5/TfOH8LbDoJSwSdMwSYJnSHAh6AqqIOijwoqAe5wF2Z0bBiuzOV0C42HQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e135c8df-0979-4d00-8a78-6d5a44ecc326",
+                            SecurityStamp = "5abf1b6d-eb38-4d4e-b86a-18de023cbb02",
                             TwoFactorEnabled = false,
                             UserName = "ali.ibrahim@gmail.com"
                         });
@@ -1353,21 +1363,21 @@ namespace Clinic_System.Data.Migrations
                         new
                         {
                             Id = "role-admin",
-                            ConcurrencyStamp = "58a534d0-5356-4729-8192-62020a8b778d",
+                            ConcurrencyStamp = "22444086-99db-403f-b007-0d41c3b9c577",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "role-doctor",
-                            ConcurrencyStamp = "6cbcdb6f-fc3c-46c9-9ecd-01d3eb95c6de",
+                            ConcurrencyStamp = "2b753f14-46eb-4036-9ff7-33a638c36866",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
                             Id = "role-patient",
-                            ConcurrencyStamp = "e808eb8c-35f7-4e34-bbb4-f4fa86d0451d",
+                            ConcurrencyStamp = "0add5e7d-4dcb-40f1-b4b8-da22e8a90846",
                             Name = "Patient",
                             NormalizedName = "PATIENT"
                         });

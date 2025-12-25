@@ -22,6 +22,8 @@ global using Microsoft.Extensions.Logging;
 global using Clinic_System.Application.DTOs.Patients;
 global using Clinic_System.Application.Features.Patients.Queries.Models;
 global using Clinic_System.Application.Features.Patients.Commands.Models;
+global using Clinic_System.Application.DTOs.Prescription;
+
 
 
 

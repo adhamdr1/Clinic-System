@@ -7,6 +7,7 @@
         Task<IEnumerable<Payment>> GetDailyPaymentsAsync(DateTime date);
 
         Task<decimal> GetTotalRevenueAsync(DateTime start, DateTime end);
+        Task<Payment?> GetPaymentByAppointmentIdAsync(int appointmentId);
 
         //Task<IEnumerable<Payments>> GetUnpaidAppointmentsAsync();
     }

@@ -450,13 +450,80 @@
         private static void SeedPayments(ModelBuilder modelBuilder, DateTime now)
         {
             modelBuilder.Entity<Payment>().HasData(
-                new Payment { Id = 1, AppointmentId = 1, AmountPaid = 350.00m, PaymentMethod = PaymentMethod.Cash, PaymentDate = now.AddDays(-10), AdditionalNotes = "Paid in full", IsDeleted = false, CreatedAt = now },
-                new Payment { Id = 2, AppointmentId = 2, AmountPaid = 250.00m, PaymentMethod = PaymentMethod.CreditCard, PaymentDate = now.AddDays(-8), AdditionalNotes = "Visa card payment", IsDeleted = false, CreatedAt = now },
-                new Payment { Id = 3, AppointmentId = 3, AmountPaid = 400.00m, PaymentMethod = PaymentMethod.Insurance, PaymentDate = now.AddDays(-5), AdditionalNotes = "Insurance coverage", IsDeleted = false, CreatedAt = now },
-                new Payment { Id = 4, AppointmentId = 4, AmountPaid = 200.00m, PaymentMethod = PaymentMethod.InstaPay, PaymentDate = now.AddDays(-3), AdditionalNotes = "InstaPay transfer", IsDeleted = false, CreatedAt = now },
-                new Payment { Id = 5, AppointmentId = 5, AmountPaid = 300.00m, PaymentMethod = PaymentMethod.Cash, PaymentDate = now.AddDays(-2), AdditionalNotes = "Cash payment", IsDeleted = false, CreatedAt = now },
-                new Payment { Id = 6, AppointmentId = 6, AmountPaid = 180.00m, PaymentMethod = PaymentMethod.CreditCard, PaymentDate = now.AddDays(-1), AdditionalNotes = "Mastercard payment", IsDeleted = false, CreatedAt = now }
+                new Payment
+                {
+                    Id = 1,
+                    AppointmentId = 1,
+                    AmountPaid = 350.00m,
+                    PaymentMethod = PaymentMethod.Cash,
+                    PaymentStatus = PaymentStatus.Paid,
+                    PaymentDate = now.AddDays(-10),
+                    AdditionalNotes = "Paid in full",
+                    IsDeleted = false,
+                    CreatedAt = now
+                },
+                new Payment
+                {
+                    Id = 2,
+                    AppointmentId = 2,
+                    AmountPaid = 250.00m,
+                    PaymentMethod = PaymentMethod.CreditCard,
+                    PaymentStatus = PaymentStatus.Paid,
+                    PaymentDate = now.AddDays(-8),
+                    AdditionalNotes = "Visa card payment",
+                    IsDeleted = false,
+                    CreatedAt = now
+                },
+                new Payment
+                {
+                    Id = 3,
+                    AppointmentId = 3,
+                    AmountPaid = 400.00m,
+                    PaymentMethod = PaymentMethod.InstaPay,
+                    PaymentStatus = PaymentStatus.Paid,
+                    PaymentDate = now.AddDays(-5),
+                    AdditionalNotes = "Insurance coverage",
+                    IsDeleted = false,
+                    CreatedAt = now
+                },
+                new Payment
+                {
+                    Id = 4,
+                    AppointmentId = 4,
+                    AmountPaid = 200.00m,
+                    PaymentMethod = null,
+                    PaymentStatus = PaymentStatus.Failed,
+                    PaymentDate = null,
+                    AdditionalNotes = "Failed transfer",
+                    IsDeleted = false,
+                    CreatedAt = now
+                },
+                new Payment
+                {
+                    Id = 5,
+                    AppointmentId = 5,
+                    AmountPaid = 300.00m,
+                    PaymentMethod = PaymentMethod.Cash,
+                    PaymentStatus = PaymentStatus.Paid,
+                    PaymentDate = now.AddDays(-2),
+                    AdditionalNotes = "Cash payment",
+                    IsDeleted = false,
+                    CreatedAt = now
+                },
+                new Payment
+                {
+                    Id = 6,
+                    AppointmentId = 6,
+                    AmountPaid = 180.00m,
+                    PaymentMethod = null,
+                    PaymentStatus = PaymentStatus.Pending,
+                    PaymentDate = null,
+                    AdditionalNotes = "Pending payment",
+                    IsDeleted = false,
+                    CreatedAt = now
+                }
             );
         }
+
     }
 }
