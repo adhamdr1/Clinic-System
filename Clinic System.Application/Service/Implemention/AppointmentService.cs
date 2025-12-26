@@ -64,6 +64,9 @@
                     var bookedAppointmentsOnDay = await unitOfWork.AppointmentsRepository
                         .GetBookedAppointmentsAsync(command.DoctorId, command.AppointmentDate, cancellationToken);
 
+                    if (appointmentDateTime < DateTime.Now)
+                        throw new ValidationException("Cannot book an appointment in the past.");
+
                     var isSlotBooked = bookedAppointmentsOnDay
                         .Any(a => a.AppointmentDate == appointmentDateTime);
 
@@ -349,5 +352,46 @@
             return slots;
         }
 
+        public async Task<PagedResult<Appointment>> GetDoctorAppointmentsAsync(GetDoctorAppointmentsQuery doctorAppointmentQuery, CancellationToken cancellationToken = default)
+        {
+            var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetDoctorAppointmentsAsync
+                (doctorAppointmentQuery.doctorId, doctorAppointmentQuery.pageNumber,
+                doctorAppointmentQuery.pageSize, doctorAppointmentQuery.dateTime, cancellationToken: cancellationToken);
+
+            return new PagedResult<Appointment>(items, totalCount, doctorAppointmentQuery.pageNumber, doctorAppointmentQuery.pageSize);
+        }
+
+        public async Task<PagedResult<Appointment>> GetPatientAppointmentsAsync(GetPatientAppointmentsQuery patientAppointmentQuery, CancellationToken cancellationToken = default)
+        {
+            var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetPatientAppointmentsAsync
+                (patientAppointmentQuery.patientId, patientAppointmentQuery.pageNumber,
+                patientAppointmentQuery.pageSize, patientAppointmentQuery.dateTime, cancellationToken: cancellationToken);
+
+            return new PagedResult<Appointment>(items, totalCount, patientAppointmentQuery.pageNumber, patientAppointmentQuery.pageSize);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetAppointmentsByStatusForAdminAsync(AppointmentStatus status, int pageNumber, int pageSize, DateTime? Start = null, DateTime? End = null, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.AppointmentsRepository
+                .GetAppointmentsByStatusForAdminAsync(status,pageNumber,pageSize,Start,End,cancellationToken);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetAppointmentsByStatusForDoctorAsync(AppointmentStatus status, int doctorId, int pageNumber, int pageSize, DateTime? Start = null, DateTime? End = null, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.AppointmentsRepository
+                .GetAppointmentsByStatusForDoctorAsync(status, doctorId, pageNumber, pageSize, Start, End, cancellationToken);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetPastAppointmentsForDoctorAsync(int doctorId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.AppointmentsRepository
+                .GetPastAppointmentsForDoctorAsync(doctorId, pageNumber, pageSize, cancellationToken);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetPastAppointmentsForPatientAsync(int patientId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.AppointmentsRepository
+                .GetPastAppointmentsForPatientAsync(patientId, pageNumber, pageSize, cancellationToken);
+        }
     }
 }

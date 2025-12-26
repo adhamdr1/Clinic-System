@@ -6,6 +6,8 @@
         {
             GetAvailableSlotMapping();
             BookAppointmentMapping();
+            GetDoctorAppointmentsMapping();
+            GetPatientAppointmentsMapping();
         }
     }
 }

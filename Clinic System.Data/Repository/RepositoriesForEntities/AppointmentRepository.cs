@@ -6,31 +6,34 @@
         {
         }
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByDoctorAsync(int doctorId, CancellationToken cancellationToken = default)
-        {
-            return await context.Appointments
-                .AsNoTracking()
-                .Where(a => a.DoctorId == doctorId)
-                .Include(a => a.Patient)
-                .ToListAsync(cancellationToken);
-        }
+        /*
+        //public async Task<IEnumerable<Appointment>> GetDoctorAppointmentsAsync(int doctorId, CancellationToken cancellationToken = default)
+        //{
+        //    return await context.Appointments
+        //        .AsNoTracking()
+        //        .Where(a => a.DoctorId == doctorId && a.AppointmentDate >= DateTime.Now.Date)
+        //        .OrderBy(d => d.AppointmentDate)
+        //        .Include(a => a.Patient)
+        //        .ToListAsync(cancellationToken);
+        //}
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByPatientAsync(int patientId, CancellationToken cancellationToken = default)
-        {
-            return await context.Appointments
-                .AsNoTracking()
-                .Where(a => a.PatientId == patientId)
-                .Include(a => a.Doctor)
-                .ToListAsync(cancellationToken);
-        }
+        //public async Task<IEnumerable<Appointment>> GetPatientAppointmentsAsync(int patientId, CancellationToken cancellationToken = default)
+        //{
+        //    return await context.Appointments
+        //        .AsNoTracking()
+        //        .Where(a => a.PatientId == patientId)
+        //        .Include(a => a.Doctor)
+        //        .ToListAsync(cancellationToken);
+        //}
 
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status, CancellationToken cancellationToken = default)
-        {
-            return await context.Appointments
-                .AsNoTracking()
-                .Where(a => a.Status == status)
-                .ToListAsync(cancellationToken);
-        }
+        //public async Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status, CancellationToken cancellationToken = default)
+        //{
+        //    return await context.Appointments
+        //        .AsNoTracking()
+        //        .Where(a => a.Status == status)
+        //        .ToListAsync(cancellationToken);
+        //}
+        */
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsInDateAsync(DateTime date, CancellationToken cancellationToken = default)
         {
@@ -50,16 +53,158 @@
 
         public async Task<Appointment?> GetNextUpcomingAppointmentAsync(int? doctorId, int? patientId, CancellationToken cancellationToken = default)
         {
-            var query = context.Appointments.AsNoTracking().Where(a => a.AppointmentDate > DateTime.Now);
+            var query = context.Appointments
+                .AsNoTracking()
+                .Where(a => a.AppointmentDate > DateTime.Now);
+
             if (doctorId.HasValue)
             {
                 query = query.Where(a => a.DoctorId == doctorId.Value);
             }
+
             if (patientId.HasValue)
             {
                 query = query.Where(a => a.PatientId == patientId.Value);
             }
+
             return await query.OrderBy(a => a.AppointmentDate).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetDoctorAppointmentsAsync(int doctorId, int pageNumber, int pageSize, DateTime? dateTime = null, CancellationToken cancellationToken = default)
+        {
+            var query = context.Appointments
+                .AsNoTracking()
+                .Where(a => a.DoctorId == doctorId);
+
+            if (dateTime.HasValue)
+            {
+                var startDate = dateTime.Value.Date;
+                var endDate = startDate.AddDays(1);
+
+                query = query.Where(a => a.AppointmentDate >= startDate
+                && a.AppointmentDate < endDate);
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(a => a.AppointmentDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(a => a.Patient)
+                .ToListAsync(cancellationToken);
+            return (items, totalCount);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetPatientAppointmentsAsync(int patientId, int pageNumber, int pageSize, DateTime? dateTime = null, CancellationToken cancellationToken = default)
+        {
+            var query = context.Appointments
+                .AsNoTracking()
+                .Where(a => a.PatientId == patientId);
+            if (dateTime.HasValue)
+            {
+                var startDate = dateTime.Value.Date;
+                var endDate = startDate.AddDays(1);
+                query = query.Where(a => a.AppointmentDate >= startDate
+                && a.AppointmentDate < endDate);
+            }
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .OrderBy(a => a.AppointmentDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(a => a.Doctor)
+                .ToListAsync(cancellationToken);
+            return (items, totalCount);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetAppointmentsByStatusForAdminAsync(AppointmentStatus status, int pageNumber, int pageSize, DateTime? Start = null, DateTime? End = null, CancellationToken cancellationToken = default)
+        {
+            var query = context.Appointments
+                .AsNoTracking()
+                .Where(a => a.Status == status);
+
+            query = FilterAppointments(query, Start, End);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(a => a.AppointmentDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetAppointmentsByStatusForDoctorAsync(AppointmentStatus status, int doctorId, int pageNumber, int pageSize, DateTime? Start = null, DateTime? End = null, CancellationToken cancellationToken = default)
+        {
+            var query = context.Appointments
+                .AsNoTracking()
+                .Where(a => a.Status == status && a.DoctorId == doctorId);
+
+            query = FilterAppointments(query, Start, End);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(a => a.AppointmentDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        private IQueryable<Appointment> FilterAppointments(IQueryable<Appointment> query, DateTime? start, DateTime? end)
+        {
+            if (start.HasValue)
+                query = query.Where(a => a.AppointmentDate >= start.Value.Date);
+            if (end.HasValue)
+                query = query.Where(a => a.AppointmentDate <= end.Value.Date.AddDays(1).AddTicks(-1));
+            return query;
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetPastAppointmentsForDoctorAsync(int doctorId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var query = context.Appointments
+                .AsNoTracking()
+                .Where(a => a.DoctorId == doctorId && a.AppointmentDate < DateTime.Now);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(a => a.AppointmentDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        public async Task<(List<Appointment> Items, int TotalCount)> GetPastAppointmentsForPatientAsync(int patientId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var query = context.Appointments
+                .AsNoTracking()
+                .Where(a => a.PatientId == patientId && a.AppointmentDate < DateTime.Now);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(a => a.AppointmentDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
         }
     }
 }

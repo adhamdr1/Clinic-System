@@ -103,6 +103,8 @@ namespace Clinic_System.API
                 builder.Services.AddScoped<IDoctorService, DoctorService>();
                 builder.Services.AddScoped<IPatientService, PatientService>();
                 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+                builder.Services.AddScoped<IPaymentService , PaymentService>();
+                builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
                 builder.Services.AddScoped<IIdentityService, IdentityService>();
                 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyReference).Assembly);
                 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
