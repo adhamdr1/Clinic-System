@@ -23,12 +23,7 @@ namespace Clinic_System.Application.Features.Patients.Queries.Handlers
 
         public async Task<Response<GetPatientWhitAppointmentDTO>> Handle(GetPatientWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
         {
-            if (request.Id < 1)
-            {
-                logger.LogWarning("GetPatientWithAppointmentsByIdQueryHandler: Invalid ID {Id}", request.Id);
-                return BadRequest<GetPatientWhitAppointmentDTO>("ID must be greater than 0");
-            }
-
+            
             var patient = await patientService.GetPatientWithAppointmentsByIdAsync(request.Id, cancellationToken);
 
             if (patient == null)

@@ -1,6 +1,4 @@
-﻿using Clinic_System.Application.Features.Appointments.Queries.Models;
-
-namespace Clinic_System.API.Controllers
+﻿namespace Clinic_System.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -11,44 +9,52 @@ namespace Clinic_System.API.Controllers
         }
 
         [HttpGet("AvailableSlots")]
-        public async Task<IActionResult> GetAvailableSlots([FromQuery] int doctorId , [FromQuery] DateTime date)
+        public async Task<IActionResult> GetAvailableSlots([FromQuery] GetAvailableSlotQuery query)
         {
-            var response = await mediator.Send(new GetAvailableSlotQuery
-            {
-                DoctorId = doctorId,
-                Date = date
-            });
-
+            var response = await mediator.Send(query);
             return Ok(response);
         }
 
         [HttpGet("DoctorAppointments")]
-        public async Task<IActionResult> GetDoctorAppointments([FromQuery] int doctorId,[FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10 , [FromQuery] DateTime? date = null)
+        public async Task<IActionResult> GetDoctorAppointments([FromQuery] GetDoctorAppointmentsQuery query)
         {
-            var response = await mediator.Send(new GetDoctorAppointmentsQuery
-            {
-                doctorId = doctorId,
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                dateTime = date
-            });
-
+            var response = await mediator.Send(query);
             return Ok(response);
         }
 
         [HttpGet("PatientAppointments")]
-        public async Task<IActionResult> GetPatientAppointments([FromQuery] int patientId, [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10, [FromQuery] DateTime? date = null)
+        public async Task<IActionResult> GetPatientAppointments([FromQuery] GetPatientAppointmentsQuery query)
         {
-            var response = await mediator.Send(new GetPatientAppointmentsQuery
-            {
-                patientId = patientId,
-                pageNumber = pageNumber,
-                pageSize = pageSize,
-                dateTime = date
-            });
+            var response = await mediator.Send(query);
+            return Ok(response);
+        }
 
+        [HttpGet("AppointmentsByStatusForAdmin")]
+        public async Task<IActionResult> GetAppointmentsByStatusForAdmin([FromQuery] GetAppointmentsByStatusForAdminQuery query)
+        {
+            var response = await mediator.Send(query);
+
+            return Ok(response);
+        }
+
+        [HttpGet("AppointmentsByStatusForDoctor")]
+        public async Task<IActionResult> GetAppointmentsByStatusForDoctor([FromQuery] GetAppointmentsByStatusForDoctorQuery query)
+        {
+            var response = await mediator.Send(query);
+            return Ok(response);
+        }
+
+        [HttpGet("PastAppointmentsForPatient")]
+        public async Task<IActionResult> GetPastAppointmentsForPatient([FromQuery] GetPastAppointmentsForPatientQuery query)
+        {
+            var response = await mediator.Send(query);
+            return Ok(response);
+        }
+
+        [HttpGet("PastAppointmentsForDoctor")]
+        public async Task<IActionResult> GetPastAppointmentsForDoctor([FromQuery] GetPastAppointmentsForDoctorQuery query)
+        {
+            var response = await mediator.Send(query);
             return Ok(response);
         }
 

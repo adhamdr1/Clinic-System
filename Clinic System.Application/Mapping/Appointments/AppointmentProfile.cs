@@ -8,6 +8,7 @@
             BookAppointmentMapping();
             GetDoctorAppointmentsMapping();
             GetPatientAppointmentsMapping();
+            GetAppointmentsByStatusForAdminMapping();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Application.Service.Implemention
+﻿using Clinic_System.Core.Entities;
+
+namespace Clinic_System.Application.Service.Implemention
 {
     public class AppointmentService : IAppointmentService
     {
@@ -88,10 +90,21 @@
                     // 3. إضافة الكيان
                     await unitOfWork.AppointmentsRepository.AddAsync(appointment, cancellationToken);
 
+                    var result = await unitOfWork.SaveAsync();
+
+                    if (result == 0)
+                    {
+                        logger.LogError("Failed to save the new appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
+                            command.PatientId, command.DoctorId, appointmentDateTime);
+                        // إذا فشل الحفظ دون استثناء، يجب رفع استثناء هنا
+                        throw new DatabaseSaveException("Failed to save the new appointment to the database.");
+                    }
+
                     await paymentService.CreatePaymentAsync(appointment.Id, cancellationToken);
 
                     // 4. *** الحفظ الفعلي والـ COMMIT (Transactional Safety) ***
-                    var result = await unitOfWork.SaveAsync();
+
+                    result = await unitOfWork.SaveAsync();
 
                     if (result == 0)
                     {
@@ -355,43 +368,61 @@
         public async Task<PagedResult<Appointment>> GetDoctorAppointmentsAsync(GetDoctorAppointmentsQuery doctorAppointmentQuery, CancellationToken cancellationToken = default)
         {
             var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetDoctorAppointmentsAsync
-                (doctorAppointmentQuery.doctorId, doctorAppointmentQuery.pageNumber,
-                doctorAppointmentQuery.pageSize, doctorAppointmentQuery.dateTime, cancellationToken: cancellationToken);
+                (doctorAppointmentQuery.DoctorId, doctorAppointmentQuery.PageNumber,
+                doctorAppointmentQuery.PageSize, doctorAppointmentQuery.DateTime, cancellationToken: cancellationToken);
 
-            return new PagedResult<Appointment>(items, totalCount, doctorAppointmentQuery.pageNumber, doctorAppointmentQuery.pageSize);
+            return new PagedResult<Appointment>(items, totalCount, doctorAppointmentQuery.PageNumber, doctorAppointmentQuery.PageSize);
         }
 
         public async Task<PagedResult<Appointment>> GetPatientAppointmentsAsync(GetPatientAppointmentsQuery patientAppointmentQuery, CancellationToken cancellationToken = default)
         {
             var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetPatientAppointmentsAsync
-                (patientAppointmentQuery.patientId, patientAppointmentQuery.pageNumber,
-                patientAppointmentQuery.pageSize, patientAppointmentQuery.dateTime, cancellationToken: cancellationToken);
+                (patientAppointmentQuery.PatientId, patientAppointmentQuery.PageNumber,
+                patientAppointmentQuery.PageSize, patientAppointmentQuery.DateTime, cancellationToken: cancellationToken);
 
-            return new PagedResult<Appointment>(items, totalCount, patientAppointmentQuery.pageNumber, patientAppointmentQuery.pageSize);
+            return new PagedResult<Appointment>(items, totalCount, patientAppointmentQuery.PageNumber, patientAppointmentQuery.PageSize);
         }
 
-        public async Task<(List<Appointment> Items, int TotalCount)> GetAppointmentsByStatusForAdminAsync(AppointmentStatus status, int pageNumber, int pageSize, DateTime? Start = null, DateTime? End = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Appointment>> GetAppointmentsByStatusForAdminAsync(GetAppointmentsByStatusForAdminQuery appointmentsByStatusForAdminQuery, CancellationToken cancellationToken = default)
         {
-            return await unitOfWork.AppointmentsRepository
-                .GetAppointmentsByStatusForAdminAsync(status,pageNumber,pageSize,Start,End,cancellationToken);
+            var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetAppointmentsByStatusForAdminAsync
+                (appointmentsByStatusForAdminQuery.Status, appointmentsByStatusForAdminQuery.PageNumber,
+                appointmentsByStatusForAdminQuery.PageSize, appointmentsByStatusForAdminQuery.Start,
+                appointmentsByStatusForAdminQuery.End, cancellationToken: cancellationToken);
+
+            return new PagedResult<Appointment>(items, totalCount, appointmentsByStatusForAdminQuery.PageNumber, appointmentsByStatusForAdminQuery.PageSize);
         }
 
-        public async Task<(List<Appointment> Items, int TotalCount)> GetAppointmentsByStatusForDoctorAsync(AppointmentStatus status, int doctorId, int pageNumber, int pageSize, DateTime? Start = null, DateTime? End = null, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Appointment>> GetAppointmentsByStatusForDoctorAsync(GetAppointmentsByStatusForDoctorQuery appointmentsByStatusForDoctorQuery, CancellationToken cancellationToken = default)
         {
-            return await unitOfWork.AppointmentsRepository
-                .GetAppointmentsByStatusForDoctorAsync(status, doctorId, pageNumber, pageSize, Start, End, cancellationToken);
+            var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetAppointmentsByStatusForDoctorAsync
+                (appointmentsByStatusForDoctorQuery.Status, appointmentsByStatusForDoctorQuery.DoctorId,
+                appointmentsByStatusForDoctorQuery.PageNumber,
+                appointmentsByStatusForDoctorQuery.PageSize, appointmentsByStatusForDoctorQuery.Start,
+                appointmentsByStatusForDoctorQuery.End, cancellationToken: cancellationToken);
+
+            return new PagedResult<Appointment>(items, totalCount, appointmentsByStatusForDoctorQuery.PageNumber, appointmentsByStatusForDoctorQuery.PageSize);
         }
 
-        public async Task<(List<Appointment> Items, int TotalCount)> GetPastAppointmentsForDoctorAsync(int doctorId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Appointment>> GetPastAppointmentsForDoctorAsync(GetPastAppointmentsForDoctorQuery appointmentsForDoctorQuery, CancellationToken cancellationToken = default)
         {
-            return await unitOfWork.AppointmentsRepository
-                .GetPastAppointmentsForDoctorAsync(doctorId, pageNumber, pageSize, cancellationToken);
+            var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetPastAppointmentsForDoctorAsync
+                (appointmentsForDoctorQuery.DoctorId, appointmentsForDoctorQuery.PageNumber,
+                appointmentsForDoctorQuery.PageSize, cancellationToken);
+
+
+            return new PagedResult<Appointment>(items, totalCount, appointmentsForDoctorQuery.PageNumber, appointmentsForDoctorQuery.PageSize);
         }
 
-        public async Task<(List<Appointment> Items, int TotalCount)> GetPastAppointmentsForPatientAsync(int patientId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Appointment>> GetPastAppointmentsForPatientAsync(GetPastAppointmentsForPatientQuery appointmentsForPatientQuery, CancellationToken cancellationToken = default)
         {
-            return await unitOfWork.AppointmentsRepository
-                .GetPastAppointmentsForPatientAsync(patientId, pageNumber, pageSize, cancellationToken);
+            var (items, totalCount) = await unitOfWork.AppointmentsRepository.GetPastAppointmentsForPatientAsync
+                (appointmentsForPatientQuery.PatientId, appointmentsForPatientQuery.PageNumber,
+                appointmentsForPatientQuery.PageSize, cancellationToken);
+
+
+            return new PagedResult<Appointment>(items, totalCount, appointmentsForPatientQuery.PageNumber, appointmentsForPatientQuery.PageSize);
+
         }
     }
 }

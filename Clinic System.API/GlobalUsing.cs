@@ -29,6 +29,7 @@ global using Clinic_System.Application.Features.Appointments.Commands.Models;
 global using Serilog;
 global using Clinic_System.Application.Features.Patients.Queries.Models;
 global using Clinic_System.Application.Features.Patients.Commands.Models;
+global using Clinic_System.Core.Enums;
 
 
 

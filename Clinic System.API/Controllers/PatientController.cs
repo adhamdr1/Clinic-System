@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.API.Controllers
 {
-    //[Route("api/[controller]")]
+    [Route("api/patients")]
     [ApiController]
     public class PatientController : AppControllerBase
     {
@@ -8,7 +8,6 @@
         {
         }
 
-        [Route("GetPatientList")]
         [HttpGet]
         public async Task<IActionResult> GetPatientList()
         {
@@ -16,20 +15,14 @@
             return Ok(response);
         }
 
-        [Route("GetPatientListPaging")]
-        [HttpGet]
-        public async Task<IActionResult> GetPatientListPaging([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [HttpGet("paging")]
+        public async Task<IActionResult> GetPatientListPaging([FromQuery] GetPatientListPagingQuery query)
         {
-            var response = await mediator.Send(new GetPatientListPagingQuery
-            {
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            });
+            var response = await mediator.Send(query);
             return Ok(response);
         }
 
-        [Route("GetPatientById/{id}")]
-        [HttpGet]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetPatientById(int id)
         {
             var response = await mediator.Send(new GetPatientByIdQuery
@@ -39,9 +32,8 @@
             return NewResult(response);
         }
 
-        [Route("GetPatientByPhone")]
-        [HttpGet]
-        public async Task<IActionResult> GetPatientByPhone([FromQuery] string phone)
+        [HttpGet("phone/{phone}")]
+        public async Task<IActionResult> GetPatientByPhone(string phone)
         {
             var response = await mediator.Send(new GetPatientByPhoneQuery
             {
@@ -50,9 +42,8 @@
             return NewResult(response);
         }
 
-        [Route("GetPatientListByName")]
-        [HttpGet]
-        public async Task<IActionResult> GetPatientListByName([FromQuery] string name)
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> GetPatientListByName(string name)
         {
             var response = await mediator.Send(new GetPatientListByNameQuery
             {
@@ -61,8 +52,7 @@
             return NewResult(response);
         }
 
-        [Route("GetPatientWithAppointmentsById/{id}")]
-        [HttpGet]
+        [HttpGet("{id:int}/appointments")]
         public async Task<IActionResult> GetPatientWithAppointmentsById(int id)
         {
             var response = await mediator.Send(new GetPatientWithAppointmentsByIdQuery
@@ -72,7 +62,6 @@
             return NewResult(response);
         }
 
-        [Route("CreatePatient")]
         [HttpPost]
         public async Task<IActionResult> CreatePatient([FromBody] CreatePatientCommand command)
         {
@@ -80,8 +69,7 @@
             return NewResult(response);
         }
 
-        [Route("UpdatePatient/{id}")]
-        [HttpPut]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientCommand command)
         {
             if (id != command.Id)
@@ -93,8 +81,7 @@
             return NewResult(response);
         }
 
-        [Route("UpdateIdentityPatient/{id}")]
-        [HttpPut]
+        [HttpPut("{id:int}/identity")]
         public async Task<IActionResult> UpdateIdentityPatient(int id, [FromBody] UpdateIdentityPatientCommand command)
         {
             if (id != command.Id)
@@ -106,8 +93,7 @@
             return NewResult(response);
         }
 
-        [Route("SoftDeletePatient/{id}")]
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> SoftDeletePatient(int id)
         {
             var response = await mediator.Send(new SoftDeletePatientCommand
@@ -117,8 +103,7 @@
             return NewResult(response);
         }
 
-        [Route("HardDeletePatient/{id}")]
-        [HttpDelete]
+        [HttpDelete("{id:int}/hard")]
         public async Task<IActionResult> HardDeletePatient(int id)
         {
             var response = await mediator.Send(new HardDeletePatientCommand

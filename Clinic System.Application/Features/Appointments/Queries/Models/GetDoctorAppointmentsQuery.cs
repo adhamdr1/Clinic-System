@@ -2,9 +2,9 @@
 {
     public class GetDoctorAppointmentsQuery : IRequest<Response<PagedResult<DoctorAppointmentDTO>>>
     {
-        public int doctorId {  get; set; }
-        public int pageNumber { get; set; }
-        public int pageSize { get; set; }
-        public DateTime? dateTime { get; set; } = null; 
+        public int DoctorId {  get; set; }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+        public DateTime? DateTime { get; set; } = null; 
     }
 }

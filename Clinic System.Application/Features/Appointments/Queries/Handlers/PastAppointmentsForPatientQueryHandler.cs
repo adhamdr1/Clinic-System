@@ -1,26 +1,26 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Queries.Handlers
 {
-    public class PatientAppointmentsQueryHandler : ResponseHandler, IRequestHandler<GetPatientAppointmentsQuery, Response<PagedResult<PatientAppointmentDTO>>>
+    public class PastAppointmentsForPatientQueryHandler : ResponseHandler, IRequestHandler<GetPastAppointmentsForPatientQuery, Response<PagedResult<PatientAppointmentDTO>>>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
-        private readonly ILogger<PatientAppointmentsQueryHandler> logger;
+        private readonly ILogger<PastAppointmentsForPatientQueryHandler> logger;
 
-        public PatientAppointmentsQueryHandler(
+        public PastAppointmentsForPatientQueryHandler(
             IAppointmentService appointmentService,
             IMapper mapper,
-            ILogger<PatientAppointmentsQueryHandler> logger)
+            ILogger<PastAppointmentsForPatientQueryHandler> logger)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<PagedResult<PatientAppointmentDTO>>> Handle(GetPatientAppointmentsQuery request, CancellationToken cancellationToken)
+        public async Task<Response<PagedResult<PatientAppointmentDTO>>> Handle(GetPastAppointmentsForPatientQuery request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Starting GetPatientAppointments for PatientId={PatientId}", request.PatientId);
+            logger.LogInformation("Starting GetPastAppointmentsForPatient for PatientId={PatientId}", request.PatientId);
 
-            var PatientwithAppointment = await appointmentService.GetPatientAppointmentsAsync(request);
+            var PatientwithAppointment = await appointmentService.GetPastAppointmentsForPatientAsync(request);
 
             var PatientwithAppointmentmapper = mapper.Map<List<PatientAppointmentDTO>>(PatientwithAppointment.Items);
 

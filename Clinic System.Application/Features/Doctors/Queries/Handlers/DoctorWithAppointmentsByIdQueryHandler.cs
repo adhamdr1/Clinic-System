@@ -21,12 +21,6 @@
 
         public async Task<Response<GetDoctorWhitAppointmentDTO>> Handle(GetDoctorWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
         {
-            if (request.Id < 1)
-            {
-                logger.LogWarning("GetDoctorWithAppointmentsByIdQueryHandler: Invalid ID {Id}", request.Id);
-                return BadRequest<GetDoctorWhitAppointmentDTO>("ID must be greater than 0");
-            }
-
             var doctor = await doctorService.GetDoctorWithAppointmentsByIdAsync(request.Id, cancellationToken);
 
             if (doctor == null)

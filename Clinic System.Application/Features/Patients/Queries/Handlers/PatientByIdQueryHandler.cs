@@ -20,12 +20,6 @@
         {
             logger.LogInformation("Handling GetPatientByIdQuery for ID: {Id}", request.Id);
 
-            if (request.Id < 1)
-            {
-                logger.LogWarning("Invalid ID: {Id}. ID must be greater than 0.", request.Id);
-                return BadRequest<GetPatientDTO>("ID must be greater than 0");
-            }
-
             var patient = await patientService.GetPatientByIdAsync(request.Id, cancellationToken);
 
             if (patient == null)

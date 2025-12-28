@@ -18,12 +18,6 @@
 
         public async Task<Response<List<AvailableSlotDTO>>> Handle(GetAvailableSlotQuery request, CancellationToken cancellationToken)
         {
-            if (request.DoctorId <= 0 || request.Date.Date < DateTime.Today.Date)
-            {
-                logger.LogWarning("Invalid request parameters: DoctorId={DoctorId}, Date={Date}", request.DoctorId, request.Date);
-                return BadRequest<List<AvailableSlotDTO>>("Invalid doctor ID or date provided.");
-            }
-
             try
             {
                 logger.LogInformation("Fetching available slots for DoctorId={DoctorId} on Date={Date}", request.DoctorId, request.Date);

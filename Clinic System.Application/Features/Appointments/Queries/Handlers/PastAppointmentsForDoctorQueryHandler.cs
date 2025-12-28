@@ -1,27 +1,27 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Queries.Handlers
 {
-    public class DoctorAppointmentsQueryHandler : ResponseHandler, IRequestHandler<GetDoctorAppointmentsQuery, Response<PagedResult<DoctorAppointmentDTO>>>
+    public class PastAppointmentsForDoctorQueryHandler : ResponseHandler, IRequestHandler<GetPastAppointmentsForDoctorQuery, Response<PagedResult<DoctorAppointmentDTO>>>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
-        private readonly ILogger<DoctorAppointmentsQueryHandler> logger;
+        private readonly ILogger<PastAppointmentsForDoctorQueryHandler> logger;
 
-        public DoctorAppointmentsQueryHandler(
+        public PastAppointmentsForDoctorQueryHandler(
             IAppointmentService appointmentService,
             IMapper mapper,
-            ILogger<DoctorAppointmentsQueryHandler> logger)
+            ILogger<PastAppointmentsForDoctorQueryHandler> logger)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<PagedResult<DoctorAppointmentDTO>>> Handle(GetDoctorAppointmentsQuery request, CancellationToken cancellationToken)
+        public async Task<Response<PagedResult<DoctorAppointmentDTO>>> Handle(GetPastAppointmentsForDoctorQuery request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Starting GetDoctorAppointments for DoctorId={DoctorId}", request.DoctorId);
+            logger.LogInformation("Starting GetPastAppointmentsForDoctor for DoctorId={DoctorId}", request.DoctorId);
 
-            var doctorwithAppointment = await appointmentService.GetDoctorAppointmentsAsync(request);
-           
+            var doctorwithAppointment = await appointmentService.GetPastAppointmentsForDoctorAsync(request);
+
             var doctorwithAppointmentmapper = mapper.Map<List<DoctorAppointmentDTO>>(doctorwithAppointment.Items);
 
             var pagedResult = new PagedResult<DoctorAppointmentDTO>(doctorwithAppointmentmapper, doctorwithAppointment.TotalCount,

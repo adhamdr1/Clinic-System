@@ -20,12 +20,6 @@
         {
             logger.LogInformation("Handling GetPatientByPhoneQuery for Phone: {Phone}", request.Phone);
 
-            if (string.IsNullOrWhiteSpace(request.Phone))
-            {
-                logger.LogWarning("Invalid Phone: {Phone}.", request.Phone);
-                return BadRequest<GetPatientDTO>("Invalid Phone");
-            }
-
             var patient = await patientService.GetPatientByPhoneAsync(request.Phone, cancellationToken);
 
             if (patient == null)

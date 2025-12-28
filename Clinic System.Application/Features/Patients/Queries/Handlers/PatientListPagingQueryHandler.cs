@@ -19,18 +19,6 @@
 
             var patients = await patientService.GetPatientsListPagingAsync(request.PageNumber, request.PageSize, cancellationToken);
 
-            if (request.PageNumber < 1)
-            {
-                logger.LogWarning("Invalid PageNumber={PageNumber} requested", request.PageNumber);
-                return BadRequest<PagedResult<GetPatientListDTO>>("Page number must be greater than 0");
-            }
-
-            if (request.PageSize < 1 || request.PageSize > 100)
-            {
-                logger.LogWarning("Invalid PageSize={PageSize} requested", request.PageSize);
-                return BadRequest<PagedResult<GetPatientListDTO>>("Page size must be between 1 and 100");
-            }
-
             if (patients?.Items.Any() != true)
             {
                 logger.LogWarning("No doctors found for PageNumber={PageNumber}, PageSize={PageSize}", request.PageNumber, request.PageSize);
