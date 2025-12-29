@@ -9,6 +9,9 @@
             GetDoctorAppointmentsMapping();
             GetPatientAppointmentsMapping();
             GetAppointmentsByStatusForAdminMapping();
+            RescheduleAppointmentMapping();
+            AppointmentMapping();
+            CancelAppointmentMapping();
         }
     }
 }

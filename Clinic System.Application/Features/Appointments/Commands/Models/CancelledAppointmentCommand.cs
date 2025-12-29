@@ -1,11 +1,9 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Models
 {
-    public class RescheduleAppointmentCommand : IRequest<Response<AppointmentDTO>>
+    public class CancelAppointmentCommand : IRequest<Response<CaneclledAppointmentDTO>>
     {
         public int AppointmentId { get; set; }
         [JsonIgnore]
         public int PatientId { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        public TimeSpan AppointmentTime { get; set; }
     }
 }

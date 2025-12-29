@@ -10,11 +10,11 @@
         Task<List<TimeSpan>> GetAvailableSlotsAsync(int doctorId, DateTime date, CancellationToken cancellationToken = default);
         Task<Appointment> BookAppointmentAsync(BookAppointmentCommand command,CancellationToken cancellationToken = default);
         Task<Appointment> RescheduleAppointmentAsync(RescheduleAppointmentCommand command, CancellationToken cancellationToken = default);
-        Task<Appointment> CancelAppointment(int AppointmentId, int PatientId, CancellationToken cancellationToken = default);
-        Task<Appointment> ConfirmAppointment(int AppointmentId, int PatientId, PaymentMethod? method = null
+        Task<Appointment> CancelAppointmentAsync(CancelAppointmentCommand command, CancellationToken cancellationToken = default);
+        Task<Appointment> ConfirmAppointmentAsync(int AppointmentId, int PatientId, PaymentMethod? method = null
             , decimal? amount = null, CancellationToken cancellationToken = default);
-        Task<Appointment> NoShowAppointment(int AppointmentId, int DoctorId, CancellationToken cancellationToken = default);
-        Task<Appointment> CompleteAppointment(CompleteAppointmentCommand command, CancellationToken cancellationToken = default);
+        Task<Appointment> NoShowAppointmentAsync(int AppointmentId, int DoctorId, CancellationToken cancellationToken = default);
+        Task<Appointment> CompleteAppointmentAsync(CompleteAppointmentCommand command, CancellationToken cancellationToken = default);
         Task<PagedResult<Appointment>> GetAppointmentsByStatusForAdminAsync(GetAppointmentsByStatusForAdminQuery appointmentsByStatusForAdminQuery,
             CancellationToken cancellationToken = default);
         Task<PagedResult<Appointment>> GetAppointmentsByStatusForDoctorAsync(GetAppointmentsByStatusForDoctorQuery appointmentsByStatusForDoctorQuery,

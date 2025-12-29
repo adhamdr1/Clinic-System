@@ -1,6 +1,4 @@
-﻿using Clinic_System.Core.Entities;
-
-namespace Clinic_System.Application.Service.Implemention
+﻿namespace Clinic_System.Application.Service.Implemention
 {
     public class AppointmentService : IAppointmentService
     {
@@ -179,20 +177,20 @@ namespace Clinic_System.Application.Service.Implemention
             return appointment;
         }
         
-        public async Task<Appointment> CancelAppointment(int AppointmentId, int PatientId, CancellationToken cancellationToken = default)
+        public async Task<Appointment> CancelAppointmentAsync(CancelAppointmentCommand command, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Attempting to cancel appointment ID: {AppointmentId} for PatientId: {PatientId}",
-                AppointmentId, PatientId);
+                command.AppointmentId, command.PatientId);
 
-            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(AppointmentId);
+            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(command.AppointmentId);
 
             if (appointment == null)
             {
-                logger.LogError("Appointment with ID: {AppointmentId} not found for rescheduling", AppointmentId);
+                logger.LogError("Appointment with ID: {AppointmentId} not found for rescheduling", command.AppointmentId);
                 throw new NotFoundException("Appointment not found.");
             }
 
-            if (appointment.PatientId != PatientId)
+            if (appointment.PatientId != command.PatientId)
                 throw new UnauthorizedException("You are not authorized to reschedule this appointment.");
 
             appointment.Cancel();
@@ -201,16 +199,16 @@ namespace Clinic_System.Application.Service.Implemention
             if (result == 0)
             {
                 logger.LogError("Failed to save the Cancel appointment for PatientId: {PatientId} on AppointmentId: {AppointmentId}",
-                    PatientId, AppointmentId);
+                    command.PatientId, command.AppointmentId);
                 // إذا فشل الحفظ دون استثناء، يجب رفع استثناء هنا
                 throw new DatabaseSaveException("Failed to save the Cancel appointment to the database.");
             }
             logger.LogInformation("Successfully Cancelled appointment with ID: {AppointmentId} for PatientId: {PatientId}",
-                appointment.Id, PatientId);
+                appointment.Id, command.PatientId);
             return appointment;
         }
 
-        public async Task<Appointment> ConfirmAppointment(int AppointmentId, int PatientId, PaymentMethod? method = null
+        public async Task<Appointment> ConfirmAppointmentAsync(int AppointmentId, int PatientId, PaymentMethod? method = null
             , decimal? amount = null, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Attempting to confirm appointment ID: {AppointmentId} for PatientId: {PatientId}",
@@ -260,7 +258,7 @@ namespace Clinic_System.Application.Service.Implemention
             }
         }
 
-        public async Task<Appointment> NoShowAppointment(int AppointmentId, int DoctorId, CancellationToken cancellationToken = default)
+        public async Task<Appointment> NoShowAppointmentAsync(int AppointmentId, int DoctorId, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Attempting to mark no-show for appointment ID: {AppointmentId} for DoctorId: {DoctorId}",
                 AppointmentId, DoctorId);
@@ -291,7 +289,7 @@ namespace Clinic_System.Application.Service.Implemention
             return appointment;
         }
 
-        public async Task<Appointment> CompleteAppointment(CompleteAppointmentCommand command, CancellationToken cancellationToken = default)
+        public async Task<Appointment> CompleteAppointmentAsync(CompleteAppointmentCommand command, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Attempting to complete appointment ID: {AppointmentId} for DoctorId: {DoctorId}",
                 command.AppointmentId, command.DoctorId);

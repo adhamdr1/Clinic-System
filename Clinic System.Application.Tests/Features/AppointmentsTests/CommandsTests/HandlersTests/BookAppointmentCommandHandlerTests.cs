@@ -27,7 +27,7 @@
             var command = new BookAppointmentCommand { DoctorId = doctorId, PatientId = patientId, AppointmentDate = DateTime.Now.AddDays(1) };
             // تأكد أن الـ Entity والـ DTO متطابقان في السيناريو
             var appointmentEntity = new Appointment { Id = 100, DoctorId = doctorId, PatientId = patientId };
-            var expectedDto = new CreateAppointmentDTO { Id = 100 };
+            var expectedDto = new AppointmentDTO { Id = 100 };
 
             // 1. إعداد الـ Service ليعيد الـ Entity (بدلاً من الافتراضي Null)
             _mockAppointmentService
@@ -42,7 +42,7 @@
                 .ReturnsAsync(new Patient { Id = patientId, FullName = "John Doe" });
 
             // 3. إعداد الـ Mapper
-            _mockMapper.Setup(m => m.Map<CreateAppointmentDTO>(appointmentEntity)).Returns(expectedDto);
+            _mockMapper.Setup(m => m.Map<AppointmentDTO>(appointmentEntity)).Returns(expectedDto);
 
             // 4. إعداد الحفظ
             _mockUnitOfWork.Setup(u => u.SaveAsync()).ReturnsAsync(1);

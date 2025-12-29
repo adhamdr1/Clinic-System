@@ -27,7 +27,7 @@ namespace Clinic_System.Core.Entities
 
         public void Reschedule(DateTime newDate)
         {
-            if (Status != AppointmentStatus.Confirmed && Status != AppointmentStatus.Pending)
+            if (Status != AppointmentStatus.Confirmed && Status != AppointmentStatus.Pending && Status != AppointmentStatus.Rescheduled)
                 throw new InvalidAppointmentStateException("Cannot reschedule an inactive appointment.");
 
             // قاعدة عمل: لا يمكن التعديل لموعد في الماضي

@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class BookAppointmentCommandHandler : ResponseHandler, IRequestHandler<BookAppointmentCommand, Response<CreateAppointmentDTO>>
+    public class BookAppointmentCommandHandler : ResponseHandler, IRequestHandler<BookAppointmentCommand, Response<AppointmentDTO>>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
@@ -18,7 +18,7 @@
             this.logger = logger;
         }
 
-        public async Task<Response<CreateAppointmentDTO>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
+        public async Task<Response<AppointmentDTO>> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Handling BookAppointmentCommand for PatientId: {PatientId}, DoctorId: {DoctorId}", request.PatientId, request.DoctorId);
             try
@@ -28,12 +28,12 @@
                 if (patient == null)
                 {
                     logger.LogWarning("Patient with ID {PatientId} not found.", request.PatientId);
-                    return BadRequest<CreateAppointmentDTO>("Patient account not found.");
+                    return BadRequest<AppointmentDTO>("Patient account not found.");
                 }
 
                 var newAppointment = await appointmentService.BookAppointmentAsync(request, cancellationToken);
 
-                var appointmentDto = mapper.Map<CreateAppointmentDTO>(newAppointment);
+                var appointmentDto = mapper.Map<AppointmentDTO>(newAppointment);
 
                 appointmentDto.PatientName = patient.FullName;
 
@@ -49,15 +49,15 @@
 
                 return Success(appointmentDto, "Appointment booked successfully.");
             }
-            catch (Exception ex) when (ex.Message.Contains("not available"))
+            catch (SlotAlreadyBookedException ex) when (ex.Message.Contains("not available"))
             {
                 logger.LogWarning("Booking failed: {ErrorMessage}", ex.Message);
-                return BadRequest<CreateAppointmentDTO>(ex.Message);
+                return BadRequest<AppointmentDTO>(ex.Message);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while booking appointment for PatientId: {PatientId}, DoctorId: {DoctorId}", request.PatientId, request.DoctorId);
-                return BadRequest<CreateAppointmentDTO>("Error occurred while processing booking: " + ex.Message);
+                return BadRequest<AppointmentDTO>("Error occurred while processing booking: " + ex.Message);
             }
         }
     }

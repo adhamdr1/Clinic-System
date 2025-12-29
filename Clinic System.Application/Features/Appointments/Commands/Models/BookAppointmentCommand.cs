@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Models
 {
-    public class BookAppointmentCommand : IRequest<Response<CreateAppointmentDTO>>
+    public class BookAppointmentCommand : IRequest<Response<AppointmentDTO>>
     {
         [JsonIgnore]
         public int PatientId { get; set; }

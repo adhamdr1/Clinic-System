@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/appointments")]
     [ApiController]
     public class AppointmentController : AppControllerBase
     {
@@ -15,21 +15,21 @@
             return Ok(response);
         }
 
-        [HttpGet("DoctorAppointments")]
+        [HttpGet("doctor")]
         public async Task<IActionResult> GetDoctorAppointments([FromQuery] GetDoctorAppointmentsQuery query)
         {
             var response = await mediator.Send(query);
             return Ok(response);
         }
 
-        [HttpGet("PatientAppointments")]
+        [HttpGet("patient")]
         public async Task<IActionResult> GetPatientAppointments([FromQuery] GetPatientAppointmentsQuery query)
         {
             var response = await mediator.Send(query);
             return Ok(response);
         }
 
-        [HttpGet("AppointmentsByStatusForAdmin")]
+        [HttpGet("statusforadmin")]
         public async Task<IActionResult> GetAppointmentsByStatusForAdmin([FromQuery] GetAppointmentsByStatusForAdminQuery query)
         {
             var response = await mediator.Send(query);
@@ -37,30 +37,49 @@
             return Ok(response);
         }
 
-        [HttpGet("AppointmentsByStatusForDoctor")]
+        [HttpGet("statusfordoctor")]
         public async Task<IActionResult> GetAppointmentsByStatusForDoctor([FromQuery] GetAppointmentsByStatusForDoctorQuery query)
         {
             var response = await mediator.Send(query);
             return Ok(response);
         }
 
-        [HttpGet("PastAppointmentsForPatient")]
+        [HttpGet("pastforpatient")]
         public async Task<IActionResult> GetPastAppointmentsForPatient([FromQuery] GetPastAppointmentsForPatientQuery query)
         {
             var response = await mediator.Send(query);
             return Ok(response);
         }
 
-        [HttpGet("PastAppointmentsForDoctor")]
+        [HttpGet("pastfordoctor")]
         public async Task<IActionResult> GetPastAppointmentsForDoctor([FromQuery] GetPastAppointmentsForDoctorQuery query)
         {
             var response = await mediator.Send(query);
             return Ok(response);
         }
 
-        //[Authorize(Roles = "Patient")]
-        [HttpPost("Book")]
+        [HttpPost("book")]
         public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentCommand command)
+        {
+            // حقن الـ ID في الـ command قبل إرساله للـ Handler
+            command.PatientId = 1;
+
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
+        [HttpPut("reschedule")]
+        public async Task<IActionResult> RescheduleAppointment([FromBody] RescheduleAppointmentCommand command)
+        {
+            // حقن الـ ID في الـ command قبل إرساله للـ Handler
+            command.PatientId = 1;
+
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
+        [HttpPut("cancel")]
+        public async Task<IActionResult> CancelledAppointment([FromBody] CancelAppointmentCommand command)
         {
             // حقن الـ ID في الـ command قبل إرساله للـ Handler
             command.PatientId = 1;

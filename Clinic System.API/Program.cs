@@ -126,7 +126,7 @@ namespace Clinic_System.API
                     app.UseSwagger();
                     app.UseSwaggerUI(c =>
                     {
-                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clinic System API v1");
+                        c.SwaggerEndpoint("", "Clinic System");
                     });
                 }
                 

@@ -47,7 +47,7 @@
         {
             return await context.Appointments
                 .AsNoTracking()
-                .Where(a => a.DoctorId == doctorId && a.AppointmentDate.Date == date.Date && a.Status != AppointmentStatus.Cancelled)
+                .Where(a => a.DoctorId == doctorId && a.AppointmentDate == date && a.Status != AppointmentStatus.Cancelled)
                 .ToListAsync(cancellationToken);
         }
 
