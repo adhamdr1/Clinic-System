@@ -2,6 +2,8 @@
 {
     public interface IAppointmentRepository : IGenericRepository<Appointment>
     {
+        Task<Appointment?> GetAppointmentWithDetailsAsync(int AppointmentId, CancellationToken cancellationToken = default);
+
         Task<(List<Appointment> Items, int TotalCount)> GetDoctorAppointmentsAsync(int doctorId,
             int pageNumber,
             int pageSize,

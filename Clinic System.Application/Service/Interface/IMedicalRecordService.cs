@@ -2,7 +2,12 @@
 {
     public interface IMedicalRecordService
     {
-        Task<MedicalRecord> CreateMedicalRecordAsync(Appointment appointment ,string Diagnosis ,
-            string Description , List<PrescriptionDto> prescriptionDto, CancellationToken cancellationToken = default);
+        Task<MedicalRecord> CreateMedicalRecordAsync(
+            Appointment appointment,
+            string Diagnosis,
+            string Description,
+            List<PrescriptionDto> prescriptionDto,
+            string? AdditionalNotes = null,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -2,8 +2,8 @@
 {
     public class PrescriptionDto
     {
-        public string Dosage { get; set; } = null!;
         public string MedicationName { get; set; } = null!;
+        public string Dosage { get; set; } = null!;
         public string? SpecialInstructions { get; set; }
         public string Frequency { get; set; } = null!;
         public DateTime StartDate { get; set; }

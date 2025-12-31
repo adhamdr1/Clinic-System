@@ -13,7 +13,7 @@
         Task<Appointment> CancelAppointmentAsync(CancelAppointmentCommand command, CancellationToken cancellationToken = default);
         Task<Appointment> ConfirmAppointmentAsync(int AppointmentId, int PatientId, PaymentMethod? method = null
             , decimal? amount = null, CancellationToken cancellationToken = default);
-        Task<Appointment> NoShowAppointmentAsync(int AppointmentId, int DoctorId, CancellationToken cancellationToken = default);
+        Task<Appointment> NoShowAppointmentAsync(NoShowAppointmentCommand command, CancellationToken cancellationToken = default);
         Task<Appointment> CompleteAppointmentAsync(CompleteAppointmentCommand command, CancellationToken cancellationToken = default);
         Task<PagedResult<Appointment>> GetAppointmentsByStatusForAdminAsync(GetAppointmentsByStatusForAdminQuery appointmentsByStatusForAdminQuery,
             CancellationToken cancellationToken = default);

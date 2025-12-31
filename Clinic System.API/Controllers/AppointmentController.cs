@@ -68,11 +68,31 @@
             return NewResult(response);
         }
 
+        [HttpPut("complete")]
+        public async Task<IActionResult> CompleteAppointment([FromBody] CompleteAppointmentCommand command)
+        {
+            // حقن الـ ID في الـ command قبل إرساله للـ Handler
+            command.DoctorId = 1;
+
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
         [HttpPut("reschedule")]
         public async Task<IActionResult> RescheduleAppointment([FromBody] RescheduleAppointmentCommand command)
         {
             // حقن الـ ID في الـ command قبل إرساله للـ Handler
             command.PatientId = 1;
+
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
+        [HttpPut("noshow")]
+        public async Task<IActionResult> NoShowAppointment([FromBody] NoShowAppointmentCommand command)
+        {
+            // حقن الـ ID في الـ command قبل إرساله للـ Handler
+            command.DoctorId = 1;
 
             var response = await mediator.Send(command);
             return NewResult(response);

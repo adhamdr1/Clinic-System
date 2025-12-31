@@ -1,13 +1,13 @@
-namespace Clinic_System.API
+Ôªønamespace Clinic_System.API
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File("Logs/bootstrap-.txt", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
+            .WriteTo.Console()
+            .WriteTo.File("Logs/bootstrap-.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
 
             try
             {
@@ -19,7 +19,7 @@ namespace Clinic_System.API
                 builder.Host.UseSerilog((context, services, config) =>
                 {
                     config.ReadFrom.Configuration(context.Configuration)
-                          .ReadFrom.Services(services);
+                    .ReadFrom.Services(services);
                 });
 
                 // Database Configuration
@@ -28,7 +28,7 @@ namespace Clinic_System.API
                     var connectionString = builder.Configuration.GetSection("constr").Value;
                     options.UseLazyLoadingProxies().UseSqlServer(connectionString);
                 });
-                
+
                 // Identity Configuration
                 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
@@ -38,11 +38,11 @@ namespace Clinic_System.API
                     options.Password.RequireUppercase = true;
                     options.Password.RequireNonAlphanumeric = true;
                     options.Password.RequiredLength = 8;
-                
+
                     // User settings
                     options.User.RequireUniqueEmail = true;
                     options.SignIn.RequireConfirmedEmail = false;
-                
+
                     // Lockout settings
                     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                     options.Lockout.MaxFailedAccessAttempts = 5;
@@ -50,13 +50,13 @@ namespace Clinic_System.API
                 })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-                
+
                 // JWT Authentication
                 var jwtSettings = builder.Configuration.GetSection("JWT");
                 var secritKey = jwtSettings["SecritKey"];
                 var audience = jwtSettings["AudienceIP"];
                 var issuer = jwtSettings["IssuerIP"];
-                
+
                 builder.Services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -78,32 +78,32 @@ namespace Clinic_System.API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secritKey!)),
                     };
                 });
-                
+
                 builder.Services.AddControllers();
-                
+
                 // Swagger/OpenAPI Configuration
                 builder.Services.AddEndpointsApiExplorer();
                 builder.Services.AddSwaggerGen();
-                
+
                 // CORS Configuration
                 builder.Services.AddCors(options =>
                 {
                     options.AddPolicy("AllowAll", policy =>
                     {
                         policy.AllowAnyOrigin()
-                              .AllowAnyMethod()
-                              .AllowAnyHeader();
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                     });
                 });
-                
-                
+
+
                 builder.Services.AddAutoMapper(typeof(ApplicationAssemblyReference).Assembly);
                 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(ApplicationAssemblyReference).Assembly));
                 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
                 builder.Services.AddScoped<IDoctorService, DoctorService>();
                 builder.Services.AddScoped<IPatientService, PatientService>();
                 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-                builder.Services.AddScoped<IPaymentService , PaymentService>();
+                builder.Services.AddScoped<IPaymentService, PaymentService>();
                 builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
                 builder.Services.AddScoped<IIdentityService, IdentityService>();
                 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyReference).Assembly);
@@ -119,29 +119,29 @@ namespace Clinic_System.API
                     throw new Exception("JWT AudienceIP is missing");
 
                 var app = builder.Build();
-                
+
                 // Configure the HTTP request pipeline.
                 if (app.Environment.IsDevelopment())
                 {
                     app.UseSwagger();
                     app.UseSwaggerUI(c =>
                     {
-                        c.SwaggerEndpoint("", "Clinic System");
+                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clinic System API v1");
                     });
                 }
-                
+
                 app.UseHttpsRedirection();
-                
+
                 app.UseMiddleware<ErrorHandlerMiddleware>();
-                
+
                 app.UseCors("AllowAll");
-                
+
                 app.UseAuthentication();
                 app.UseAuthorization();
-                
+
                 app.MapControllers();
 
-                app.Run(); 
+                app.Run();
             }
             catch (Exception ex)
             {
@@ -149,7 +149,7 @@ namespace Clinic_System.API
             }
             finally
             {
-                Log.CloseAndFlush(); // «· √ﬂœ „‰ ﬂ «»… ﬂ· «·»Ì«‰«  ··„·› ﬁ»· «·≈€·«ﬁ
+                Log.CloseAndFlush();
             }
         }
     }

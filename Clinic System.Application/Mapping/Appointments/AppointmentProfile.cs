@@ -12,6 +12,7 @@
             RescheduleAppointmentMapping();
             AppointmentMapping();
             CancelAppointmentMapping();
+            CompleteAppointmentMapping();
         }
     }
 }

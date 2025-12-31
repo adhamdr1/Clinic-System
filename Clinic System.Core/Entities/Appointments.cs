@@ -1,4 +1,5 @@
 ﻿using Clinic_System.Core.Exceptions;
+using System.Threading.Channels;
 
 namespace Clinic_System.Core.Entities
 {
@@ -25,10 +26,22 @@ namespace Clinic_System.Core.Entities
         public virtual DateTime CreatedAt { get; set; }
         public virtual DateTime? UpdatedAt { get; set; }
 
+        private void InvalidAppointmentState(string cancel, string complete,string noshow)
+        {
+            if (Status == AppointmentStatus.Completed)
+                throw new InvalidAppointmentStateException(complete);
+            if (Status == AppointmentStatus.Cancelled)
+                throw new InvalidAppointmentStateException(cancel);
+            if (Status == AppointmentStatus.NoShow)
+                throw new InvalidAppointmentStateException(noshow);
+        }
+
         public void Reschedule(DateTime newDate)
         {
-            if (Status != AppointmentStatus.Confirmed && Status != AppointmentStatus.Pending && Status != AppointmentStatus.Rescheduled)
-                throw new InvalidAppointmentStateException("Cannot reschedule an inactive appointment.");
+
+            InvalidAppointmentState("Cannot reschedule a cancelled appointment.",
+                "Cannot reschedule a completed appointment.",
+                "Cannot reschedule a no-show appointment.");
 
             // قاعدة عمل: لا يمكن التعديل لموعد في الماضي
             if (newDate < DateTime.Now)
@@ -41,11 +54,9 @@ namespace Clinic_System.Core.Entities
 
         public void Cancel()
         {
-            // قاعدة عمل: لا يمكن إلغاء موعد تم الانتهاء منه
-            if (Status == AppointmentStatus.Completed)
-                throw new InvalidAppointmentStateException("Cannot cancel a completed appointment.");
-            if (Status == AppointmentStatus.Cancelled)
-                throw new InvalidAppointmentStateException("Appointment is already cancelled.");
+            InvalidAppointmentState("Cannot cancel a completed appointment.",
+                "Appointment is already cancelled.", "Cannot cancel a no-show appointment.");
+
             if (AppointmentDate < DateTime.Now.AddHours(1))
                 throw new InvalidAppointmentStateException("Cannot cancel appointment less than 1 hour before start.");
 
@@ -55,11 +66,8 @@ namespace Clinic_System.Core.Entities
 
         public void Complete()
         {
-            // قاعدة عمل: لا يمكن إكمال موعد تم إلغاؤه
-            if (Status == AppointmentStatus.Cancelled)
-                throw new InvalidAppointmentStateException("Cannot complete a cancelled appointment.");
-            if (Status == AppointmentStatus.Completed)
-                throw new InvalidAppointmentStateException("Appointment is already completed.");
+            InvalidAppointmentState("Cannot complete a cancelled appointment.",
+                "Appointment is already completed.", "Cannot complete a no-show appointment.");
 
             this.Status = AppointmentStatus.Completed;
             this.UpdatedAt = DateTime.Now;
@@ -67,22 +75,23 @@ namespace Clinic_System.Core.Entities
 
         public void NoShow()
         {
-            // قاعدة عمل: لا يمكن وضع حالة عدم الحضور لموعد تم إلغاؤه أو إكماله
-            if (Status == AppointmentStatus.Cancelled)
-                throw new InvalidAppointmentStateException("Cannot mark a cancelled appointment as no-show.");
-            if (Status == AppointmentStatus.Completed)
-                throw new InvalidAppointmentStateException("Cannot mark a completed appointment as no-show.");
+
+            InvalidAppointmentState("Cannot mark a cancelled appointment as no-show.",
+                "Cannot mark a completed appointment as no-show.",
+                "Appointment is already marked as no-show.");
+
             this.Status = AppointmentStatus.NoShow;
             this.UpdatedAt = DateTime.Now;
         }
 
         public void Confirm()
         {
-            // قاعدة عمل: لا يمكن تأكيد موعد تم إلغاؤه أو إكماله
-            if (Status == AppointmentStatus.Cancelled)
-                throw new InvalidAppointmentStateException("Cannot confirm a cancelled appointment.");
-            if (Status == AppointmentStatus.Completed)
-                throw new InvalidAppointmentStateException("Cannot confirm a completed appointment.");
+            InvalidAppointmentState("Cannot confirm a cancelled appointment.",
+                "Cannot confirm a completed appointment.",
+                "Cannot confirm a no-show appointment.");
+
+            if (Status == AppointmentStatus.Confirmed)
+                throw new InvalidAppointmentStateException("Appointment is already confirmed.");
 
             this.Status = AppointmentStatus.Confirmed;
             this.UpdatedAt = DateTime.Now;

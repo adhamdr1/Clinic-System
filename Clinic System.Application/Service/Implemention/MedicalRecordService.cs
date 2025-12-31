@@ -10,13 +10,14 @@
         }
 
         public async Task<MedicalRecord> CreateMedicalRecordAsync(Appointment appointment, string Diagnosis,
-            string Description, List<PrescriptionDto> prescriptionDto, CancellationToken cancellationToken = default)
+            string Description, List<PrescriptionDto> prescriptionDto, string? AdditionalNotes = null, CancellationToken cancellationToken = default)
         {
             var record = new MedicalRecord
             {
                 Appointment = appointment,
                 Diagnosis = Diagnosis,
                 DescriptionOfTheVisit = Description,
+                AdditionalNotes = AdditionalNotes,
                 Prescriptions = prescriptionDto
                     .Select(dto => new Prescription
                     {

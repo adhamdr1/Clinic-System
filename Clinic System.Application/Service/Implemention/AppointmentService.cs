@@ -133,7 +133,7 @@
             logger.LogInformation("Attempting to reschedule appointment ID: {AppointmentId} for PatientId: {PatientId} on {AppointmentDate} at {AppointmentTime}",
                 command.AppointmentId, command.PatientId, command.AppointmentDate.ToShortDateString(), command.AppointmentTime);
 
-            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(command.AppointmentId);
+            var appointment = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(command.AppointmentId, cancellationToken);
 
             if (appointment == null)
             {
@@ -182,7 +182,8 @@
             logger.LogInformation("Attempting to cancel appointment ID: {AppointmentId} for PatientId: {PatientId}",
                 command.AppointmentId, command.PatientId);
 
-            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(command.AppointmentId);
+            var appointment = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(command.AppointmentId, cancellationToken);
+
 
             if (appointment == null)
             {
@@ -214,7 +215,8 @@
             logger.LogInformation("Attempting to confirm appointment ID: {AppointmentId} for PatientId: {PatientId}",
                 AppointmentId, PatientId);
 
-            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(AppointmentId);
+            var appointment = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(AppointmentId, cancellationToken);
+
             if (appointment == null)
             {
                 logger.LogError("Appointment with ID: {AppointmentId} not found for confirmation", AppointmentId);
@@ -258,19 +260,19 @@
             }
         }
 
-        public async Task<Appointment> NoShowAppointmentAsync(int AppointmentId, int DoctorId, CancellationToken cancellationToken = default)
+        public async Task<Appointment> NoShowAppointmentAsync(NoShowAppointmentCommand command, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Attempting to mark no-show for appointment ID: {AppointmentId} for DoctorId: {DoctorId}",
-                AppointmentId, DoctorId);
+                command.AppointmentId, command.DoctorId);
 
-            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(AppointmentId);
+            var appointment = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(command.AppointmentId , cancellationToken);
             if (appointment == null)
             {
-                logger.LogError("Appointment with ID: {AppointmentId} not found for no-show", AppointmentId);
+                logger.LogError("Appointment with ID: {AppointmentId} not found for no-show", command.AppointmentId);
                 throw new NotFoundException("Appointment not found.");
             }
 
-            if (appointment.DoctorId != DoctorId)
+            if (appointment.DoctorId != command.DoctorId)
                 throw new UnauthorizedException("You are not authorized to mark no-show for this appointment.");
 
             appointment.NoShow();
@@ -278,13 +280,13 @@
             if (result == 0)
             {
                 logger.LogError("Failed to save the No-Show appointment for DoctorId: {DoctorId} on AppointmentId: {AppointmentId}",
-                    DoctorId, AppointmentId);
+                    command.DoctorId, command.AppointmentId);
                 // إذا فشل الحفظ دون استثناء، يجب رفع استثناء هنا
                 throw new DatabaseSaveException("Failed to save the No-Show appointment to the database.");
             }
 
             logger.LogInformation("Successfully marked No-Show for appointment with ID: {AppointmentId} for DoctorId: {DoctorId}",
-                appointment.Id, DoctorId);
+                appointment.Id, command.DoctorId);
 
             return appointment;
         }
@@ -298,8 +300,7 @@
             {
                 try
                 {
-
-                    var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(command.AppointmentId);
+                    var appointment = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(command.AppointmentId , cancellationToken);
 
                     if (appointment == null)
                     {
@@ -313,7 +314,7 @@
                     appointment.Complete();
 
                     await medicalRecordService.CreateMedicalRecordAsync(appointment,
-                        command.Diagnosis,command.Description,command.Medicines, cancellationToken);
+                        command.Diagnosis,command.Description,  command.Medicines, command.AdditionalNotes, cancellationToken);
 
                     var result = await unitOfWork.SaveAsync();
                     if (result == 0)

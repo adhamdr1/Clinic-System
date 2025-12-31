@@ -206,5 +206,15 @@
 
             return (items, totalCount);
         }
+
+        public async Task<Appointment?> GetAppointmentWithDetailsAsync(int AppointmentId, CancellationToken cancellationToken = default)
+        {
+            return await context.Appointments
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
+                .Include(a => a.MedicalRecord) 
+                .ThenInclude(mr => mr.Prescriptions)
+                .FirstOrDefaultAsync(a => a.Id == AppointmentId, cancellationToken);
+        }
     }
 }

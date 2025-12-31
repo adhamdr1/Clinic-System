@@ -30,25 +30,7 @@
                 newAppointment = await appointmentService.RescheduleAppointmentAsync(request, cancellationToken);
 
                 var appointmentDto = mapper.Map<AppointmentDTO>(newAppointment);
-
-                var patient = await unitOfWork.PatientsRepository.GetByIdAsync(request.PatientId, cancellationToken);
-
-                if (patient == null)
-                {
-                    logger.LogWarning("Patient with ID {PatientId} not found.", newAppointment.PatientId);
-                    return BadRequest<AppointmentDTO>("Patient account not found.");
-                }
-
-                appointmentDto.PatientName = patient.FullName;
-
-                var doctor = await unitOfWork.DoctorsRepository.GetByIdAsync(newAppointment.DoctorId, cancellationToken);
-
-                if (doctor != null)
-                {
-                    appointmentDto.DoctorName = doctor.FullName;
-                    logger.LogInformation("Doctor found: {DoctorName} for DoctorId: {DoctorId}", doctor.FullName, newAppointment.DoctorId);
-                }
-
+               
                 logger.LogInformation("Appointment rescheduled successfully for PatientId: {PatientId}, DoctorId: {DoctorId}", newAppointment.PatientId, newAppointment.DoctorId);
 
                 return Success(appointmentDto, "Appointment rescheduled successfully.");

@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.DTOs.Appointments
 {
-    public class CaneclledAppointmentDTO
+    public class CaneclledAndNoShowAppointmentDTO
     {
         public int Id { get; set; }
         public string DoctorName { get; set; }
