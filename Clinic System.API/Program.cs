@@ -22,12 +22,20 @@
                     .ReadFrom.Services(services);
                 });
 
+
+                var connectionString = builder.Configuration.GetSection("constr").Value;
+
                 // Database Configuration
                 builder.Services.AddDbContext<AppDbContext>(options =>
                 {
-                    var connectionString = builder.Configuration.GetSection("constr").Value;
                     options.UseLazyLoadingProxies().UseSqlServer(connectionString);
                 });
+
+                // إضافة Hangfire Services
+                builder.Services.AddHangfire(config =>
+                               config.UseSqlServerStorage(connectionString));
+
+                builder.Services.AddHangfireServer(); // تشغيل الـ Server المسؤول عن تنفيذ المهام
 
                 // Identity Configuration
                 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -132,14 +140,19 @@
 
                 app.UseHttpsRedirection();
 
-                app.UseMiddleware<ErrorHandlerMiddleware>();
 
                 app.UseCors("AllowAll");
 
                 app.UseAuthentication();
                 app.UseAuthorization();
 
+                app.UseMiddleware<ErrorHandlerMiddleware>();
+
                 app.MapControllers();
+
+                app.UseHangfireDashboard();
+
+                JobScheduler.ScheduleRecurringJobs(app);
 
                 app.Run();
             }

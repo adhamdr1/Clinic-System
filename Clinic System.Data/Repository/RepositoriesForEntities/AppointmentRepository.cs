@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Data.Repository.RepositoriesForEntities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Clinic_System.Data.Repository.RepositoriesForEntities
 {
     public class AppointmentRepository : GenericRepository<Appointment>, IAppointmentRepository
     {
@@ -47,7 +49,7 @@
         {
             return await context.Appointments
                 .AsNoTracking()
-                .Where(a => a.DoctorId == doctorId && a.AppointmentDate == date && a.Status != AppointmentStatus.Cancelled)
+                .Where(a => a.DoctorId == doctorId && a.AppointmentDate.Date == date.Date && a.Status != AppointmentStatus.Cancelled)
                 .ToListAsync(cancellationToken);
         }
 
@@ -215,6 +217,28 @@
                 .Include(a => a.MedicalRecord) 
                 .ThenInclude(mr => mr.Prescriptions)
                 .FirstOrDefaultAsync(a => a.Id == AppointmentId, cancellationToken);
+        }
+
+        public async Task<IEnumerable<Appointment>> GetPendingOverdueAppointmentsAsync(DateTime date, CancellationToken cancellationToken = default)
+        {
+            return await context.Appointments
+                .Include(a => a.Payment)
+                .Where(a => a.Status == AppointmentStatus.Pending && a.AppointmentDate < date)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<Dictionary<AppointmentStatus, int>> GetAppointmentsCountByStatusAsync(DateTime start, DateTime end, CancellationToken cancellationToken = default)
+        {
+            var query = context.Appointments
+                .Where(a => a.AppointmentDate >= start && a.AppointmentDate <= end);
+
+            // نرجع Count لكل حالة على شكل Dictionary
+            var result = await query
+                .GroupBy(a => a.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Status, x => x.Count, cancellationToken);
+
+            return result;
         }
     }
 }

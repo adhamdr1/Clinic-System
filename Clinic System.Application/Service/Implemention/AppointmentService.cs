@@ -48,7 +48,31 @@
             return availableSlots;
         }
 
-        // في AppointmentService.cs
+        public async Task CancelOverdueAppointmentsAsync()
+        {
+            // 1. تحديد المواعيد اللي فات ميعادها بـ 60 دقيقة ولسه Pending
+            var threshold = DateTime.Now.AddHours(-1);
+
+            var overdueAppointments = await unitOfWork.AppointmentsRepository
+                .GetPendingOverdueAppointmentsAsync(threshold);
+
+            if (!overdueAppointments.Any()) return;
+
+            foreach (var appointment in overdueAppointments)
+            {
+                logger.LogInformation("Auto-cancelling overdue appointment ID: {Id}", appointment.Id);
+                appointment.Cancel(); // استخدام ميثود الـ Domain اللي إنت عاملها
+
+                if (appointment.Payment != null && appointment.Payment.PaymentStatus == PaymentStatus.Pending)
+                {
+                    appointment.Payment.PaymentStatus = PaymentStatus.Cancelled;
+                }
+            }
+
+            // 2. حفظ كل التغييرات مرة واحدة
+            await unitOfWork.SaveAsync();
+        }
+
         public async Task<Appointment> BookAppointmentAsync(BookAppointmentCommand command, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Attempting to book appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDate} at {AppointmentTime}",
@@ -209,8 +233,8 @@
             return appointment;
         }
 
-        public async Task<Appointment> ConfirmAppointmentAsync(int AppointmentId, int PatientId, PaymentMethod? method = null
-            , decimal? amount = null, CancellationToken cancellationToken = default)
+        public async Task<Appointment> ConfirmAppointmentAsync(int AppointmentId, int PatientId, PaymentMethod method,
+            string? notes = null, decimal? amount = null, CancellationToken cancellationToken = default)
         {
             logger.LogInformation("Attempting to confirm appointment ID: {AppointmentId} for PatientId: {PatientId}",
                 AppointmentId, PatientId);
@@ -231,9 +255,9 @@
             {
                 try
                 {
-                    appointment.Confirm();
+                    await paymentService.ConfirmPaymentAsync(appointment.Id, method, notes, amount, cancellationToken);
 
-                    await paymentService.ConfirmPaymentAsync(appointment.Id, method, amount, cancellationToken);
+                    appointment.Confirm();
 
                     var result = await unitOfWork.SaveAsync();
 
@@ -422,6 +446,26 @@
 
             return new PagedResult<Appointment>(items, totalCount, appointmentsForPatientQuery.PageNumber, appointmentsForPatientQuery.PageSize);
 
+        }
+
+        public async Task<AppointmentStatsDto> GetAdminAppointmentsStatsAsync(GetAdminAppointmentsStatsQuery query, CancellationToken cancellationToken = default)
+        {
+            var start = query.StartDate ?? DateTime.Today;
+            var end = query.EndDate ?? DateTime.Today.AddDays(1).AddSeconds(-1);
+
+            var counts = await unitOfWork.AppointmentsRepository
+                .GetAppointmentsCountByStatusAsync(start, end, cancellationToken);
+
+            return new AppointmentStatsDto
+            {
+                TotalAppointments = counts.Values.Sum(),
+                Pending = counts.ContainsKey(AppointmentStatus.Pending) ? counts[AppointmentStatus.Pending] : 0,
+                Confirmed = counts.ContainsKey(AppointmentStatus.Confirmed) ? counts[AppointmentStatus.Confirmed] : 0,
+                Cancelled = counts.ContainsKey(AppointmentStatus.Cancelled) ? counts[AppointmentStatus.Cancelled] : 0,
+                NoShow = counts.ContainsKey(AppointmentStatus.NoShow) ? counts[AppointmentStatus.NoShow] : 0,
+                Rescheduled = counts.ContainsKey(AppointmentStatus.Rescheduled) ? counts[AppointmentStatus.Rescheduled] : 0,
+                Completed = counts.ContainsKey(AppointmentStatus.Completed) ? counts[AppointmentStatus.Completed] : 0
+            };
         }
     }
 }

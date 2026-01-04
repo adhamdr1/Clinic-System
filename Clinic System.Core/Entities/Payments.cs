@@ -22,18 +22,16 @@ namespace Clinic_System.Core.Entities
         public virtual DateTime CreatedAt { get; set; }
         public virtual DateTime? UpdatedAt { get; set; }
 
-        public void MarkAsPaid(PaymentMethod? method = null,decimal? amount = null)
+        public void MarkAsPaid(PaymentMethod method, string? additionalNotes = null, decimal? amount = null)
         {
             if (PaymentStatus == PaymentStatus.Paid)
                 throw new InvalidOperationException("Payment already paid.");
 
             PaymentStatus = PaymentStatus.Paid;
 
-            if (method != null)
-                PaymentMethod = method;
-            if (amount != null)
-                AmountPaid = amount.Value;
-
+            AdditionalNotes = additionalNotes ?? AdditionalNotes;
+            AmountPaid = amount ?? AmountPaid;
+            PaymentMethod = method;
             PaymentDate = DateTime.Now;
             UpdatedAt = DateTime.Now;
         }

@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Application.Service.Interface
+﻿using Clinic_System.Core.Interfaces.UnitOfWork;
+
+namespace Clinic_System.Application.Service.Interface
 {
     public interface IAppointmentService
     {
@@ -11,8 +13,8 @@
         Task<Appointment> BookAppointmentAsync(BookAppointmentCommand command,CancellationToken cancellationToken = default);
         Task<Appointment> RescheduleAppointmentAsync(RescheduleAppointmentCommand command, CancellationToken cancellationToken = default);
         Task<Appointment> CancelAppointmentAsync(CancelAppointmentCommand command, CancellationToken cancellationToken = default);
-        Task<Appointment> ConfirmAppointmentAsync(int AppointmentId, int PatientId, PaymentMethod? method = null
-            , decimal? amount = null, CancellationToken cancellationToken = default);
+        Task<Appointment> ConfirmAppointmentAsync(int AppointmentId, int PatientId, PaymentMethod method
+            ,string? notes = null, decimal? amount = null, CancellationToken cancellationToken = default);
         Task<Appointment> NoShowAppointmentAsync(NoShowAppointmentCommand command, CancellationToken cancellationToken = default);
         Task<Appointment> CompleteAppointmentAsync(CompleteAppointmentCommand command, CancellationToken cancellationToken = default);
         Task<PagedResult<Appointment>> GetAppointmentsByStatusForAdminAsync(GetAppointmentsByStatusForAdminQuery appointmentsByStatusForAdminQuery,
@@ -26,5 +28,9 @@
         Task<PagedResult<Appointment>> GetPastAppointmentsForPatientAsync(GetPastAppointmentsForPatientQuery appointmentsForPatientQuery,
             CancellationToken cancellationToken = default);
 
+        Task CancelOverdueAppointmentsAsync();
+
+        Task<AppointmentStatsDto> GetAdminAppointmentsStatsAsync(GetAdminAppointmentsStatsQuery query, CancellationToken cancellationToken = default);
+        
     }
 }

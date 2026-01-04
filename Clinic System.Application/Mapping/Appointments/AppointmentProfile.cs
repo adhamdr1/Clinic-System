@@ -13,6 +13,7 @@
             AppointmentMapping();
             CancelAppointmentMapping();
             CompleteAppointmentMapping();
+            ConfirmAppointmentMapping();
         }
     }
 }

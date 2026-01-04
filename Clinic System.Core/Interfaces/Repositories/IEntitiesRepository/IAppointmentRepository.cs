@@ -43,5 +43,7 @@
         Task<IEnumerable<Appointment>> GetAppointmentsInDateAsync(DateTime date, CancellationToken cancellationToken = default);
         Task<IEnumerable<Appointment>> GetBookedAppointmentsAsync(int doctorId, DateTime date, CancellationToken cancellationToken = default);
         Task<Appointment?> GetNextUpcomingAppointmentAsync(int? doctorId, int? patientId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Appointment>> GetPendingOverdueAppointmentsAsync(DateTime date, CancellationToken cancellationToken = default);
+        Task<Dictionary<AppointmentStatus, int>> GetAppointmentsCountByStatusAsync(DateTime start, DateTime end, CancellationToken cancellationToken = default);
     }
 }

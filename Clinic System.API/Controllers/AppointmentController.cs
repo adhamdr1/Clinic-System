@@ -8,6 +8,13 @@
         {
         }
 
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetAppointmentsStats([FromQuery] GetAdminAppointmentsStatsQuery query)
+        {
+            var response = await mediator.Send(query);
+            return Ok(response);
+        }
+
         [HttpGet("AvailableSlots")]
         public async Task<IActionResult> GetAvailableSlots([FromQuery] GetAvailableSlotQuery query)
         {
@@ -18,6 +25,21 @@
         [HttpGet("doctor")]
         public async Task<IActionResult> GetDoctorAppointments([FromQuery] GetDoctorAppointmentsQuery query)
         {
+            var response = await mediator.Send(query);
+            return Ok(response);
+        }
+
+        [HttpGet("today-schedule")]
+        public async Task<IActionResult> GetTodaySchedule()
+        {
+            var query = new GetDoctorAppointmentsQuery
+            {
+                DoctorId = 1,
+                DateTime = DateTime.Today, // اليوم الحالي فقط
+                PageNumber = 1,
+                PageSize = 100 // لضمان عرض كل مواعيد اليوم في قائمة واحدة
+            };
+
             var response = await mediator.Send(query);
             return Ok(response);
         }
@@ -68,6 +90,15 @@
             return NewResult(response);
         }
 
+        [HttpPut("confirm")]
+        public async Task<IActionResult> ConfirmAppointment([FromBody] ConfirmAppointmentCommand command)
+        {
+            command.PatientId = 1;
+
+            var response = await mediator.Send(command);
+            return Ok(response);
+        }
+    
         [HttpPut("complete")]
         public async Task<IActionResult> CompleteAppointment([FromBody] CompleteAppointmentCommand command)
         {

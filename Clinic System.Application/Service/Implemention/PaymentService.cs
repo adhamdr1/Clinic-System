@@ -9,8 +9,8 @@
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<Payment> ConfirmPaymentAsync(int appointmentId, PaymentMethod? method = null, 
-            decimal? amount = null, CancellationToken cancellationToken = default)
+        public async Task<Payment> ConfirmPaymentAsync(int appointmentId, PaymentMethod method,
+           string? notes = null, decimal? amount = null, CancellationToken cancellationToken = default)
         {
             var payment = await unitOfWork.PaymentsRepository.GetPaymentByAppointmentIdAsync(appointmentId);
 
@@ -19,7 +19,7 @@
                 throw new NotFoundException($"No pending payment found for appointment ID {appointmentId}.");
             }
 
-            payment.MarkAsPaid(method, amount);
+            payment.MarkAsPaid(method,notes, amount);
 
             unitOfWork.PaymentsRepository.Update(payment, cancellationToken);
 

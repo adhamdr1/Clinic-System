@@ -30,6 +30,9 @@ global using Serilog;
 global using Clinic_System.Application.Features.Patients.Queries.Models;
 global using Clinic_System.Application.Features.Patients.Commands.Models;
 global using Clinic_System.Core.Enums;
+global using Clinic_System.Infrastructure.Helpers;
+global using Hangfire;
+
 
 
 
