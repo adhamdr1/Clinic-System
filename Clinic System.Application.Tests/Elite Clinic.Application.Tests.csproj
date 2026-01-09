@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Clinic System.Application\Clinic System.Application.csproj" />
+    <ProjectReference Include="..\Clinic System.Application\Elite Clinic.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

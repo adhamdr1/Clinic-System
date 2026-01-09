@@ -26,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Clinic System.Core\Clinic System.Core.csproj" />
-    <ProjectReference Include="..\Clinic System.Infrastructure\Clinic System.Infrastructure.csproj" />
+    <ProjectReference Include="..\Clinic System.Core\Elite Clinic.Core.csproj" />
+    <ProjectReference Include="..\Clinic System.Infrastructure\Elite Clinic.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

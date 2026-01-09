@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Clinic System.Core\Clinic System.Core.csproj" />
+    <ProjectReference Include="..\Clinic System.Core\Elite Clinic.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

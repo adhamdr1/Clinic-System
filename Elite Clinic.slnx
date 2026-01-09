@@ -1,8 +1,8 @@
 <Solution>
   <Project Path="Clinic System.API/Elite Clinic.csproj" />
-  <Project Path="Clinic System.Application.Tests/Clinic System.Application.Tests.csproj" Id="f8442c65-a6cd-4065-ade1-0dbe3a75822e" />
-  <Project Path="Clinic System.Application/Clinic System.Application.csproj" />
-  <Project Path="Clinic System.Core/Clinic System.Core.csproj" />
-  <Project Path="Clinic System.Data/Clinic System.Data.csproj" />
-  <Project Path="Clinic System.Infrastructure/Clinic System.Infrastructure.csproj" />
+  <Project Path="Clinic System.Application.Tests/Elite Clinic.Application.Tests.csproj" Id="f8442c65-a6cd-4065-ade1-0dbe3a75822e" />
+  <Project Path="Clinic System.Application/Elite Clinic.Application.csproj" />
+  <Project Path="Clinic System.Core/Elite Clinic.Core.csproj" />
+  <Project Path="Clinic System.Data/Elite Clinic.Data.csproj" />
+  <Project Path="Clinic System.Infrastructure/Elite Clinic.Infrastructure.csproj" />
 </Solution>

@@ -29,10 +29,10 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Clinic System.Application\Clinic System.Application.csproj" />
-    <ProjectReference Include="..\Clinic System.Core\Clinic System.Core.csproj" />
-    <ProjectReference Include="..\Clinic System.Data\Clinic System.Data.csproj" />
-    <ProjectReference Include="..\Clinic System.Infrastructure\Clinic System.Infrastructure.csproj" />
+    <ProjectReference Include="..\Clinic System.Application\Elite Clinic.Application.csproj" />
+    <ProjectReference Include="..\Clinic System.Core\Elite Clinic.Core.csproj" />
+    <ProjectReference Include="..\Clinic System.Data\Elite Clinic.Data.csproj" />
+    <ProjectReference Include="..\Clinic System.Infrastructure\Elite Clinic.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
