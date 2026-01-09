@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace Clinic_System.Infrastructure.Services
 {
     public class IdentityService : IIdentityService

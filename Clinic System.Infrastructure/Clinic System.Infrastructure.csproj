@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.8.22" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.22" />
+    <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
@@ -20,10 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Clinic System.Application\Clinic System.Application.csproj" />
     <ProjectReference Include="..\Clinic System.Core\Clinic System.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\Email\" />
   </ItemGroup>
 
 </Project>

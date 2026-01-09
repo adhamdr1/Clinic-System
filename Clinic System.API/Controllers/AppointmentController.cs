@@ -84,7 +84,7 @@
         public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentCommand command)
         {
             // حقن الـ ID في الـ command قبل إرساله للـ Handler
-            command.PatientId = 1;
+            command.PatientId = 8;
 
             var response = await mediator.Send(command);
             return NewResult(response);
@@ -93,7 +93,7 @@
         [HttpPut("confirm")]
         public async Task<IActionResult> ConfirmAppointment([FromBody] ConfirmAppointmentCommand command)
         {
-            command.PatientId = 1;
+            command.PatientId = 8;
 
             var response = await mediator.Send(command);
             return Ok(response);
@@ -113,7 +113,7 @@
         public async Task<IActionResult> RescheduleAppointment([FromBody] RescheduleAppointmentCommand command)
         {
             // حقن الـ ID في الـ command قبل إرساله للـ Handler
-            command.PatientId = 1;
+            command.PatientId = 8;
 
             var response = await mediator.Send(command);
             return NewResult(response);
@@ -133,7 +133,7 @@
         public async Task<IActionResult> CancelledAppointment([FromBody] CancelAppointmentCommand command)
         {
             // حقن الـ ID في الـ command قبل إرساله للـ Handler
-            command.PatientId = 1;
+            command.PatientId = 8;
 
             var response = await mediator.Send(command);
             return NewResult(response);

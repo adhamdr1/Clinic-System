@@ -32,6 +32,8 @@ global using Clinic_System.Application.Features.Patients.Commands.Models;
 global using Clinic_System.Core.Enums;
 global using Clinic_System.Infrastructure.Helpers;
 global using Hangfire;
+global using Clinic_System.Infrastructure.Services.Email;
+
 
 
 

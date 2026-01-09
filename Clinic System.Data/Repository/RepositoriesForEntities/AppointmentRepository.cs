@@ -223,6 +223,8 @@ namespace Clinic_System.Data.Repository.RepositoriesForEntities
         {
             return await context.Appointments
                 .Include(a => a.Payment)
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
                 .Where(a => a.Status == AppointmentStatus.Pending && a.AppointmentDate < date)
                 .ToListAsync(cancellationToken);
         }

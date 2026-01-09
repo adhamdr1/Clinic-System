@@ -2,6 +2,9 @@
 {
     public class AppointmentService : IAppointmentService
     {
+        private readonly IBackgroundJobService jobService; // الـ Wrapper بتاع Hangfire
+        private readonly IEmailService emailService;
+        private readonly IIdentityService identityService;
         private readonly IUnitOfWork unitOfWork;
         private readonly IPaymentService paymentService;
         private readonly IMedicalRecordService medicalRecordService;
@@ -11,11 +14,17 @@
         private readonly TimeSpan DefaultEndTime = new TimeSpan(22, 0, 0);   // 10:00 PM
         private const int SlotDurationInMinutes = 15;
 
-        public AppointmentService(IUnitOfWork unitOfWork, IPaymentService paymentService,
-            IMedicalRecordService medicalRecordService, ILogger<AppointmentService> logger)
+        public AppointmentService(IBackgroundJobService jobService,
+            IEmailService emailService, IUnitOfWork unitOfWork,
+            IIdentityService identityService,
+            IPaymentService paymentService, IMedicalRecordService medicalRecordService,
+            ILogger<AppointmentService> logger)
         {
-            this.paymentService = paymentService;
+            this.jobService = jobService;
+            this.emailService = emailService;
             this.unitOfWork = unitOfWork;
+            this.identityService = identityService;
+            this.paymentService = paymentService;
             this.medicalRecordService = medicalRecordService;
             this.logger = logger;
         }
@@ -67,6 +76,18 @@
                 {
                     appointment.Payment.PaymentStatus = PaymentStatus.Cancelled;
                 }
+
+                var patientEmail = await identityService.GetUserEmailAsync(appointment.Patient.ApplicationUserId);
+
+                var emailSubject = "Your Appointment Reservation has Expired";
+                var emailContent = EmailTemplates.GetAutoCancellationEmail(
+                    appointment.Patient.FullName,
+                    appointment.Doctor.FullName,
+                    appointment.Doctor.Specialization,
+                    appointment.AppointmentDate);
+
+                // وضع الإيميل في الطابور
+                jobService.Enqueue(() => emailService.SendEmailAsync(patientEmail, emailSubject, emailContent));
             }
 
             // 2. حفظ كل التغييرات مرة واحدة
@@ -77,6 +98,10 @@
         {
             logger.LogInformation("Attempting to book appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDate} at {AppointmentTime}",
                     command.PatientId, command.DoctorId, command.AppointmentDate.ToShortDateString(), command.AppointmentTime);
+
+            string PatientEmail = string.Empty;
+            Appointment appointment2 = null;
+
 
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -139,9 +164,13 @@
                     logger.LogInformation("Successfully booked appointment with ID: {AppointmentId} for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
                         appointment.Id, command.PatientId, command.DoctorId, appointmentDateTime);
 
-                    transaction.Complete();
 
-                    return appointment;
+                    appointment2 = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(appointment.Id, cancellationToken);
+
+                    PatientEmail = await identityService.GetUserEmailAsync(appointment2.Patient.ApplicationUserId);
+
+
+                    transaction.Complete();
                 }
                 catch (Exception ex)
                 {
@@ -150,6 +179,17 @@
                     throw; // إعادة رمي الاستثناء بعد تسجيله
                 }
             }
+
+            var emailSubject = "Your Appointment is Booked - Elite Clinic";
+            var emailContent = EmailTemplates.GetBookingConfirmation(
+                appointment2.Patient.FullName,
+                appointment2.Doctor.FullName,
+                appointment2.Doctor.Specialization,
+                appointment2.AppointmentDate);
+
+            jobService.Enqueue(() => emailService.SendEmailAsync(PatientEmail, emailSubject, emailContent));
+
+            return appointment2;
         }
 
         public async Task<Appointment> RescheduleAppointmentAsync(RescheduleAppointmentCommand command, CancellationToken cancellationToken = default)
@@ -164,6 +204,8 @@
                 logger.LogError("Appointment with ID: {AppointmentId} not found for rescheduling", command.AppointmentId);
                 throw new NotFoundException("Appointment not found.");
             }
+
+            var oldAppointmentDate = appointment.AppointmentDate;
 
             if (appointment.PatientId != command.PatientId)
                 throw new UnauthorizedException("You are not authorized to reschedule this appointment.");
@@ -197,7 +239,22 @@
 
             logger.LogInformation("Successfully rescheduled appointment with ID: {AppointmentId} for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
                 appointment.Id, command.PatientId, appointment.DoctorId, appointmentDateTime);
-            // 5. إرجاع الكيان المحفوظ (الذي يحمل الـ ID الآن)
+
+            var emailSubject = "Your Appointment is Rescheduled - Elite Clinic";
+
+            var emailContent = EmailTemplates.GetReschedulingConfirmation(
+                appointment.Patient.FullName,
+                appointment.Doctor.FullName,
+                appointment.Doctor.Specialization,
+                oldAppointmentDate,
+                appointment.AppointmentDate);
+
+            var PatientEmail = await identityService.GetUserEmailAsync(appointment.Patient.ApplicationUserId);
+
+
+            jobService.Enqueue(() => emailService.SendEmailAsync(PatientEmail, emailSubject, emailContent));
+
+
             return appointment;
         }
         
@@ -230,6 +287,21 @@
             }
             logger.LogInformation("Successfully Cancelled appointment with ID: {AppointmentId} for PatientId: {PatientId}",
                 appointment.Id, command.PatientId);
+
+            var emailSubject = "Your Appointment is Cancelled - Elite Clinic";
+
+            var emailContent = EmailTemplates.GetPatientCancellationEmail(
+                appointment.Patient.FullName,
+                appointment.Doctor.FullName,
+                appointment.Doctor.Specialization,
+                appointment.AppointmentDate);
+
+            var PatientEmail = await identityService.GetUserEmailAsync(appointment.Patient.ApplicationUserId);
+
+
+            jobService.Enqueue(() => emailService.SendEmailAsync(PatientEmail, emailSubject, emailContent));
+
+
             return appointment;
         }
 
@@ -272,7 +344,6 @@
                         appointment.Id, PatientId);
 
                     transaction.Complete();
-                    return appointment;
                 }
                 catch (Exception ex)
                 {
@@ -282,6 +353,25 @@
                     throw; // إعادة رمي الاستثناء بعد تسجيله
                 }
             }
+
+            var MethodPayment = appointment.Payment.PaymentMethod.ToString();
+
+            var emailSubject = "Your Appointment is Confirmed - Elite Clinic";
+            var emailContent = EmailTemplates.GetPaymentAndBookingConfirmation(
+                appointment.Patient.FullName,
+                appointment.Doctor.FullName,
+                appointment.Doctor.Specialization,
+                appointment.AppointmentDate,
+                appointment.Payment.AmountPaid,
+                MethodPayment,
+                appointment.Payment.Id);
+
+            var PatientEmail = await identityService.GetUserEmailAsync(appointment.Patient.ApplicationUserId);
+
+            jobService.Enqueue(() => emailService.SendEmailAsync(PatientEmail, emailSubject, emailContent));
+
+
+            return appointment;
         }
 
         public async Task<Appointment> NoShowAppointmentAsync(NoShowAppointmentCommand command, CancellationToken cancellationToken = default)
@@ -312,6 +402,20 @@
             logger.LogInformation("Successfully marked No-Show for appointment with ID: {AppointmentId} for DoctorId: {DoctorId}",
                 appointment.Id, command.DoctorId);
 
+            var emailSubject = $"Missed Appointment with Dr. {appointment.Doctor.FullName} - Elite Clinic";
+
+            var emailContent = EmailTemplates.GetNoShowNotice(
+                appointment.Patient.FullName,
+                appointment.Doctor.FullName,
+                appointment.Doctor.Specialization,
+                appointment.AppointmentDate);
+
+            var PatientEmail = await identityService.GetUserEmailAsync(appointment.Patient.ApplicationUserId);
+
+
+            jobService.Enqueue(() => emailService.SendEmailAsync(PatientEmail, emailSubject, emailContent));
+
+
             return appointment;
         }
 
@@ -320,11 +424,13 @@
             logger.LogInformation("Attempting to complete appointment ID: {AppointmentId} for DoctorId: {DoctorId}",
                 command.AppointmentId, command.DoctorId);
 
+            Appointment appointment = null;
+
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-                    var appointment = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(command.AppointmentId , cancellationToken);
+                    appointment = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(command.AppointmentId , cancellationToken);
 
                     if (appointment == null)
                     {
@@ -354,7 +460,6 @@
 
                     transaction.Complete();
 
-                    return appointment;
                 }
                 catch (Exception ex)
                 {
@@ -363,6 +468,22 @@
                     throw; // إعادة رمي الاستثناء بعد تسجيله
                 }
             }
+
+            var emailSubject = $"Medical Report & Prescription | Dr. {appointment.Doctor.FullName} - Elite Clinic";
+
+            var emailContent = EmailTemplates.GetMedicalReportEmail(
+                appointment.Patient.FullName,
+                appointment.Doctor.FullName,
+                appointment.Doctor.Specialization,
+                appointment.MedicalRecord.Diagnosis,
+                appointment.MedicalRecord.DescriptionOfTheVisit,
+                appointment.MedicalRecord.Prescriptions.ToList(),
+                appointment.MedicalRecord.AdditionalNotes);
+
+            var PatientEmail = await identityService.GetUserEmailAsync(appointment.Patient.ApplicationUserId);
+            jobService.Enqueue(() => emailService.SendEmailAsync(PatientEmail, emailSubject, emailContent));
+
+            return appointment;
         }
 
         /// <summary>

@@ -104,6 +104,7 @@
                     });
                 });
 
+                builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
                 builder.Services.AddAutoMapper(typeof(ApplicationAssemblyReference).Assembly);
                 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(ApplicationAssemblyReference).Assembly));
@@ -114,6 +115,8 @@
                 builder.Services.AddScoped<IPaymentService, PaymentService>();
                 builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
                 builder.Services.AddScoped<IIdentityService, IdentityService>();
+                builder.Services.AddTransient<IEmailService, EmailService>();
+                builder.Services.AddScoped<IBackgroundJobService, HangfireBackgroundJobService>();
                 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyReference).Assembly);
                 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
@@ -134,7 +137,7 @@
                     app.UseSwagger();
                     app.UseSwaggerUI(c =>
                     {
-                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clinic System API v1");
+                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Elite Clinic");
                     });
                 }
 
