@@ -5,7 +5,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.IdentityModel.Tokens;
 global using System.Text;
-global using Clinic_System.Core.Interfaces.UnitOfWork;
+global using Clinic_System.Application;
 global using Clinic_System.Data.Repository.UnitOfWork;
 global using Clinic_System.Application.Common;
 global using Clinic_System.Application.Features.Doctors.Queries.Models;

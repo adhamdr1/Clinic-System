@@ -1,4 +1,7 @@
-﻿namespace Clinic_System.API
+﻿using Clinic_System.Data;
+using Clinic_System.Infrastructure;
+
+namespace Clinic_System.API
 {
     public class Program
     {
@@ -104,21 +107,9 @@
                     });
                 });
 
-                builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
-                builder.Services.AddAutoMapper(typeof(ApplicationAssemblyReference).Assembly);
-                builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(ApplicationAssemblyReference).Assembly));
-                builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-                builder.Services.AddScoped<IDoctorService, DoctorService>();
-                builder.Services.AddScoped<IPatientService, PatientService>();
-                builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-                builder.Services.AddScoped<IPaymentService, PaymentService>();
-                builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
-                builder.Services.AddScoped<IIdentityService, IdentityService>();
-                builder.Services.AddTransient<IEmailService, EmailService>();
-                builder.Services.AddScoped<IBackgroundJobService, HangfireBackgroundJobService>();
-                builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyReference).Assembly);
-                builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+                builder.Services.AddPersistenceDependencies();
+                builder.Services.AddApplicationDependencies();
+                builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
                 if (string.IsNullOrWhiteSpace(secritKey))
                     throw new Exception("JWT SecretKey is missing in appsettings.json");

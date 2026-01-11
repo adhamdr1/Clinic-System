@@ -17,3 +17,5 @@ global using Clinic_System.Data.Context;
 global using Clinic_System.Core.Interfaces.Repositories.IEntitiesRepository;
 global using Clinic_System.Core.Interfaces.UnitOfWork;
 global using Clinic_System.Data.Repository.RepositoriesForEntities;
+global using Clinic_System.Data.Repository.UnitOfWork;
+global using Microsoft.Extensions.DependencyInjection;

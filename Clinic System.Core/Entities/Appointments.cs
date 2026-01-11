@@ -64,6 +64,15 @@ namespace Clinic_System.Core.Entities
             this.UpdatedAt = DateTime.Now;
         }
 
+        public void SystemExpire()
+        {
+            if (this.Status == AppointmentStatus.Pending)
+            {
+                this.Status = AppointmentStatus.Cancelled;
+                this.UpdatedAt = DateTime.Now;
+            }
+        }
+
         public void Complete()
         {
             InvalidAppointmentState("Cannot complete a cancelled appointment.",

@@ -13,6 +13,11 @@ global using MailKit.Security;
 global using MimeKit;
 global using Microsoft.Extensions.Options;
 global using System.Linq.Expressions;
+global using Clinic_System.Infrastructure.Helpers;
+global using Clinic_System.Infrastructure.Services;
+global using Clinic_System.Infrastructure.Services.Email;
+global using Microsoft.Extensions.Configuration;
+
 
 
 
