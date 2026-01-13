@@ -36,5 +36,7 @@ global using Clinic_System.Infrastructure.Services.Email;
 global using Clinic_System.Data;
 global using Clinic_System.Infrastructure;
 global using Clinic_System.Application.Features.MedicalRecords.Commands.Models;
+global using Clinic_System.Application.Features.MedicalRecords.Queries.Models;
+
 
 

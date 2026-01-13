@@ -1,11 +1,37 @@
 ﻿namespace Clinic_System.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/medicalrecords")]
     [ApiController]
     public class MedicalRecordController : AppControllerBase
     {
         public MedicalRecordController(IMediator mediator) : base(mediator)
         {
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetMedicalRecordById(int id)
+        {
+            // بنبعت الـ ID للـ Query constructor
+            var response = await mediator.Send(new GetMedicalRecordByIdQuery
+            {
+                Id = id
+            });
+
+            return NewResult(response);
+        }
+
+        [HttpGet("patient")]
+        public async Task<IActionResult> GetPatientHistory([FromQuery] GetPatientHistoryQuery query)
+        {
+            var response = await mediator.Send(query);
+            return NewResult(response);
+        }
+
+        [HttpGet("doctor")]
+        public async Task<IActionResult> GetRecordsByDoctorId([FromQuery] GetRecordsByDoctorIdQuery query)
+        {
+            var response = await mediator.Send(query);
+            return NewResult(response);
         }
 
         [HttpPut("update")]

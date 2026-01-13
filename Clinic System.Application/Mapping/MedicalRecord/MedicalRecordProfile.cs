@@ -5,6 +5,9 @@
         public MedicalRecordProfile()
         {
             UpdateMedicalRecordMapping();
+            GetMedicalRecordByIdMapping();
+            GetMedicalRecordPatientHistoryMapping();
+            GetMedicalRecordDoctorMapping();
         }
     }
 }

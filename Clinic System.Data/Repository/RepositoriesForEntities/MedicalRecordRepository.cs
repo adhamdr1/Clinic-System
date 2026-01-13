@@ -30,38 +30,37 @@
                 .AsNoTracking()
                 .Where(mr => mr.Appointment.PatientId == patientId)
                 .OrderByDescending(mr => mr.CreatedAt);
+
             var totalCount = await query.CountAsync(cancellationToken);
+
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .Include(mr => mr.Appointment)
                 .ThenInclude(a => a.Doctor)
                 .ToListAsync(cancellationToken);
+
             return (items, totalCount);
         }
 
-        public async Task<(List<MedicalRecord> Items, int TotalCount)> GetRecordsByDateRangeAsync(DateTime start, DateTime end, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<(List<MedicalRecord> Items, int TotalCount)> GetRecordsByDoctorAsync(int doctorId, int pageNumber, int pageSize, DateTime? start, DateTime? end, CancellationToken cancellationToken = default)
         {
             var query = context.MedicalRecords
                 .AsNoTracking()
-                .Where(mr => mr.CreatedAt >= start && mr.CreatedAt <= end)
-                .OrderByDescending(mr => mr.CreatedAt);
-            var totalCount = await query.CountAsync(cancellationToken);
-            var items = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .Include(mr => mr.Appointment)
-                .ThenInclude(a => a.Doctor)
-                .ToListAsync(cancellationToken);
-            return (items, totalCount);
-        }
+                .Where(mr => mr.Appointment.DoctorId == doctorId);
 
-        public async Task<(List<MedicalRecord> Items, int TotalCount)> GetRecordsByDoctorAsync(int doctorId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
-        {
-            var query = context.MedicalRecords
-                .AsNoTracking()
-                .Where(mr => mr.Appointment.DoctorId == doctorId)
-                .OrderByDescending(mr => mr.CreatedAt);
+            if (start.HasValue)
+            {
+                query = query.Where(mr => mr.CreatedAt >= start.Value);
+            }
+
+            if (end.HasValue)
+            {
+                query = query.Where(mr => mr.CreatedAt <= end.Value);
+            }
+
+            query = query.OrderByDescending(mr => mr.CreatedAt);
+
             var totalCount = await query.CountAsync(cancellationToken);
             var items = await query
                 .Skip((pageNumber - 1) * pageSize)

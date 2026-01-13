@@ -54,17 +54,10 @@
             return record;
         }
 
-        public async Task<PagedResult<MedicalRecord>> GetRecordsByDateRangeAsync(DateTime start, DateTime end, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<MedicalRecord>> GetRecordsByDoctorIdAsync( int pageNumber, int pageSize, int doctorId, DateTime? start, DateTime? end, CancellationToken cancellationToken = default)
         {
             var (item, total) = await unitOfWork.MedicalRecordsRepository
-                .GetRecordsByDateRangeAsync(start, end, pageNumber, pageSize, cancellationToken);
-            return new PagedResult<MedicalRecord>(item, total, pageNumber, pageSize);
-        }
-
-        public async Task<PagedResult<MedicalRecord>> GetRecordsByDoctorIdAsync(int pageNumber, int pageSize, int patientId, CancellationToken cancellationToken = default)
-        {
-            var (item, total) = await unitOfWork.MedicalRecordsRepository
-                .GetRecordsByDoctorAsync(patientId, pageNumber, pageSize, cancellationToken);
+                .GetRecordsByDoctorAsync(doctorId, pageNumber, pageSize, start, end , cancellationToken);
             return new PagedResult<MedicalRecord>(item, total, pageNumber, pageSize);
         }
 

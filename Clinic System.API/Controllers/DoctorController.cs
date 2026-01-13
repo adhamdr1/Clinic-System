@@ -33,7 +33,7 @@
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetDoctorById([FromQuery] int id)
+        public async Task<IActionResult> GetDoctorById(int id)
         {
             var response = await mediator.Send(new GetDoctorByIdQuery
             {
@@ -43,7 +43,7 @@
         }
 
         [HttpGet("{id:int}/appointments")]
-        public async Task<IActionResult> GetDoctorWithAppointmentsById([FromQuery] int id)
+        public async Task<IActionResult> GetDoctorWithAppointmentsById(int id)
         {
             var response = await mediator.Send(new GetDoctorWithAppointmentsByIdQuery
             {

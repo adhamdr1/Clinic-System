@@ -1,9 +1,12 @@
 ﻿namespace Clinic_System.Application.Features.MedicalRecords.Queries.Validators
 {
-    public class GetDoctorListPagingQueryValidator : AbstractValidator<GetDoctorListPagingQuery>
+    public class GetPatientHistoryQueryValidator : AbstractValidator<GetPatientHistoryQuery>
     {
-        public GetDoctorListPagingQueryValidator()
+        public GetPatientHistoryQueryValidator()
         {
+            RuleFor(x => x.PatientId)
+                .GreaterThanOrEqualTo(1).WithMessage("Doctor Id must be at least 1.");
+
             RuleFor(x => x.PageNumber)
                 .GreaterThanOrEqualTo(1).WithMessage("Page number must be at least 1.");
 

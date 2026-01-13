@@ -1,4 +1,4 @@
-﻿namespace Clinic_System.Application.Features.Doctors.Commands.Handlers
+﻿namespace Clinic_System.Application.Features.MedicalRecords.Commands.Handlers
 {
     public class UpdateMedicalRecordCommandHandler : ResponseHandler, IRequestHandler<UpdateMedicalRecordCommand, Response<UpdateMedicalRecordDTO>>
     {
