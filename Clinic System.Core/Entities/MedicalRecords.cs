@@ -19,5 +19,18 @@
         // Audit Fields (automatically set by SaveChanges)
         public virtual DateTime CreatedAt { get; set; }
         public virtual DateTime? UpdatedAt { get; set; }
+
+
+        public void Update(string? diagnosis,string? description,string? additionalNotes)
+        {
+            if (!string.IsNullOrWhiteSpace(diagnosis))
+                this.Diagnosis = diagnosis;
+
+            if (!string.IsNullOrWhiteSpace(description))
+                this.DescriptionOfTheVisit = description;
+
+            if (additionalNotes != null)
+                this.AdditionalNotes = additionalNotes;
+        }
     }
 }

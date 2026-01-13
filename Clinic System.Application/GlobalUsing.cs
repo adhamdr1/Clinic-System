@@ -28,6 +28,10 @@ global using System.Linq.Expressions;
 global using Clinic_System.Application.Common.Behaviors;
 global using Clinic_System.Application.Service.Implemention;
 global using Microsoft.Extensions.DependencyInjection;
+global using Clinic_System.Application.DTOs.MedicalRecord;
+global using Clinic_System.Application.Features.MedicalRecords.Commands.Models;
+
+
 
 
 

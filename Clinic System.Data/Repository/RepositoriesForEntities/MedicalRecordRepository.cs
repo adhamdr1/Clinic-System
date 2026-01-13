@@ -6,49 +6,70 @@
         {
         }
 
-        public async Task<MedicalRecord?> GetMedicalRecordWithPrescriptionsAsync(int recordId)
+        public async Task<MedicalRecord?> GetMedicalRecordDetailsAsync(int recordId, CancellationToken cancellationToken = default)
         {
             return await context.MedicalRecords
                 .AsNoTracking()
-                .Include(mr => mr.Prescriptions)
-                .FirstOrDefaultAsync(mr => mr.Id == recordId);
+                .Include(mr => mr.Prescriptions) 
+                .Include(mr => mr.Appointment)   
+                .ThenInclude(a => a.Patient)
+                .FirstOrDefaultAsync(mr => mr.Id == recordId , cancellationToken);
         }
 
-        public async Task<IEnumerable<MedicalRecord>> GetPatientMedicalHistoryAsync(int patientId)
+        public async Task<MedicalRecord?> GetMedicalRecordForUpdateAsync(int recordId, CancellationToken cancellationToken = default)
         {
-            // الحل: إضافة Include للـ Appointment لتجنب N+1 Query Problem
             return await context.MedicalRecords
-                .AsNoTracking()
                 .Include(mr => mr.Appointment)
-                .Where(mr => mr.Appointment.PatientId == patientId)
-                .ToListAsync();
+                .ThenInclude(a => a.Patient)
+                .FirstOrDefaultAsync(mr => mr.Id == recordId, cancellationToken);
         }
 
-        public async Task<IEnumerable<MedicalRecord>> GetRecordsByDateRangeAsync(DateTime start, DateTime end)
+        public async Task<(List<MedicalRecord> Items, int TotalCount)> GetPatientMedicalHistoryAsync(int patientId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
-            return await context.MedicalRecords
+            var query = context.MedicalRecords
+                .AsNoTracking()
+                .Where(mr => mr.Appointment.PatientId == patientId)
+                .OrderByDescending(mr => mr.CreatedAt);
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(mr => mr.Appointment)
+                .ThenInclude(a => a.Doctor)
+                .ToListAsync(cancellationToken);
+            return (items, totalCount);
+        }
+
+        public async Task<(List<MedicalRecord> Items, int TotalCount)> GetRecordsByDateRangeAsync(DateTime start, DateTime end, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            var query = context.MedicalRecords
                 .AsNoTracking()
                 .Where(mr => mr.CreatedAt >= start && mr.CreatedAt <= end)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<MedicalRecord>> GetRecordsByDoctorAsync(int doctorId)
-        {
-            // الحل: إضافة Include للـ Appointment لتجنب N+1 Query Problem
-            return await context.MedicalRecords
-                .AsNoTracking()
+                .OrderByDescending(mr => mr.CreatedAt);
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Include(mr => mr.Appointment)
-                .Where(mr => mr.Appointment.DoctorId == doctorId)
-                .ToListAsync();
+                .ThenInclude(a => a.Doctor)
+                .ToListAsync(cancellationToken);
+            return (items, totalCount);
         }
 
-        public async Task<IEnumerable<MedicalRecord>> SearchByDiagnosisAsync(string diagnosis)
+        public async Task<(List<MedicalRecord> Items, int TotalCount)> GetRecordsByDoctorAsync(int doctorId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
         {
-            // الحل: استخدام EF.Functions.Like للبحث Case-Insensitive
-            return await context.MedicalRecords
+            var query = context.MedicalRecords
                 .AsNoTracking()
-                .Where(mr => EF.Functions.Like(mr.Diagnosis, $"%{diagnosis}%"))
-                .ToListAsync();
+                .Where(mr => mr.Appointment.DoctorId == doctorId)
+                .OrderByDescending(mr => mr.CreatedAt);
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(mr => mr.Appointment)
+                .ThenInclude(a => a.Patient)
+                .ToListAsync(cancellationToken);
+            return (items, totalCount);
         }
     }
 }

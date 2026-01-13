@@ -1,8 +1,8 @@
 ﻿namespace Clinic_System.Application.Mapping.Doctors
 {
-    public partial class DoctorProfile : Profile
+    public partial class MedicalRecordProfile : Profile
     {
-        public DoctorProfile()
+        public MedicalRecordProfile()
         {
             GetDoctorListMapping();
             GetDoctorWithAppointmentsByIdMapping();

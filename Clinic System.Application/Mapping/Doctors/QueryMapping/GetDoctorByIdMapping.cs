@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Mapping.Doctors
 {
-    public partial class DoctorProfile
+    public partial class MedicalRecordProfile
     {
         public void GetDoctorByIdMapping()
         {

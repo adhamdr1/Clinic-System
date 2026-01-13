@@ -1,7 +1,4 @@
-﻿using Clinic_System.Data;
-using Clinic_System.Infrastructure;
-
-namespace Clinic_System.API
+﻿namespace Clinic_System.API
 {
     public class Program
     {

@@ -1,6 +1,4 @@
-﻿using Clinic_System.Core.Interfaces.UnitOfWork;
-
-namespace Clinic_System.Application.Service.Interface
+﻿namespace Clinic_System.Application.Service.Interface
 {
     public interface IAppointmentService
     {

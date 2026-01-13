@@ -23,6 +23,8 @@
 
   <ItemGroup>
     <Folder Include="DTOs\Common\" />
+    <Folder Include="Features\MedicalRecords\Queries\Handlers\" />
+    <Folder Include="Mapping\MedicalRecord\QueryMapping\" />
   </ItemGroup>
 
 </Project>

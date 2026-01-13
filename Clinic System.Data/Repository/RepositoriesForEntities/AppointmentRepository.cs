@@ -8,35 +8,6 @@ namespace Clinic_System.Data.Repository.RepositoriesForEntities
         {
         }
 
-        /*
-        //public async Task<IEnumerable<Appointment>> GetDoctorAppointmentsAsync(int doctorId, CancellationToken cancellationToken = default)
-        //{
-        //    return await context.Appointments
-        //        .AsNoTracking()
-        //        .Where(a => a.DoctorId == doctorId && a.AppointmentDate >= DateTime.Now.Date)
-        //        .OrderBy(d => d.AppointmentDate)
-        //        .Include(a => a.Patient)
-        //        .ToListAsync(cancellationToken);
-        //}
-
-        //public async Task<IEnumerable<Appointment>> GetPatientAppointmentsAsync(int patientId, CancellationToken cancellationToken = default)
-        //{
-        //    return await context.Appointments
-        //        .AsNoTracking()
-        //        .Where(a => a.PatientId == patientId)
-        //        .Include(a => a.Doctor)
-        //        .ToListAsync(cancellationToken);
-        //}
-
-        //public async Task<IEnumerable<Appointment>> GetAppointmentsByStatusAsync(AppointmentStatus status, CancellationToken cancellationToken = default)
-        //{
-        //    return await context.Appointments
-        //        .AsNoTracking()
-        //        .Where(a => a.Status == status)
-        //        .ToListAsync(cancellationToken);
-        //}
-        */
-
         public async Task<IEnumerable<Appointment>> GetAppointmentsInDateAsync(DateTime date, CancellationToken cancellationToken = default)
         {
             return await context.Appointments

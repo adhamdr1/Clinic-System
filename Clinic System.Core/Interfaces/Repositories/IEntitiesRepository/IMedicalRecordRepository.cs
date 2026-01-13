@@ -2,14 +2,12 @@
 {
     public interface IMedicalRecordRepository : IGenericRepository<MedicalRecord>
     {
-        Task<MedicalRecord?> GetMedicalRecordWithPrescriptionsAsync(int recordId);
+        Task<MedicalRecord?> GetMedicalRecordDetailsAsync(int recordId , CancellationToken cancellationToken = default);
+        Task<MedicalRecord?> GetMedicalRecordForUpdateAsync(int recordId, CancellationToken cancellationToken = default);
+        Task<(List<MedicalRecord> Items, int TotalCount)> GetPatientMedicalHistoryAsync(int patientId, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<MedicalRecord>> GetPatientMedicalHistoryAsync(int patientId);
+        Task<(List<MedicalRecord> Items, int TotalCount)> GetRecordsByDoctorAsync(int doctorId, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<MedicalRecord>> SearchByDiagnosisAsync(string diagnosis);
-
-        Task<IEnumerable<MedicalRecord>> GetRecordsByDoctorAsync(int doctorId);
-
-        Task<IEnumerable<MedicalRecord>> GetRecordsByDateRangeAsync(DateTime start, DateTime end);
+        Task<(List<MedicalRecord> Items, int TotalCount)> GetRecordsByDateRangeAsync(DateTime start, DateTime end, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
     }
 }
