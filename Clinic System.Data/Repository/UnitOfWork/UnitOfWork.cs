@@ -18,6 +18,19 @@
 
         IPaymentRepository PaymentsRepo;
 
+        IPrescriptionRepository PrescriptionsRepo;
+
+        public IPrescriptionRepository PrescriptionsRepository
+        {
+            get
+            {
+                if (PrescriptionsRepo == null)
+                {
+                    PrescriptionsRepo = new PrescriptionRepository(context);
+                }
+                return PrescriptionsRepo;
+            }
+        }
 
         public IPatientRepository PatientsRepository
         {

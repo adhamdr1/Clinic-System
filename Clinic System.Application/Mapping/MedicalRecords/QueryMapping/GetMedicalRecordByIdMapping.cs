@@ -6,6 +6,7 @@
         {
             // Mapping for Prescription → PrescriptionDto
             CreateMap<Prescription, PrescriptionDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.MedicationName, opt => opt.MapFrom(src => src.MedicationName))
                 .ForMember(dest => dest.Dosage, opt => opt.MapFrom(src => src.Dosage))
                 .ForMember(dest => dest.Frequency, opt => opt.MapFrom(src => src.Frequency))

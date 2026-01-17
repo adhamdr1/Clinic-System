@@ -37,6 +37,8 @@ global using Clinic_System.Data;
 global using Clinic_System.Infrastructure;
 global using Clinic_System.Application.Features.MedicalRecords.Commands.Models;
 global using Clinic_System.Application.Features.MedicalRecords.Queries.Models;
+global using Clinic_System.Application.Features.Prescriptions.Commands.Models;
+
 
 
 

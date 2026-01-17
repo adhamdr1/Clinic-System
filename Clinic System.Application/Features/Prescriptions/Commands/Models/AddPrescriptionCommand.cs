@@ -1,14 +1,13 @@
-﻿namespace Clinic_System.Application.DTOs.Prescription
+﻿namespace Clinic_System.Application.Features.Prescriptions.Commands.Models
 {
-    public class PrescriptionDto
+    public class CreatePrescriptionCommand : IRequest<Response<PrescriptionDto>>
     {
-        public int Id { get; set; }
+        public int MedicalRecordId { get; set; }
         public string MedicationName { get; set; } = null!;
         public string Dosage { get; set; } = null!;
         public string? SpecialInstructions { get; set; }
         public string Frequency { get; set; } = null!;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-
     }
 }

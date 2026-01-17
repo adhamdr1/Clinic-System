@@ -7,6 +7,7 @@
         IAppointmentRepository AppointmentsRepository { get; }
         IMedicalRecordRepository MedicalRecordsRepository { get; }
         IPaymentRepository PaymentsRepository { get; }
+        IPrescriptionRepository PrescriptionsRepository { get; }
 
         Task<int> SaveAsync();
     }

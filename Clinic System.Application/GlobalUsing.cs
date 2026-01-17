@@ -31,6 +31,8 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Clinic_System.Application.DTOs.MedicalRecord;
 global using Clinic_System.Application.Features.MedicalRecords.Commands.Models;
 global using Clinic_System.Application.Features.MedicalRecords.Queries.Models;
+global using Clinic_System.Application.Features.Prescriptions.Commands.Models;
+
 
 
 

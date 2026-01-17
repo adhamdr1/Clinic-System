@@ -29,7 +29,7 @@
     
                 logger.LogInformation("Appointment booked successfully for PatientId: {PatientId}, DoctorId: {DoctorId}", request.PatientId, request.DoctorId);
 
-                return Success(appointmentDto, "Appointment booked successfully.");
+                return Created(appointmentDto, "Appointment booked successfully.");
             }
             catch (SlotAlreadyBookedException ex) when (ex.Message.Contains("not available"))
             {

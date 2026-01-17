@@ -18,7 +18,7 @@
             _mockMedicalRecordService = new Mock<IMedicalRecordService>();
             _mockLogger = new Mock<ILogger<AppointmentService>>();
             _mockUnitOfWork.SetupGet(u => u.AppointmentsRepository).Returns(_mockAppointmentRepository.Object);
-            _appointmentService = new AppointmentService(_mockUnitOfWork.Object, _mockPaymentService.Object,
+            _appointmentService = new AppointmentService(null,_mockUnitOfWork.Object, _mockPaymentService.Object,
                _mockMedicalRecordService.Object, _mockLogger.Object);
         }
 
