@@ -8,14 +8,14 @@
         {
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreatePrescription([FromBody] CreatePrescriptionCommand command)
         {
             var response = await mediator.Send(command);
             return NewResult(response);
         }
 
-        [HttpPut]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdatePrescription([FromQuery]int id ,[FromBody] UpdatePrescriptionCommand command)
         {
             if (id != command.PrescriptionId)
@@ -27,7 +27,7 @@
             return NewResult(response);
         }
 
-        [HttpDelete]
+        [HttpDelete("delete")]
         public async Task<IActionResult> DeletePrescription([FromQuery] DeletePrescriptionCommand command)
         {
             var response = await mediator.Send(command);

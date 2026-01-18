@@ -69,7 +69,7 @@
 
                 if (appointment.Payment != null && appointment.Payment.PaymentStatus == PaymentStatus.Pending)
                 {
-                    appointment.Payment.PaymentStatus = PaymentStatus.Cancelled;
+                    appointment.Payment.MarkAsCancelling("Appointment cancelled");
                 }
 
                 await notification.SendAutoCancellationAsync(appointment);
@@ -238,6 +238,8 @@
                 throw new UnauthorizedException("You are not authorized to reschedule this appointment.");
 
             appointment.Cancel();
+
+            StatePaymentOnAppointmentCancellation(appointment);
 
             var result = await unitOfWork.SaveAsync();
             if (result == 0)
@@ -418,6 +420,18 @@
             logger.LogInformation("Generated {SlotCount} slots", slots.Count);
 
             return slots;
+        }
+
+        private void StatePaymentOnAppointmentCancellation(Appointment appointment)
+        {
+            if (appointment.Payment != null && appointment.Payment.PaymentStatus == PaymentStatus.Pending)
+            {
+                appointment.Payment.MarkAsCancelling("Appointment cancelled");
+            }
+            else if (appointment.Payment != null && appointment.Payment.PaymentStatus == PaymentStatus.Paid)
+            {
+                appointment.Payment.MarkAsRefunded("Appointment cancelled by patient.");
+            }
         }
 
         public async Task<PagedResult<Appointment>> GetDoctorAppointmentsAsync(GetDoctorAppointmentsQuery doctorAppointmentQuery, CancellationToken cancellationToken = default)

@@ -4,16 +4,6 @@
     {
         public void ConfirmAppointmentMapping()
         {
-            CreateMap<Payment, PaymentDTO>()
-                .ForMember(dest => dest.PaymentId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.AmountPaid, opt => opt.MapFrom(src => src.AmountPaid))
-                .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.PaymentStatus.ToString()))
-                .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod.ToString()))
-                .ForMember(dest => dest.PaymentDate, opt => opt.MapFrom(src =>
-                        src.PaymentDate.HasValue
-                        ? src.PaymentDate.Value.ToString("yyyy-MM-dd HH:mm")
-                        : null));
-
             // 2. Mapping for Appointment Entity to ConfirmAppointmentDTO
             CreateMap<Appointment, ConfirmAppointmentDTO>()
                 .ForMember(dest => dest.AppointmentId, opt => opt.MapFrom(src => src.Id))

@@ -5,6 +5,7 @@
         public PrescriptionProfile()
         {
             CreatePrescriptionMapping();
+            PrescriptionDTOMapping();
         }
     }
 }
