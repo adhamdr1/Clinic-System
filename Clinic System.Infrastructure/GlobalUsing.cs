@@ -17,6 +17,15 @@ global using Clinic_System.Infrastructure.Helpers;
 global using Clinic_System.Infrastructure.Services;
 global using Clinic_System.Infrastructure.Services.Email;
 global using Microsoft.Extensions.Configuration;
+global using Clinic_System.Infrastructure.Authentication.Models;
+global using Clinic_System.Infrastructure.Authentication;
+global using Microsoft.IdentityModel.Tokens;
+global using System.IdentityModel.Tokens.Jwt;
+global using System.Security.Claims;
+global using System.Text;
+
+
+
 
 
 

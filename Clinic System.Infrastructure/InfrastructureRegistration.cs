@@ -9,9 +9,13 @@
 
             // Services
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IBackgroundJobService, HangfireBackgroundJobService>();
             services.AddScoped<IAppointmentNotificationService, AppointmentEmailNotificationService>();
             services.AddTransient<IEmailService, EmailService>();
+
+            // بيقرأ القسم من الـ JSON ويربطه بالكلاس
+            services.Configure<JwtSettings>(configuration.GetSection("JWT"));
             return services;
         }
     }

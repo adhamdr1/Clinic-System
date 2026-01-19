@@ -84,6 +84,7 @@
                         ValidIssuer = issuer,
                         ValidAudience = audience,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secritKey!)),
+                        //RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
                     };
                 });
 
@@ -91,7 +92,47 @@
 
                 // Swagger/OpenAPI Configuration
                 builder.Services.AddEndpointsApiExplorer();
-                builder.Services.AddSwaggerGen();
+                builder.Services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Elite Clinic", Version = "v1" });
+                    c.EnableAnnotations();
+
+                    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                    {
+                        // الاسم الرسمي للهيدر في بروتوكول HTTP
+                        Name = "Authorization",
+
+                        // وصف بسيط ومختصر يطمن المستخدم إنه يحط التوكن بس
+                        Description = "Enter your JWT Access Token directly (No need to type 'Bearer').",
+
+                        // مكان التوكن
+                        In = ParameterLocation.Header,
+
+                        // التغيير المهم هنا: Http بدلاً من ApiKey
+                        Type = SecuritySchemeType.Http,
+
+                        // بنحدد السكيما إنها Bearer
+                        Scheme = JwtBearerDefaults.AuthenticationScheme,
+
+                        // مجرد توضيح إن التوكن نوعها JWT
+                        BearerFormat = "JWT"
+                    });
+
+                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                    {
+                          new OpenApiSecurityScheme
+                          {
+                              Reference = new OpenApiReference
+                              {
+                                  Type = ReferenceType.SecurityScheme,
+                                  Id = JwtBearerDefaults.AuthenticationScheme
+                              }
+                          },
+                          Array.Empty<string>()
+                    }
+                   });
+                });
 
                 // CORS Configuration
                 builder.Services.AddCors(options =>

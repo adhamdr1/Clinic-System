@@ -40,6 +40,9 @@ global using Clinic_System.Application.Features.MedicalRecords.Queries.Models;
 global using Clinic_System.Application.Features.Prescriptions.Commands.Models;
 global using Clinic_System.Application.Features.Payment.Queries.Models;
 global using Clinic_System.Application.Features.Payment.Commands.Models;
+global using Clinic_System.Application.Features.Authentication.Commands.Models;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.OpenApi.Models;
 
 
 

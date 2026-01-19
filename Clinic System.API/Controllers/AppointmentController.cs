@@ -1,5 +1,6 @@
 ﻿namespace Clinic_System.API.Controllers
 {
+    //[Authorize(Roles = "Doctor")]
     [Route("api/appointments")]
     [ApiController]
     public class AppointmentController : AppControllerBase

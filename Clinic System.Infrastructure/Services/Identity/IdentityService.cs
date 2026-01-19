@@ -3,10 +3,12 @@ namespace Clinic_System.Infrastructure.Services
     public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public IdentityService(UserManager<ApplicationUser> userManager)
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        
+        public IdentityService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
-            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<string> CreateUserAsync(string userName, string email, string password, string role, CancellationToken cancellationToken = default)
@@ -175,7 +177,30 @@ namespace Clinic_System.Infrastructure.Services
 
             return userNameResult.Succeeded;
         }
-   
+
+        public async Task<(bool IsAuthenticated, string Id, string UserName, string Email, List<string> Roles)> LoginAsync(string userNameOrEmail, string password)
+        {
+            var user = userNameOrEmail.Contains("@")
+                ? await _userManager.FindByEmailAsync(userNameOrEmail)
+                : await _userManager.FindByNameAsync(userNameOrEmail);
+
+            if (user == null)
+            {
+                return (false, string.Empty, string.Empty, string.Empty, new List<string>());
+            }
+
+            
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+
+            if (!signInResult.Succeeded)
+            {
+                return (false, string.Empty, string.Empty, string.Empty, new List<string>());
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return (true, user.Id, user.UserName!, user.Email!, roles.ToList());
+        }
     }
 }
 
