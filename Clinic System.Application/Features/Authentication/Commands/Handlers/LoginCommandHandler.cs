@@ -25,7 +25,7 @@
                 }
 
                 
-                var (token, expiresAt, userName, email,roles) =
+                var (accesstoken, refreshtoken, expiresAt, userName, email,roles) =
                 await authenticationService.GenerateJwtTokenAsync(Id, UserName, Email, Roles);
 
                 logger.LogInformation("User {EmailOrUserName} authenticated successfully.", request.EmailOrUserName);
@@ -35,7 +35,8 @@
                 {
                     UserName = userName ?? string.Empty,
                     Email = email ?? string.Empty,
-                    Token = token,
+                    AccessToken = accesstoken,
+                    RefreshToken = refreshtoken,
                     ExpiresAt = expiresAt.ToString("yyyy-MM-dd HH:mm:ss"),
                     Roles = roles ?? new List<string>()
                 };

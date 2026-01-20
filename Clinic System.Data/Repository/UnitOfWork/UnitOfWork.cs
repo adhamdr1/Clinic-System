@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Data.Repository.UnitOfWork
+﻿using Clinic_System.Core.Interfaces;
+
+namespace Clinic_System.Data.Repository.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -19,6 +21,20 @@
         IPaymentRepository PaymentsRepo;
 
         IPrescriptionRepository PrescriptionsRepo;
+
+        IRefreshTokenRepository RefreshTokensRepo;
+
+        public IRefreshTokenRepository RefreshTokensRepository
+        {
+            get
+            {
+                if (RefreshTokensRepo == null)
+                {
+                    RefreshTokensRepo = new RefreshTokenRepository(context);
+                }
+                return RefreshTokensRepo;
+            }
+        }
 
         public IPrescriptionRepository PrescriptionsRepository
         {

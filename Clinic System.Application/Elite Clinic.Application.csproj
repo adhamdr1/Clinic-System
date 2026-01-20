@@ -23,9 +23,10 @@
 
   <ItemGroup>
     <Folder Include="DTOs\Common\" />
-    <Folder Include="Features\Authentication\Queries\Handlers\" />
-    <Folder Include="Features\Authentication\Queries\Models\" />
-    <Folder Include="Features\Authentication\Queries\Validators\" />
+    <Folder Include="Features\Authorization\Commands\Validators\" />
+    <Folder Include="Features\Authorization\Queries\Handlers\" />
+    <Folder Include="Features\Authorization\Queries\Models\" />
+    <Folder Include="Features\Authorization\Queries\Validators\" />
   </ItemGroup>
 
 </Project>

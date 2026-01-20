@@ -8,6 +8,7 @@
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public AppDbContext()
         {
@@ -19,21 +20,21 @@
 
 
         #region OnConfiguring
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    base.OnConfiguring(optionsBuilder);
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
 
-        //    optionsBuilder.ConfigureWarnings(warnings =>
-        //warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+            optionsBuilder.ConfigureWarnings(warnings =>
+        warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
 
-        //    var config = new ConfigurationBuilder()
-        //        .AddJsonFile("appsettings.json")
-        //        .Build();
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-        //    var connectionString = config.GetSection("constr").Value;
+            var connectionString = config.GetSection("constr").Value;
 
-        //    optionsBuilder.UseSqlServer(connectionString);
-        //}
+            optionsBuilder.UseSqlServer(connectionString);
+        }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

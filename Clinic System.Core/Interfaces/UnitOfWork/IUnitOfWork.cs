@@ -8,7 +8,7 @@
         IMedicalRecordRepository MedicalRecordsRepository { get; }
         IPaymentRepository PaymentsRepository { get; }
         IPrescriptionRepository PrescriptionsRepository { get; }
-
+        IRefreshTokenRepository RefreshTokensRepository { get; }
         Task<int> SaveAsync();
     }
 }

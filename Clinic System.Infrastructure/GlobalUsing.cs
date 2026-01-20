@@ -23,6 +23,12 @@ global using Microsoft.IdentityModel.Tokens;
 global using System.IdentityModel.Tokens.Jwt;
 global using System.Security.Claims;
 global using System.Text;
+global using Clinic_System.Infrastructure.Authorization;
+global using System.Security.Cryptography;
+global using Clinic_System.Core.Interfaces.UnitOfWork;
+
+
+
 
 
 

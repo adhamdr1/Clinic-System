@@ -14,5 +14,12 @@
             var response = await mediator.Send(command);
             return NewResult(response);
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
+        {
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
     }
 }

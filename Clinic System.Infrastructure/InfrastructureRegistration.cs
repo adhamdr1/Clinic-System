@@ -10,6 +10,8 @@
             // Services
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<IRefreshTokenCleanupService, RefreshTokenCleanupService>();
             services.AddScoped<IBackgroundJobService, HangfireBackgroundJobService>();
             services.AddScoped<IAppointmentNotificationService, AppointmentEmailNotificationService>();
             services.AddTransient<IEmailService, EmailService>();

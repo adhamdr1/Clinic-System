@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.API
+﻿using Clinic_System.Infrastructure.Authentication.Models;
+
+namespace Clinic_System.API
 {
     public class Program
     {
@@ -60,10 +62,7 @@
                 .AddDefaultTokenProviders();
 
                 // JWT Authentication
-                var jwtSettings = builder.Configuration.GetSection("JWT");
-                var secritKey = jwtSettings["SecritKey"];
-                var audience = jwtSettings["AudienceIP"];
-                var issuer = jwtSettings["IssuerIP"];
+                var jwtSettings = builder.Configuration.GetSection("JWT").Get<JwtSettings>();
 
                 builder.Services.AddAuthentication(options =>
                 {
@@ -81,10 +80,10 @@
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = issuer,
-                        ValidAudience = audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secritKey!)),
-                        //RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                        ValidIssuer = jwtSettings.IssuerIP,
+                        ValidAudience = jwtSettings.AudienceIP,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecritKey!))
+                        //ClockSkew = TimeSpan.Zero
                     };
                 });
 
@@ -149,16 +148,19 @@
                 builder.Services.AddApplicationDependencies();
                 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
-                if (string.IsNullOrWhiteSpace(secritKey))
+                if (string.IsNullOrWhiteSpace(jwtSettings.SecritKey))
                     throw new Exception("JWT SecretKey is missing in appsettings.json");
 
-                if (string.IsNullOrWhiteSpace(issuer))
+                if (string.IsNullOrWhiteSpace(jwtSettings.IssuerIP))
                     throw new Exception("JWT IssuerIP is missing");
 
-                if (string.IsNullOrWhiteSpace(audience))
+                if (string.IsNullOrWhiteSpace(jwtSettings.AudienceIP))
                     throw new Exception("JWT AudienceIP is missing");
 
                 var app = builder.Build();
+
+                app.UseMiddleware<ErrorHandlerMiddleware>();
+
 
                 // Configure the HTTP request pipeline.
                 if (app.Environment.IsDevelopment())
@@ -178,7 +180,6 @@
                 app.UseAuthentication();
                 app.UseAuthorization();
 
-                app.UseMiddleware<ErrorHandlerMiddleware>();
 
                 app.MapControllers();
 
