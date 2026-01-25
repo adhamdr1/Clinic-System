@@ -178,7 +178,7 @@ namespace Clinic_System.Infrastructure.Services
             return userNameResult.Succeeded;
         }
 
-        public async Task<(bool IsAuthenticated, string Id, string UserName, string Email, List<string> Roles)> LoginAsync(string userNameOrEmail, string password)
+        public async Task<(bool IsAuthenticated, bool IsEmailConfirmed, string Id, string UserName, string Email, List<string> Roles)> LoginAsync(string userNameOrEmail, string password)
         {
             var user = userNameOrEmail.Contains("@")
                 ? await _userManager.FindByEmailAsync(userNameOrEmail)
@@ -186,21 +186,53 @@ namespace Clinic_System.Infrastructure.Services
 
             if (user == null)
             {
-                return (false, string.Empty, string.Empty, string.Empty, new List<string>());
+                return (false, false, string.Empty, string.Empty, string.Empty, new List<string>());
             }
-
             
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, false);
 
             if (!signInResult.Succeeded)
             {
-                return (false, string.Empty, string.Empty, string.Empty, new List<string>());
+                return (false, false, string.Empty, string.Empty, string.Empty, new List<string>());
+            }
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                return (true, false, user.Id, user.UserName!, user.Email!, new List<string>());
             }
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            return (true, user.Id, user.UserName!, user.Email!, roles.ToList());
+            return (true, true, user.Id, user.UserName!, user.Email!, roles.ToList());
+        }
+
+        public async Task<string> GenerateEmailConfirmationTokenAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new DomainException("User not found");
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return token;
+        }
+
+        public string EncodeToken(string token)
+        {
+            return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+        }
+
+        public string DecodeToken(string encodedToken)
+        {
+            var bytes = WebEncoders.Base64UrlDecode(encodedToken);
+            return Encoding.UTF8.GetString(bytes);
+        }
+
+        public async Task<bool> ConfirmEmailAsync(string userId, string code)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return result.Succeeded;
         }
     }
 }
-

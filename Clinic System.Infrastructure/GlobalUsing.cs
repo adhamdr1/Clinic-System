@@ -26,6 +26,8 @@ global using System.Text;
 global using Clinic_System.Infrastructure.Authorization;
 global using System.Security.Cryptography;
 global using Clinic_System.Core.Interfaces.UnitOfWork;
+global using Microsoft.AspNetCore.WebUtilities;
+
 
 
 

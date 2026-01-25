@@ -51,7 +51,7 @@ namespace Clinic_System.API
 
                     // User settings
                     options.User.RequireUniqueEmail = true;
-                    options.SignIn.RequireConfirmedEmail = false;
+                    options.SignIn.RequireConfirmedEmail = true;
 
                     // Lockout settings
                     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);

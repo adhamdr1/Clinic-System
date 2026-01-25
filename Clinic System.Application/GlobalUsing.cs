@@ -37,6 +37,9 @@ global using Clinic_System.Application.Features.Payment.Commands.Models;
 global using Clinic_System.Application.Features.Authentication.Commands.Models;
 global using Clinic_System.Application.DTOs.Authentications;
 global using Clinic_System.Application.Features.Authorization.Commands.Models;
+global using Clinic_System.Application.Features.Authentication.Queries.Models;
+global using System.Text;
+
 
 
 

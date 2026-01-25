@@ -16,7 +16,7 @@
         {
             try
             {
-                var (IsAuthenticated, Id, UserName, Email, Roles) = await identityService.LoginAsync(request.EmailOrUserName, request.Password);
+                var (IsAuthenticated, IsEmailConfirmed , Id, UserName, Email, Roles) = await identityService.LoginAsync(request.EmailOrUserName, request.Password);
 
                 if (!IsAuthenticated)
                 {
@@ -24,7 +24,12 @@
                     return Unauthorized<LoginResponseDTO>("Invalid credentials provided.");
                 }
 
-                
+                if (!IsEmailConfirmed) 
+                {
+                    logger.LogWarning("Email not confirmed for user: {EmailOrUserName}", request.EmailOrUserName);
+                    return Failure<LoginResponseDTO>("Email address is not confirmed.");
+                }
+
                 var (accesstoken, refreshtoken, expiresAt, userName, email,roles) =
                 await authenticationService.GenerateJwtTokenAsync(Id, UserName, Email, Roles);
 

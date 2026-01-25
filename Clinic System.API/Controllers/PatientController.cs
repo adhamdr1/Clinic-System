@@ -62,9 +62,10 @@
             return NewResult(response);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreatePatient([FromBody] CreatePatientCommand command)
         {
+            command.BaseUrl = $"{Request.Scheme}://{Request.Host.Value}";
             var response = await mediator.Send(command);
             return NewResult(response);
         }

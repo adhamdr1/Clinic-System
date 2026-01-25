@@ -12,7 +12,11 @@ namespace Clinic_System.Application.Service.Interface
         Task<bool> UpdatePasswordUserAsync(string userId, string newpassword,string currentPassword,  CancellationToken cancellationToken = default);
         Task<bool> SoftDeleteUserAsync(string userId, CancellationToken cancellationToken = default);
         Task<bool> HardDeleteUserAsync(string userId, CancellationToken cancellationToken = default);
-        Task<(bool IsAuthenticated, string Id, string UserName, string Email, List<string> Roles)> LoginAsync(string userNameOrEmail, string password);
+        Task<(bool IsAuthenticated, bool IsEmailConfirmed, string Id, string UserName, string Email, List<string> Roles)> LoginAsync(string userNameOrEmail, string password);
+        Task<string> GenerateEmailConfirmationTokenAsync(string userId);
+        string EncodeToken(string token);
+        string DecodeToken(string encodedToken);
+        Task<bool> ConfirmEmailAsync(string userId, string code);
     }
 }
 

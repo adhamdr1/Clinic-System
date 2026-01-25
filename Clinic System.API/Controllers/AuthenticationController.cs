@@ -21,5 +21,12 @@
             var response = await mediator.Send(command);
             return NewResult(response);
         }
+
+        [HttpGet("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailQuery query)
+        {
+            var response = await mediator.Send(query);
+            return NewResult(response);
+        }
     }
 }
