@@ -234,5 +234,34 @@ namespace Clinic_System.Infrastructure.Services
             var result = await _userManager.ConfirmEmailAsync(user, code);
             return result.Succeeded;
         }
+
+        public async Task<string> GeneratePasswordResetTokenAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                throw new DomainException("User not found");
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            return token;
+        }
+
+        public async Task<(bool Succeeded, string Error)> ResetPasswordAsync(string email, string decodedToken, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return (false, "User not found");
+
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, newPassword);
+
+            if (result.Succeeded)
+            {
+                return (true, null); 
+            }
+
+            // áæ ÝÔá¡ ÌãÚ ßá ÇáÃÎØÇÁ Ýí ÑÓÇáÉ æÇÍÏÉ
+            // ãËáÇð: "Password requires non-alphanumeric, Password requires digit"
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
+            return (false, errors);
+        }
     }
 }

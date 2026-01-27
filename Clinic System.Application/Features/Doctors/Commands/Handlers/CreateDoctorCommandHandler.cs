@@ -5,15 +5,23 @@
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
         private readonly IIdentityService identityService;
+        private readonly IEmailService emailService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CreateDoctorCommandHandler> logger;
 
-        public CreateDoctorCommandHandler(IDoctorService doctorService
-            , IMapper mapper, IIdentityService identityService, IUnitOfWork unitOfWork , ILogger<CreateDoctorCommandHandler> logger)
+        public CreateDoctorCommandHandler(
+            IDoctorService doctorService,
+            IMapper mapper,
+            IIdentityService identityService,
+            IEmailService emailService,
+            IUnitOfWork unitOfWork,
+            ILogger<CreateDoctorCommandHandler> logger
+        )
         {
             this.doctorService = doctorService;
             this.mapper = mapper;
             this.identityService = identityService;
+            this.emailService = emailService;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
         }
@@ -21,13 +29,14 @@
         public async Task<Response<CreateDoctorDTO>> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
         {
             Doctor doctor = null;
+            string userId = string.Empty;
 
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 logger.LogInformation("Starting the process to add a new doctor with name: {DoctorName}", request.FullName);
                 try
                 {
-                    var UserId = await identityService.CreateUserAsync(
+                    userId = await identityService.CreateUserAsync(
                         request.UserName,
                         request.Email,
                         request.Password,
@@ -36,7 +45,7 @@
                     );
 
                     doctor = mapper.Map<Doctor>(request);
-                    doctor.ApplicationUserId = UserId;
+                    doctor.ApplicationUserId = userId;
 
                     await doctorService.CreateDoctorAsync(doctor, cancellationToken);
                     var result = await unitOfWork.SaveAsync();
@@ -54,20 +63,37 @@
                 }
             }
 
-            var doctorsMapper = mapper.Map<CreateDoctorDTO>(doctor);
-
-            if (!string.IsNullOrEmpty(doctor.ApplicationUserId))
+            try
             {
-                doctorsMapper.Email = await identityService.GetUserEmailAsync(doctor.ApplicationUserId, cancellationToken) ?? string.Empty;
+                var token = await identityService.GenerateEmailConfirmationTokenAsync(userId);
+                var encodedToken = identityService.EncodeToken(token);
 
-                if (string.IsNullOrEmpty(doctorsMapper.Email))
-                {
-                    // نستخدم Warning هنا لأن الموقف غريب (يوجد ID ولا يوجد ايميل) لكنه لا يعطل البرنامج
-                    logger.LogWarning("Email not found for User ID: {UserId} during doctor mapping.", doctor.ApplicationUserId);
-                }
+                var confirmationLink = $"{request.BaseUrl}/api/authentication/confirm-email?UserId={userId}&Code={encodedToken}";
+
+                var emailBody = EmailTemplates.GetEmailConfirmationTemplate(
+                                    request.FullName,
+                                    request.UserName,
+                                    request.Email,
+                                    confirmationLink,
+                                    request.Specialization
+                                );
+
+                // 4. الإرسال
+                await emailService.SendEmailAsync(request.Email, "Welcome to Elite Clinic - Confirm Your Email", emailBody);
+
+                logger.LogInformation("Confirmation email sent to {Email}", request.Email);
+            }
+            catch (Exception ex)
+            {
+                // لو فشل الإيميل مش بنوقف العملية، بس بنسجل تحذير
+                logger.LogWarning(ex, "Doctor created but failed to send confirmation email to {Email}", request.Email);
             }
 
-            var locationUri = $"/api/GetDoctorById/{doctor.Id}";
+            var doctorsMapper = mapper.Map<CreateDoctorDTO>(doctor);
+
+            doctorsMapper.Email = request.Email;
+
+            var locationUri = $"/api/doctors/id/{doctor.Id}";
 
             logger.LogInformation("Doctor {DoctorName} added successfully with ID: {DoctorId}", request.FullName, doctor.Id);
             return Created<CreateDoctorDTO>(doctorsMapper, locationUri, "Doctor created successfully");
@@ -76,14 +102,14 @@
 }
 /*
  {
-  "fullName": "Dr.Nour Farag",
+  "fullName": "Nour Farag",
   "gender": "female",
   "dateOfBirth": "1979-07-22",
   "phone": "01070689484",
   "address": "Alex",
   "specialization": "string",
   "userName": "Nourdr7",
-  "email": "Nour7@g.c",
+  "email": "adhamdr32@gmail.com",
   "password": "Doma.dr1",
   "confirmPassword": "Doma.dr1"
 }

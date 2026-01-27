@@ -66,6 +66,7 @@
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)
         {
+            command.BaseUrl = $"{Request.Scheme}://{Request.Host.Value}";
             var response = await mediator.Send(command);
             return NewResult(response);
         }
