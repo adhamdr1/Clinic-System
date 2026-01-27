@@ -311,17 +311,19 @@
             </div>";
         }
 
-        public static string GetEmailConfirmationTemplate(string name, string userName, string email, string confirmationLink, string? specialty = null)
+        public static string GetEmailConfirmationTemplate(string name, string userName, string email, string confirmationLink, string userRole, string? specialty = null)
         {
             // 1. تحديد نوع الحساب ورسالة الترحيب بناءً على وجود التخصص
-            bool isDoctor = !string.IsNullOrEmpty(specialty);
+            bool isDoctor = userRole == "Doctor";
             string accountType = isDoctor ? "Doctor" : "Patient";
             string welcomeSubtitle = isDoctor ? "Welcome to our Medical Team 👨‍⚕️" : "Welcome to our family 🏡";
 
             // 2. تجهيز سطر التخصص (يظهر فقط للدكتور)
-            string specialtyRow = isDoctor
-                ? $@"<div class='details-item'><strong>Specialty:</strong> {specialty}</div>"
-                : "";
+            string specialtyRow = "";
+            if (!string.IsNullOrEmpty(specialty) && isDoctor)
+            {
+                specialtyRow = $@"<div class='details-item'><strong>Specialty:</strong> {specialty}</div>";
+            }
 
             // 3. تعديل الاسم (لو دكتور نضيف Dr. قبل الاسم)
             string displayName = isDoctor && !name.StartsWith("Dr.", StringComparison.OrdinalIgnoreCase)

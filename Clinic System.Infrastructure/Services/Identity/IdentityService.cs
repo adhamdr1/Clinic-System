@@ -263,5 +263,25 @@ namespace Clinic_System.Infrastructure.Services
 
             return (false, errors);
         }
+
+        public async Task<(string UserId, string UserName, string Role, string Token, string Error)> GenerateTokenForResendEmailConfirmationAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return (null, null, null, null, "No user found with this email.");
+
+            if (user.EmailConfirmed)
+                return (null, null, null, null, "Email is already confirmed.");
+
+            //  Ê·Ìœ  Êﬂ‰ ÃœÌœ
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var userRole = roles.FirstOrDefault();
+
+            return (user.Id, user.UserName, userRole, token, null);
+        }
     }
 }

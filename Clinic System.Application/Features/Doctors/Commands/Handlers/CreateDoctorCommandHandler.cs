@@ -75,6 +75,7 @@
                                     request.UserName,
                                     request.Email,
                                     confirmationLink,
+                                    "Doctor",
                                     request.Specialization
                                 );
 

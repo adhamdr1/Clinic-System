@@ -19,5 +19,6 @@ namespace Clinic_System.Application.Service.Interface
         Task<bool> ConfirmEmailAsync(string userId, string code);
         Task<string> GeneratePasswordResetTokenAsync(string email);
         Task<(bool Succeeded, string Error)> ResetPasswordAsync(string email, string decodedToken, string newPassword);
+        Task<(string UserId, string UserName,string Role, string Token, string Error)> GenerateTokenForResendEmailConfirmationAsync(string email);
     }
 }

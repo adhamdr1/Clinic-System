@@ -73,7 +73,8 @@
                                     request.FullName,
                                     request.UserName,
                                     request.Email,
-                                    confirmationLink
+                                    confirmationLink,
+                                    "Patient"
                                 );
 
                 // 4. الإرسال

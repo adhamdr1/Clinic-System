@@ -29,6 +29,14 @@
             return NewResult(response);
         }
 
+        [HttpPost("resend-confirmation-email")]
+        public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailCommand command)
+        {
+            command.BaseUrl = $"{Request.Scheme}://{Request.Host}";
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
         [HttpPost("send-reset-password")]
         public async Task<IActionResult> SendResetPassword([FromBody] SendResetPasswordCommand command)
         {
