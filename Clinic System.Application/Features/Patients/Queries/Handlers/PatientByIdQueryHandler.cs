@@ -1,22 +1,23 @@
 ﻿namespace Clinic_System.Application.Features.Patients.Queries.Handlers
 {
-    public class PatientByIdQueryHandler : ResponseHandler, IRequestHandler<GetPatientByIdQuery, Response<GetPatientDTO>>
+    public class PatientByIdQueryHandler : AppRequestHandler<GetPatientByIdQuery, GetPatientDTO>
     {
         private readonly IPatientService patientService;
         private readonly IMapper mapper;
         private readonly ILogger<PatientByIdQueryHandler> logger;
 
         public PatientByIdQueryHandler(
+            ICurrentUserService currentUserService, // <---
             IPatientService patientService,
             IMapper mapper,
-            ILogger<PatientByIdQueryHandler> logger)
+            ILogger<PatientByIdQueryHandler> logger) : base(currentUserService)
         {
             this.patientService = patientService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<GetPatientDTO>> Handle(GetPatientByIdQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<GetPatientDTO>> Handle(GetPatientByIdQuery request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Handling GetPatientByIdQuery for ID: {Id}", request.Id);
 
@@ -27,6 +28,9 @@
                 logger.LogWarning("Patient with ID: {Id} not found.", request.Id);
                 return NotFound<GetPatientDTO>();
             }
+
+            var authResult = await ValidateOwner(patient.ApplicationUserId);
+            if (authResult != null) return authResult;
 
             var patientsMapper = mapper.Map<GetPatientDTO>(patient);
 

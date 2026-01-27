@@ -1,16 +1,18 @@
-﻿using Clinic_System.Application.Service.Implemention;
-
-namespace Clinic_System.Application.Features.Patients.Commands.Handlers
+﻿namespace Clinic_System.Application.Features.Patients.Commands.Handlers
 {
-    public class SoftDeletePatientCommandHandler : ResponseHandler, IRequestHandler<SoftDeletePatientCommand, Response<Patient>>
+    public class SoftDeletePatientCommandHandler : AppRequestHandler<SoftDeletePatientCommand, Patient>
     {
         private readonly IPatientService patientService;
         private readonly IIdentityService identityService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<SoftDeletePatientCommandHandler> logger;
 
-        public SoftDeletePatientCommandHandler(IPatientService patientService
-            , IIdentityService identityService, IUnitOfWork unitOfWork, ILogger<SoftDeletePatientCommandHandler> logger)
+        public SoftDeletePatientCommandHandler(
+            ICurrentUserService currentUserService, 
+            IPatientService patientService,
+            IIdentityService identityService,
+            IUnitOfWork unitOfWork,
+            ILogger<SoftDeletePatientCommandHandler> logger) : base(currentUserService) // <--- تمرير للأب
         {
             this.patientService = patientService;
             this.identityService = identityService;
@@ -18,7 +20,7 @@ namespace Clinic_System.Application.Features.Patients.Commands.Handlers
             this.logger = logger;
         }
 
-        public async Task<Response<Patient>> Handle(SoftDeletePatientCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<Patient>> Handle(SoftDeletePatientCommand request, CancellationToken cancellationToken)
         {
 
             var patient = await patientService.GetPatientByIdAsync(request.Id);
@@ -28,6 +30,9 @@ namespace Clinic_System.Application.Features.Patients.Commands.Handlers
                 logger.LogWarning("Patient with Id {PatientId} not found", request.Id);
                 return NotFound<Patient>($"Patient with Id {request.Id} not found");
             }
+
+            var authResult = await ValidateOwner(patient.ApplicationUserId);
+            if (authResult != null) return authResult;
 
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {

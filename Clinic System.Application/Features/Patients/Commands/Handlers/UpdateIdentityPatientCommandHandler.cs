@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Features.Patients.Commands.Handlers
 {
-    public class UpdateIdentityPatientCommandHandler : ResponseHandler, IRequestHandler<UpdateIdentityPatientCommand, Response<UserDTO>>
+    public class UpdateIdentityPatientCommandHandler : AppRequestHandler<UpdateIdentityPatientCommand, UserDTO>
     {
         private readonly IPatientService patientService;
         private readonly IMapper mapper;
@@ -8,8 +8,13 @@
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<UpdateIdentityPatientCommandHandler> logger;
 
-        public UpdateIdentityPatientCommandHandler(IPatientService patientService
-            , IMapper mapper, IIdentityService identityService, IUnitOfWork unitOfWork, ILogger<UpdateIdentityPatientCommandHandler> logger)
+        public UpdateIdentityPatientCommandHandler(
+            ICurrentUserService currentUserService, // <--- الجديد
+            IPatientService patientService,
+            IMapper mapper,
+            IIdentityService identityService,
+            IUnitOfWork unitOfWork,
+            ILogger<UpdateIdentityPatientCommandHandler> logger) : base(currentUserService)
         {
             this.patientService = patientService;
             this.mapper = mapper;
@@ -18,7 +23,7 @@
             this.logger = logger;
         }
 
-        public async Task<Response<UserDTO>> Handle(UpdateIdentityPatientCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<UserDTO>> Handle(UpdateIdentityPatientCommand request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Handling UpdateIdentityPatientCommand for Patient Id: {PatientId}", request.Id);
 

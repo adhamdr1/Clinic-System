@@ -11,6 +11,7 @@
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IRefreshTokenCleanupService, RefreshTokenCleanupService>();
             services.AddScoped<IBackgroundJobService, HangfireBackgroundJobService>();
             services.AddScoped<IAppointmentNotificationService, AppointmentEmailNotificationService>();

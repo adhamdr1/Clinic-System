@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/doctors")]
     [ApiController]
     public class DoctorController : AppControllerBase
@@ -9,6 +9,7 @@
         {
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetDoctorList()
         {
@@ -16,41 +17,12 @@
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("paging")]
         public async Task<IActionResult> GetDoctorListPaging([FromQuery] GetDoctorListPagingQuery query)
         {
             var response = await mediator.Send(query);
             return Ok(response);
-        }
-
-        [HttpGet("specializations/{specialization}")]
-        public async Task<IActionResult> GetDoctorListBySpecialization(string specialization)
-        {
-            var response = await mediator.Send(new GetDoctorListBySpecializationQuery
-            {
-                Specialization = specialization
-            });
-            return NewResult(response);
-        }
-
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetDoctorById(int id)
-        {
-            var response = await mediator.Send(new GetDoctorByIdQuery
-            {
-                Id = id
-            });
-            return NewResult(response);
-        }
-
-        [HttpGet("{id:int}/appointments")]
-        public async Task<IActionResult> GetDoctorWithAppointmentsById(int id)
-        {
-            var response = await mediator.Send(new GetDoctorWithAppointmentsByIdQuery
-            {
-                Id = id
-            });
-            return NewResult(response);
         }
 
         [HttpGet("name/{name}")]
@@ -63,6 +35,39 @@
             return NewResult(response);
         }
 
+        [HttpGet("specializations/{specialization}")]
+        public async Task<IActionResult> GetDoctorListBySpecialization(string specialization)
+        {
+            var response = await mediator.Send(new GetDoctorListBySpecializationQuery
+            {
+                Specialization = specialization
+            });
+            return NewResult(response);
+        }
+
+        [Authorize(Roles = "Admin,Doctor")]
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetDoctorById(int id)
+        {
+            var response = await mediator.Send(new GetDoctorByIdQuery
+            {
+                Id = id
+            });
+            return NewResult(response);
+        }
+
+        [Authorize(Roles = "Admin,Doctor")]
+        [HttpGet("{id:int}/appointments")]
+        public async Task<IActionResult> GetDoctorWithAppointmentsById(int id)
+        {
+            var response = await mediator.Send(new GetDoctorWithAppointmentsByIdQuery
+            {
+                Id = id
+            });
+            return NewResult(response);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)
         {
@@ -71,6 +76,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorCommand command)
         {
@@ -83,6 +89,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id:int}/identity")]
         public async Task<IActionResult> UpdateIdentityDoctor(int id, [FromBody] UpdateIdentityDoctorCommand command)
         {
@@ -95,6 +102,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> SoftDeleteDoctor(int id)
         {
@@ -105,6 +113,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}/hard")]
         public async Task<IActionResult> HardDeleteDoctor(int id)
         {

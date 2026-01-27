@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Features.Doctors.Commands.Handlers
 {
-    public class UpdateIdentityDoctorCommandHandler : ResponseHandler, IRequestHandler<UpdateIdentityDoctorCommand, Response<UserDTO>>
+    public class UpdateIdentityDoctorCommandHandler : AppRequestHandler<UpdateIdentityDoctorCommand, UserDTO>
     {
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
@@ -8,8 +8,13 @@
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<UpdateIdentityDoctorCommandHandler> logger;
 
-        public UpdateIdentityDoctorCommandHandler(IDoctorService doctorService
-            , IMapper mapper, IIdentityService identityService, IUnitOfWork unitOfWork, ILogger<UpdateIdentityDoctorCommandHandler> logger)
+        public UpdateIdentityDoctorCommandHandler(
+            ICurrentUserService currentUserService, 
+            IDoctorService doctorService,
+            IMapper mapper,
+            IIdentityService identityService,
+            IUnitOfWork unitOfWork,
+            ILogger<UpdateIdentityDoctorCommandHandler> logger) : base(currentUserService) 
         {
             this.doctorService = doctorService;
             this.mapper = mapper;
@@ -18,7 +23,7 @@
             this.logger = logger;
         }
 
-        public async Task<Response<UserDTO>> Handle(UpdateIdentityDoctorCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<UserDTO>> Handle(UpdateIdentityDoctorCommand request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Handling UpdateIdentityDoctorCommand for Doctor Id: {DoctorId}", request.Id);
 
@@ -29,6 +34,9 @@
                 logger.LogWarning("Doctor with Id: {DoctorId} not found", request.Id);
                 return NotFound<UserDTO>($"Doctor with Id {request.Id} not found");
             }
+
+            var authResult = await ValidateOwner(doctor.ApplicationUserId);
+            if (authResult != null) return authResult;
 
             var oldEmail = await identityService.GetUserEmailAsync(doctor.ApplicationUserId, cancellationToken);
             var oldUserName = await identityService.GetUserNameAsync(doctor.ApplicationUserId, cancellationToken);

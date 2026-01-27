@@ -283,5 +283,21 @@ namespace Clinic_System.Infrastructure.Services
 
             return (user.Id, user.UserName, userRole, token, null);
         }
+
+        public async Task<(string Email, string UserName)> GetUserEmailAndUserNameAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            // áæ ÇáÜ ID ÛáØ¡ ÑÌÚ İÇÖí ÈÏá null
+            if (string.IsNullOrWhiteSpace(userId))
+                return (string.Empty, string.Empty);
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            // áæ ÇáíæÒÑ ãÔ ãæÌæÏ¡ ÑÌÚ İÇÖí ÈÏá null
+            if (user == null)
+                return (string.Empty, string.Empty);
+
+            // ÑÌÚ ÇáÈíÇäÇÊ¡ æáæ İíåã ÍÇÌÉ null ÑÌÚ İÇÖí (ÒíÇÏÉ ÊÃßíÏ)
+            return (user.Email ?? string.Empty, user.UserName ?? string.Empty);
+        }
     }
 }

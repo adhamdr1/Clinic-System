@@ -1,8 +1,6 @@
-﻿using Clinic_System.Core.Entities;
-
-namespace Clinic_System.Application.Features.Patients.Queries.Handlers
+﻿namespace Clinic_System.Application.Features.Patients.Queries.Handlers
 {
-    public class PatientWithAppointmentsByIdQueryHandler : ResponseHandler, IRequestHandler<GetPatientWithAppointmentsByIdQuery, Response<GetPatientWhitAppointmentDTO>>
+    public class PatientWithAppointmentsByIdQueryHandler : AppRequestHandler<GetPatientWithAppointmentsByIdQuery, GetPatientWhitAppointmentDTO>
     {
         private readonly IPatientService patientService;
         private readonly IMapper mapper;
@@ -10,10 +8,11 @@ namespace Clinic_System.Application.Features.Patients.Queries.Handlers
         private readonly ILogger<PatientWithAppointmentsByIdQueryHandler> logger;
 
         public PatientWithAppointmentsByIdQueryHandler(
+            ICurrentUserService currentUserService, 
             IPatientService patientService,
             IMapper mapper,
             IIdentityService identityService,
-            ILogger<PatientWithAppointmentsByIdQueryHandler> logger)
+            ILogger<PatientWithAppointmentsByIdQueryHandler> logger) : base(currentUserService)
         {
             this.patientService = patientService;
             this.mapper = mapper;
@@ -21,9 +20,9 @@ namespace Clinic_System.Application.Features.Patients.Queries.Handlers
             this.logger = logger;
         }
 
-        public async Task<Response<GetPatientWhitAppointmentDTO>> Handle(GetPatientWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
+        public async override Task<Response<GetPatientWhitAppointmentDTO>> Handle(GetPatientWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
         {
-            
+
             var patient = await patientService.GetPatientWithAppointmentsByIdAsync(request.Id, cancellationToken);
 
             if (patient == null)
@@ -32,27 +31,21 @@ namespace Clinic_System.Application.Features.Patients.Queries.Handlers
                 return NotFound<GetPatientWhitAppointmentDTO>($"Patient with ID {request.Id} not found");
             }
 
+            var authResult = await ValidateOwner(patient.ApplicationUserId);
+            if (authResult != null) return authResult;
+
             var patientsMapper = mapper.Map<GetPatientWhitAppointmentDTO>(patient);
 
-            // Get Email from UserService using ApplicationUserId
             if (!string.IsNullOrEmpty(patient.ApplicationUserId))
             {
-                patientsMapper.Email = await identityService.GetUserEmailAsync(patient.ApplicationUserId, cancellationToken) ?? string.Empty;
+                var (email, userName) = await identityService.GetUserEmailAndUserNameAsync(patient.ApplicationUserId, cancellationToken);
 
-                if (string.IsNullOrEmpty(patientsMapper.Email))
+                patientsMapper.Email = email;
+                patientsMapper.UserName = userName;
+
+                if (string.IsNullOrEmpty(patientsMapper.Email) || string.IsNullOrEmpty(patientsMapper.UserName))
                 {
-                    logger.LogWarning("GetPatientWithAppointmentsByIdQueryHandler: Email not found for ApplicationUserId {ApplicationUserId}", patient.ApplicationUserId);
-                }
-            }
-
-            // Get UserName from UserService using ApplicationUserId
-            if (!string.IsNullOrEmpty(patient.ApplicationUserId))
-            {
-                patientsMapper.UserName = await identityService.GetUserNameAsync(patient.ApplicationUserId, cancellationToken) ?? string.Empty;
-
-                if (string.IsNullOrEmpty(patientsMapper.UserName))
-                {
-                    logger.LogWarning("GetPatientWithAppointmentsByIdQueryHandler: UserName not found for ApplicationUserId {ApplicationUserId}", patient.ApplicationUserId);
+                    logger.LogWarning("Missing Identity data for Doctor AppUserId: {AppUserId}", patient.ApplicationUserId);
                 }
             }
 
