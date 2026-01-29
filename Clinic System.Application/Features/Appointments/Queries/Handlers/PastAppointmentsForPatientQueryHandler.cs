@@ -1,24 +1,31 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Queries.Handlers
 {
-    public class PastAppointmentsForPatientQueryHandler : ResponseHandler, IRequestHandler<GetPastAppointmentsForPatientQuery, Response<PagedResult<PatientAppointmentDTO>>>
+    public class PastAppointmentsForPatientQueryHandler : AppRequestHandler<GetPastAppointmentsForPatientQuery, PagedResult<PatientAppointmentDTO>>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly ILogger<PastAppointmentsForPatientQueryHandler> logger;
 
         public PastAppointmentsForPatientQueryHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
-            ILogger<PastAppointmentsForPatientQueryHandler> logger)
+            ILogger<PastAppointmentsForPatientQueryHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<PagedResult<PatientAppointmentDTO>>> Handle(GetPastAppointmentsForPatientQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<PagedResult<PatientAppointmentDTO>>> Handle(GetPastAppointmentsForPatientQuery request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Starting GetPastAppointmentsForPatient for PatientId={PatientId}", request.PatientId);
+
+            var (authorizedId, errorResponse) = await GetAuthorizedPatientId(request.PatientId);
+
+            if (errorResponse != null) return errorResponse;
+
+            request.PatientId = authorizedId;
 
             var PatientwithAppointment = await appointmentService.GetPastAppointmentsForPatientAsync(request);
 

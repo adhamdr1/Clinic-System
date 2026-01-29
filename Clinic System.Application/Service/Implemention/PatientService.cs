@@ -60,5 +60,16 @@
         {
             return (await unitOfWork.PatientsRepository.GetPatientsByNameAsync(name, cancellationToken)).ToList();
         }
+
+        public async Task<Patient?> GetPatientByUserIdAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            return await unitOfWork.PatientsRepository.GetPatientByUserIdAsync(userId, cancellationToken);
+        }
+
+        public async Task<string?> GetPatientUserIdAsync(int doctorId, CancellationToken cancellationToken = default)
+        {
+            var patient = await unitOfWork.PatientsRepository.GetPatientUserIdAsync(doctorId, cancellationToken);
+            return patient;
+        }
     }
 }

@@ -103,80 +103,6 @@ namespace Clinic_System.Infrastructure.Services
             var user = await _userManager.FindByIdAsync(userId);
             return user?.UserName;
         }
-       
-        public async Task<bool> ExistingEmail(string Email)
-        {
-            return await _userManager.Users.AnyAsync(u => u.Email == Email);
-        }
-
-        public async Task<bool> ExistingUserName(string UserName)
-        {
-            return await _userManager.Users.AnyAsync(u => u.UserName == UserName);
-        }
-
-        public async Task<bool> UpdateEmailUserAsync(string userId, string newEmail, CancellationToken cancellationToken = default)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(newEmail))
-                throw new DomainException("Email cannot be empty");
-
-
-            var emailResult = await _userManager.SetEmailAsync(user , newEmail);
-
-            if (!emailResult.Succeeded)
-            {
-                var errors = string.Join(", ", emailResult.Errors.Select(e => e.Description));
-                throw new DomainException($"Failed to Update Email User: {errors}");
-            }
-
-            return emailResult.Succeeded;
-        }
-
-        public async Task<bool> UpdatePasswordUserAsync(string userId, string newpassword, string currentPassword, CancellationToken cancellationToken = default)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(newpassword))
-                throw new DomainException("Password cannot be empty");
-
-            var passwordResult = await _userManager.ChangePasswordAsync(user, currentPassword, newpassword);
-
-            if (!passwordResult.Succeeded)
-            {
-                var errors = string.Join(", ", passwordResult.Errors.Select(e => e.Description));
-                throw new DomainException($"Failed to Update Password User: {errors}");
-            }
-
-            return passwordResult.Succeeded;
-        }
-
-        public async Task<bool> UpdateUserNameAsync(string userId, string newUserName, CancellationToken cancellationToken = default)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-                return false;
-
-            if (string.IsNullOrWhiteSpace(newUserName))
-                throw new DomainException("User name cannot be empty");
-
-            var userNameResult = await _userManager.SetUserNameAsync(user, newUserName);
-
-            if (!userNameResult.Succeeded)
-            {
-                var errors = string.Join(", ", userNameResult.Errors.Select(e => e.Description));
-                throw new DomainException($"Failed to Update User Name User: {errors}");
-            }
-
-            return userNameResult.Succeeded;
-        }
 
         public async Task<(bool IsAuthenticated, bool IsEmailConfirmed, string Id, string UserName, string Email, List<string> Roles)> LoginAsync(string userNameOrEmail, string password)
         {
@@ -295,6 +221,84 @@ namespace Clinic_System.Infrastructure.Services
                 return (string.Empty, string.Empty);
 
             return (user.Email ?? string.Empty, user.UserName ?? string.Empty);
+        }
+
+        public async Task<bool> UpdateUserProfileAsync(string userId, string newEmail, string newUserName, string currentPassword, bool isAdmin, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) throw new Exception("User not found");
+
+            if (!isAdmin)
+            {
+                var checkPass = await _userManager.CheckPasswordAsync(user, currentPassword);
+                if (!checkPass) throw new Exception("Invalid current password.");
+            }
+
+            if (!string.IsNullOrEmpty(newEmail) && user.Email != newEmail)
+            {
+                var result = await _userManager.SetEmailAsync(user, newEmail);
+                if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
+                user.EmailConfirmed = false;
+            }
+
+            if (!string.IsNullOrEmpty(newUserName) && user.UserName != newUserName)
+            {
+                var result = await _userManager.SetUserNameAsync(user, newUserName);
+                if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
+            }
+
+            await _userManager.UpdateAsync(user);
+            return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword, bool isAdmin, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return false;
+
+            if (string.IsNullOrWhiteSpace(newPassword))
+                throw new DomainException("Password cannot be empty");
+
+            IdentityResult result;
+
+            if (isAdmin)
+            {
+                var removeResult = await _userManager.RemovePasswordAsync(user);
+                if (!removeResult.Succeeded) throw new Exception("Failed to reset existing password.");
+
+                result = await _userManager.AddPasswordAsync(user, newPassword);
+            }
+            else
+            {
+                result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+            }
+
+            if (!result.Succeeded)
+            {
+                var error = result.Errors.FirstOrDefault()?.Description ?? "Failed to update password.";
+                if (result.Errors.Any(e => e.Code == "PasswordMismatch"))
+                    throw new UnauthorizedAccessException();
+
+                throw new Exception(error);
+            }
+
+            return true;
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email, string? excludeUserId = null, CancellationToken cancellationToken = default)
+        {
+            var userWithEmail = await _userManager.FindByEmailAsync(email);
+            if (userWithEmail == null) return true;
+            if (excludeUserId != null && userWithEmail.Id == excludeUserId) return true;
+            return false;
+        }
+
+        public async Task<bool> IsUserNameUniqueAsync(string userName, string? excludeUserId = null, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null) return true;
+            if (excludeUserId != null && user.Id == excludeUserId) return true;
+            return false;
         }
     }
 }

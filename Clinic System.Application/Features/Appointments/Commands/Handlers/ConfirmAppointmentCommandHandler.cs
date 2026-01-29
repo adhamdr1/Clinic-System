@@ -1,16 +1,17 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class ConfirmAppointmentCommandHandler : ResponseHandler, IRequestHandler<ConfirmAppointmentCommand, Response<ConfirmAppointmentDTO>>
+    public class ConfirmAppointmentCommandHandler : AppRequestHandler<ConfirmAppointmentCommand, ConfirmAppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<ConfirmAppointmentCommandHandler> logger;
         public ConfirmAppointmentCommandHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            ILogger<ConfirmAppointmentCommandHandler> logger)
+            ILogger<ConfirmAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
@@ -18,8 +19,22 @@
             this.logger = logger;
         }
 
-        public async Task<Response<ConfirmAppointmentDTO>> Handle(ConfirmAppointmentCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<ConfirmAppointmentDTO>> Handle(ConfirmAppointmentCommand request, CancellationToken cancellationToken)
         {
+            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(request.AppointmentId);
+
+            if (appointment == null)
+            {
+                return NotFound<ConfirmAppointmentDTO>("Appointment not found.");
+            }
+
+            var authResult = await ValidatePatientAccess(appointment.PatientId);
+            if (authResult != null)
+                return authResult;
+
+            request.PatientId = appointment.PatientId;
+
+
             Appointment ConfirmAppointment = null;
             try
             {

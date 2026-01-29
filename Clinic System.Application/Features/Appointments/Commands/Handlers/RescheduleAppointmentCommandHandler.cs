@@ -1,16 +1,17 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class RescheduleAppointmentCommandHandler : ResponseHandler, IRequestHandler<RescheduleAppointmentCommand, Response<AppointmentDTO>>
+    public class RescheduleAppointmentCommandHandler : AppRequestHandler<RescheduleAppointmentCommand, AppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<RescheduleAppointmentCommandHandler> logger;
         public RescheduleAppointmentCommandHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            ILogger<RescheduleAppointmentCommandHandler> logger)
+            ILogger<RescheduleAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
@@ -18,12 +19,27 @@
             this.logger = logger;
         }
 
-        public async Task<Response<AppointmentDTO>> Handle(RescheduleAppointmentCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<AppointmentDTO>> Handle(RescheduleAppointmentCommand request, CancellationToken cancellationToken)
         {
 
             logger.LogInformation("Starting appointment rescheduling for PatientId: {PatientId}", request.PatientId);
 
-            Appointment newAppointment=null;
+            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(request.AppointmentId);
+
+            if (appointment == null)
+            {
+                return NotFound<AppointmentDTO>("Appointment not found.");
+            }
+
+            var authResult = await ValidatePatientAccess(appointment.PatientId);
+            if (authResult != null)
+                return authResult;
+
+            request.PatientId = appointment.PatientId;
+
+
+
+            Appointment newAppointment =null;
 
             try
             {

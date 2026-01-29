@@ -3,10 +3,12 @@
     public class BookAppointmentCommandValidator : AbstractValidator<BookAppointmentCommand>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICurrentUserService currentUserService;
 
-        public BookAppointmentCommandValidator(IUnitOfWork unitOfWork)
+        public BookAppointmentCommandValidator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             this.unitOfWork = unitOfWork;
+            this.currentUserService = currentUserService;
 
             ApplyRules();
         }
@@ -21,12 +23,11 @@
             RuleFor(x => x.PatientId)
                 .GreaterThan(0)
                 .MustAsync(PatientExists)
-                .WithMessage("Patient not found");
+                .WithMessage("Patient not found")
+                .When(x => currentUserService.PatientId == null);
 
             RuleFor(x => x.AppointmentDate)
-
                .GreaterThanOrEqualTo(DateTime.Today)
-
                .WithMessage("Appointment date cannot be in the past");
 
             RuleFor(x => x.AppointmentTime)

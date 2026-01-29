@@ -46,12 +46,23 @@
             return NewResult(response);
         }
 
-        // 2. تنفيذ تغيير الباسورد (Reset Password)
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
             var response = await mediator.Send(command);
             return NewResult(response);
+        }
+
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileCommand command)
+        {
+            return NewResult(await mediator.Send(command));
+        }
+
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangeUserPasswordCommand command)
+        {
+            return NewResult(await mediator.Send(command));
         }
     }
 }

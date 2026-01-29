@@ -6,11 +6,11 @@
         {
         }
 
-        public async Task<Patient?> GetPatientByUserIdAsync(string userId)
+        public async Task<Patient?> GetPatientByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await context.Patients
                 .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.ApplicationUserId == userId);
+                .FirstOrDefaultAsync(p => p.ApplicationUserId == userId, cancellationToken);
         }
 
         public async Task<IEnumerable<Patient?>> GetPatientsWithAppointmentsAsync(Expression<Func<Appointment, bool>> appointmentPredicate)
@@ -50,6 +50,15 @@
             return await context.Patients
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.Phone == Phone, cancellationToken);
+        }
+
+        public async Task<string?> GetPatientUserIdAsync(int patientId, CancellationToken cancellationToken = default)
+        {
+            return await context.Patients
+                .AsNoTracking()
+                .Where(p => p.Id == patientId)
+                .Select(p => p.ApplicationUserId)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

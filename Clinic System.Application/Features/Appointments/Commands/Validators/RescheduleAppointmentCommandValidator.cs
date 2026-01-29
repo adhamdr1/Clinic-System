@@ -3,10 +3,11 @@
     public class RescheduleAppointmentCommandValidator : AbstractValidator<RescheduleAppointmentCommand>
     {
         private readonly IUnitOfWork unitOfWork;
-
-        public RescheduleAppointmentCommandValidator(IUnitOfWork unitOfWork)
+        private readonly ICurrentUserService currentUserService;
+        public RescheduleAppointmentCommandValidator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             this.unitOfWork = unitOfWork;
+            this.currentUserService = currentUserService;
 
             ApplyRules();
         }
@@ -17,6 +18,10 @@
                 .GreaterThan(0)
                 .MustAsync(AppointmentExists)
                 .WithMessage("Appointment not found");
+
+            RuleFor(x => x.PatientId)
+                .GreaterThan(0).WithMessage("Invalid Patient ID.")
+                .When(x => currentUserService.PatientId == null);
 
             RuleFor(x => x)
                .MustAsync(NewDateTimeDifferentFromOld)

@@ -12,5 +12,8 @@
         Task UpdateDoctor(Doctor doctor, CancellationToken cancellationToken = default);
         Task SoftDeleteDoctor(Doctor doctor,  CancellationToken cancellationToken = default);
         Task HardDeleteDoctor(Doctor doctor, CancellationToken cancellationToken = default);
+
+        Task<string?> GetDoctorUserIdAsync(int doctorId, CancellationToken cancellationToken = default);
+        Task<Doctor?> GetDoctorByUserIdAsync(string userId, CancellationToken cancellationToken = default);
     }
 }

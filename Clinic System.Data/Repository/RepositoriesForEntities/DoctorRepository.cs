@@ -22,6 +22,15 @@
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<string?> GetDoctorUserIdAsync(int doctorId, CancellationToken cancellationToken = default)
+        {
+            return await context.Doctors
+                .AsNoTracking()
+                .Where(d => d.Id == doctorId)
+                .Select(d => d.ApplicationUserId)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<Doctor?> GetDoctorByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await context.Doctors

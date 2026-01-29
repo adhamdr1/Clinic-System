@@ -67,7 +67,7 @@
             return (accessToken, refreshToken.Token , expiresAt, userName, email, roles);
         }
 
-        public async Task<(string AccessToken, string RefreshToken, DateTime ExpiresAt)> RefreshTokenAsync(string accessToken, string refreshToken)
+        public async Task<(string AccessToken, string RefreshToken, DateTime ExpiresAt)> RefreshTokenAsync(string accessToken, string refreshToken, List<Claim>? extraClaims = null)
         {
             // 1. استخراج بيانات المستخدم من الـ Access Token المنتهية (بدون التحقق من وقت الانتهاء)
             var principal = GetPrincipalFromExpiredToken(accessToken);
@@ -90,13 +90,12 @@
 
             // 5. توليد طقم توكنات جديد
             var roles = (await _userManager.GetRolesAsync(user)).ToList();
-            var result = await GenerateJwtTokenAsync(user.Id, user.UserName, user.Email, roles);
+            var result = await GenerateJwtTokenAsync(user.Id, user.UserName, user.Email, roles, extraClaims);
 
             return (result.AccessToken, result.RefreshToken, result.ExpiresAt);
         }
 
-        // ميثود سرية لاستخراج البيانات من التوكن حتى لو منتهية
-        private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {

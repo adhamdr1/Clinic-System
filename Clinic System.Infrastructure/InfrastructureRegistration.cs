@@ -17,6 +17,8 @@
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+            services.Configure<ClinicSettings>(configuration.GetSection("ClinicSettings"));
+
             // بيقرأ القسم من الـ JSON ويربطه بالكلاس
             services.Configure<JwtSettings>(configuration.GetSection("JWT"));
             return services;

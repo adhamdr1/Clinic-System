@@ -1,24 +1,31 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Queries.Handlers
 {
-    public class DoctorAppointmentsQueryHandler : ResponseHandler, IRequestHandler<GetDoctorAppointmentsQuery, Response<PagedResult<DoctorAppointmentDTO>>>
+    public class DoctorAppointmentsQueryHandler : AppRequestHandler<GetDoctorAppointmentsQuery, PagedResult<DoctorAppointmentDTO>>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly ILogger<DoctorAppointmentsQueryHandler> logger;
 
         public DoctorAppointmentsQueryHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
-            ILogger<DoctorAppointmentsQueryHandler> logger)
+            ILogger<DoctorAppointmentsQueryHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<PagedResult<DoctorAppointmentDTO>>> Handle(GetDoctorAppointmentsQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<PagedResult<DoctorAppointmentDTO>>> Handle(GetDoctorAppointmentsQuery request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Starting GetDoctorAppointments for DoctorId={DoctorId}", request.DoctorId);
+
+            var (authorizedId, errorResponse) = await GetAuthorizedDoctorId(request.DoctorId);
+
+            if (errorResponse != null) return errorResponse;
+
+            request.DoctorId = authorizedId;
 
             var doctorwithAppointment = await appointmentService.GetDoctorAppointmentsAsync(request);
            

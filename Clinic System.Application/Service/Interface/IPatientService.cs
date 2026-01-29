@@ -12,5 +12,7 @@
         Task UpdatePatient(Patient patient, CancellationToken cancellationToken = default);
         Task SoftDeletePatient(Patient patient, CancellationToken cancellationToken = default);
         Task HardDeletePatient(Patient patient, CancellationToken cancellationToken = default);
+        Task<Patient?> GetPatientByUserIdAsync(string userId, CancellationToken cancellationToken = default);
+        Task<string?> GetPatientUserIdAsync(int doctorId, CancellationToken cancellationToken = default);
     }
 }

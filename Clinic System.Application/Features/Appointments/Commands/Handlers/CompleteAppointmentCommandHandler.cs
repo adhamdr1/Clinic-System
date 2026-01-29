@@ -1,16 +1,20 @@
-﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
+﻿using Clinic_System.Application.Service.Interface;
+using Clinic_System.Core.Entities;
+
+namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class CompleteAppointmentCommandHandler : ResponseHandler, IRequestHandler<CompleteAppointmentCommand, Response<CompleteAppointmentDTO>>
+    public class CompleteAppointmentCommandHandler : AppRequestHandler<CompleteAppointmentCommand, CompleteAppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CompleteAppointmentCommandHandler> logger;
         public CompleteAppointmentCommandHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            ILogger<CompleteAppointmentCommandHandler> logger)
+            ILogger<CompleteAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
@@ -18,8 +22,21 @@
             this.logger = logger;
         }
 
-        public async Task<Response<CompleteAppointmentDTO>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<CompleteAppointmentDTO>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
         {
+            var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(request.AppointmentId);
+
+            if (appointment == null)
+            {
+                return NotFound<CompleteAppointmentDTO>("Appointment not found.");
+            }
+
+            var authResult = await ValidateDoctorAccess(appointment.DoctorId);
+            if (authResult != null)
+                return authResult;
+
+            request.DoctorId = appointment.DoctorId;
+
             Appointment CompleteAppointment = null;
             try
             {

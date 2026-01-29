@@ -1,13 +1,19 @@
-﻿namespace Clinic_System.Application.Features.Authentication.Commands.Handlers
+﻿using Clinic_System.Core.Entities;
+using Clinic_System.Core.Interfaces.UnitOfWork;
+using System.Data;
+
+namespace Clinic_System.Application.Features.Authentication.Commands.Handlers
 {
     public class RefreshTokenCommandHandler : ResponseHandler, IRequestHandler<RefreshTokenCommand, Response<JwtAuthResult>>
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<RefreshTokenCommandHandler> _logger;
 
-        public RefreshTokenCommandHandler(IAuthenticationService authenticationService, ILogger<RefreshTokenCommandHandler> logger)
+        public RefreshTokenCommandHandler(IAuthenticationService authenticationService, IUnitOfWork unitOfWork, ILogger<RefreshTokenCommandHandler> logger)
         {
             _authenticationService = authenticationService;
+            this.unitOfWork = unitOfWork;
             _logger = logger;
         }
 
@@ -17,7 +23,36 @@
 
             try
             {
-                var (accessToken, refreshToken, expiresAt) = await _authenticationService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
+                var principal = _authenticationService.GetPrincipalFromExpiredToken(request.AccessToken);
+
+                if (principal == null)
+                    return BadRequest<JwtAuthResult>("Invalid Token");
+
+                var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                
+                var customClaims = new List<Claim>();
+
+                if (principal.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Doctor"))
+                {
+                    // بنروح نجيب الـ Doctor ID من الداتابيز
+                    var doctor = await unitOfWork.DoctorsRepository.GetDoctorByUserIdAsync(userId);
+                    if (doctor != null)
+                    {
+                        customClaims.Add(new Claim("DoctorId", doctor.Id.ToString()));
+                    }
+                }
+                else if (principal.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Patient"))
+                {
+                    // بنروح نجيب الـ Patient ID من الداتابيز
+                    var patient = await unitOfWork.PatientsRepository.GetPatientByUserIdAsync(userId);
+                    if (patient != null)
+                    {
+                        customClaims.Add(new Claim("PatientId", patient.Id.ToString()));
+                    }
+                }
+
+                var (accessToken, refreshToken, expiresAt) = await _authenticationService.RefreshTokenAsync(request.AccessToken, request.RefreshToken , customClaims);
 
                 if (string.IsNullOrEmpty(accessToken))
                 {

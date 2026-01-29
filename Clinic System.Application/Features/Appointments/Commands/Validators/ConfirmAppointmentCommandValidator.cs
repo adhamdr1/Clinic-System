@@ -2,16 +2,20 @@
 {
     public class ConfirmAppointmentCommandValidator : AbstractValidator<ConfirmAppointmentCommand>
     {
-        public ConfirmAppointmentCommandValidator()
+        private readonly ICurrentUserService _currentUserService;
+
+        public ConfirmAppointmentCommandValidator(ICurrentUserService currentUserService)
         {
+            _currentUserService = currentUserService;
+            
             // 1. التحقق من الـ IDs
             RuleFor(x => x.AppointmentId)
                 .NotEmpty().WithMessage("Appointment ID is required.")
                 .GreaterThan(0).WithMessage("Invalid Appointment ID.");
 
             RuleFor(x => x.PatientId)
-                .NotEmpty().WithMessage("Patient ID is required.")
-                .GreaterThan(0).WithMessage("Invalid Patient ID.");
+                .GreaterThan(0).WithMessage("Invalid Patient ID.")
+                .When(x => _currentUserService.PatientId == null);
 
             // 2. التحقق من المبلغ (Amount)
             RuleFor(x => x.amount)

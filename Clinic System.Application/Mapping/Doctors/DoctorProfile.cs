@@ -10,7 +10,6 @@
             GetDoctorBasicInfoMapping();
             CreateDoctorMapping();
             UpdateDoctorMapping();
-            UpdateIdentityDoctorMapping();
         }
     }
 }
