@@ -2,6 +2,7 @@
 {
     public interface IDoctorRepository : IGenericRepository<Doctor>
     {
+        Task<string?> GetDoctorUserIdAsync(int doctorId, CancellationToken cancellationToken = default);
         Task<IEnumerable<Doctor?>> GetDoctorsBySpecializationAsync(string specialization, CancellationToken cancellationToken = default);
         Task<IEnumerable<Doctor?>> GetDoctorsByNameAsync(string FullName, CancellationToken cancellationToken = default);
         Task<IEnumerable<Doctor?>> GetAvailableDoctorsAsync(DateTime dateTime, CancellationToken cancellationToken = default);

@@ -3,10 +3,12 @@
     public class BookAppointmentCommandValidator : AbstractValidator<BookAppointmentCommand>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICurrentUserService currentUserService;
 
-        public BookAppointmentCommandValidator(IUnitOfWork unitOfWork)
+        public BookAppointmentCommandValidator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             this.unitOfWork = unitOfWork;
+            this.currentUserService = currentUserService;
 
             ApplyRules();
         }
@@ -19,14 +21,33 @@
                 .WithMessage("Doctor not found");
 
             RuleFor(x => x.PatientId)
-                .GreaterThan(0)
-                .MustAsync(PatientExists)
-                .WithMessage("Patient not found");
+                .MustAsync(async (command, patientId, ct) =>
+                {
+                    var roles = await currentUserService.GetCurrentUserRolesAsync();
+
+                    // أ. لو مريض: عدي (رجع true) حتى لو الـ ID بـ 0
+                    // لأن الـ Handler هيجيب الـ ID الحقيقي من التوكن بعدين
+                    if (roles.Contains("Patient")) return true;
+
+                    // ب. لو أدمن (أو أي حد تاني): لازم يكون باعت ID وقيمته > 0
+                    return patientId > 0;
+                })
+                .WithMessage("Patient Id is required for Admin booking.")
+                .DependentRules(() => // القاعدة دي هتشتغل بس لو اللي فوق عدت
+                {
+                    RuleFor(x => x.PatientId)
+                        .MustAsync(async (command, patientId, ct) =>
+                        {
+                            var roles = await currentUserService.GetCurrentUserRolesAsync();
+                            if (roles.Contains("Patient")) return true; // المريض ميتحصش هنا
+
+                            return await PatientExists(patientId, ct); // الأدمن نتأكد إن المريض اللي باعته موجود
+                        })
+                        .WithMessage("Patient not found in database.");
+                });
 
             RuleFor(x => x.AppointmentDate)
-
                .GreaterThanOrEqualTo(DateTime.Today)
-
                .WithMessage("Appointment date cannot be in the past");
 
             RuleFor(x => x.AppointmentTime)

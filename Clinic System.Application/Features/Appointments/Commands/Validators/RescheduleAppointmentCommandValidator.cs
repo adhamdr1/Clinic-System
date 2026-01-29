@@ -1,12 +1,16 @@
-﻿namespace Clinic_System.Application.Features.Appointments.Commands.Validators
+﻿using Clinic_System.Application.Service.Interface;
+
+namespace Clinic_System.Application.Features.Appointments.Commands.Validators
 {
     public class RescheduleAppointmentCommandValidator : AbstractValidator<RescheduleAppointmentCommand>
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICurrentUserService currentUserService;
 
-        public RescheduleAppointmentCommandValidator(IUnitOfWork unitOfWork)
+        public RescheduleAppointmentCommandValidator(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             this.unitOfWork = unitOfWork;
+            this.currentUserService = currentUserService;
 
             ApplyRules();
         }
@@ -17,6 +21,19 @@
                 .GreaterThan(0)
                 .MustAsync(AppointmentExists)
                 .WithMessage("Appointment not found");
+
+            RuleFor(x => x.PatientId)
+                .MustAsync(async (command, patientId, ct) =>
+                {
+                    var roles = await currentUserService.GetCurrentUserRolesAsync();
+
+                    // لو مريض: عدي (حتى لو الـ ID بـ 0)
+                    if (roles.Contains("Patient")) return true;
+
+                    // لو أدمن: لازم يكون باعت ID
+                    return patientId > 0;
+                })
+                .WithMessage("Patient ID is required for Admins.");
 
             RuleFor(x => x)
                .MustAsync(NewDateTimeDifferentFromOld)

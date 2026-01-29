@@ -1,25 +1,35 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class CompleteAppointmentCommandHandler : ResponseHandler, IRequestHandler<CompleteAppointmentCommand, Response<CompleteAppointmentDTO>>
+    public class CompleteAppointmentCommandHandler : AppRequestHandler<CompleteAppointmentCommand, CompleteAppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
+        private readonly IDoctorService doctorService; 
         private readonly IMapper mapper;
-        private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CompleteAppointmentCommandHandler> logger;
+
         public CompleteAppointmentCommandHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
+            IDoctorService doctorService, // New
             IMapper mapper,
-            IUnitOfWork unitOfWork,
-            ILogger<CompleteAppointmentCommandHandler> logger)
+            ILogger<CompleteAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
+            this.doctorService = doctorService;
             this.mapper = mapper;
-            this.unitOfWork = unitOfWork;
             this.logger = logger;
         }
 
-        public async Task<Response<CompleteAppointmentDTO>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<CompleteAppointmentDTO>> Handle(CompleteAppointmentCommand request, CancellationToken cancellationToken)
         {
+            var doctor = await doctorService.GetDoctorByUserIdAsync(CurrentUserId);
+
+            if (doctor == null)
+                return Unauthorized<CompleteAppointmentDTO>("User is not registered as a doctor.");
+
+            // 2. املأ الـ Command
+            request.DoctorId = doctor.Id;
+
             Appointment CompleteAppointment = null;
             try
             {

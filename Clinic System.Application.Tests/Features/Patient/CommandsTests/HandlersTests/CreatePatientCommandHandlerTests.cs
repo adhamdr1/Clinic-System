@@ -6,6 +6,7 @@
         private readonly Mock<IPatientService> _mockPatientService;
         private readonly Mock<IIdentityService> _mockIdentityService;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<IEmailService> _mockEmailService;
         private readonly Mock<ILogger<CreatePatientCommandHandler>> _mockLogger;
         private readonly CreatePatientCommandHandler _handler;
         public CreatePatientCommandHandlerTests()
@@ -13,6 +14,7 @@
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockPatientService = new Mock<IPatientService>();
             _mockIdentityService = new Mock<IIdentityService>();
+            _mockEmailService = new Mock<IEmailService>();
             _mockMapper = new Mock<IMapper>();
             _mockLogger = new Mock<ILogger<CreatePatientCommandHandler>>();
 
@@ -20,6 +22,7 @@
                 _mockMapper.Object,
                 _mockIdentityService.Object,
                 _mockUnitOfWork.Object,
+                _mockEmailService.Object,
                 _mockLogger.Object);
         }
 

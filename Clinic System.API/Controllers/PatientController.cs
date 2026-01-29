@@ -92,19 +92,6 @@
         }
 
         [Authorize(Roles = "Admin,Patient")]
-        [HttpPut("{id:int}/identity")]
-        public async Task<IActionResult> UpdateIdentityPatient(int id, [FromBody] UpdateIdentityPatientCommand command)
-        {
-            if (id != command.Id)
-            {
-                return BadRequest("Mismatched Patient ID");
-            }
-
-            var response = await mediator.Send(command);
-            return NewResult(response);
-        }
-
-        [Authorize(Roles = "Admin,Patient")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> SoftDeletePatient(int id)
         {

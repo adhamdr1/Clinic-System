@@ -1,23 +1,37 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Queries.Handlers
 {
-    public class PatientAppointmentsQueryHandler : ResponseHandler, IRequestHandler<GetPatientAppointmentsQuery, Response<PagedResult<PatientAppointmentDTO>>>
+    public class PatientAppointmentsQueryHandler : AppRequestHandler<GetPatientAppointmentsQuery, PagedResult<PatientAppointmentDTO>>
     {
         private readonly IAppointmentService appointmentService;
+        private readonly IPatientService patientService; 
         private readonly IMapper mapper;
         private readonly ILogger<PatientAppointmentsQueryHandler> logger;
 
         public PatientAppointmentsQueryHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
+            IPatientService patientService,
             IMapper mapper,
-            ILogger<PatientAppointmentsQueryHandler> logger)
+            ILogger<PatientAppointmentsQueryHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
+            this.patientService = patientService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<PagedResult<PatientAppointmentDTO>>> Handle(GetPatientAppointmentsQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<PagedResult<PatientAppointmentDTO>>> Handle(GetPatientAppointmentsQuery request, CancellationToken cancellationToken)
         {
+            var patientUserId = await patientService.GetPatientUserIdAsync(request.PatientId);
+
+            if (patientUserId == null)
+                return NotFound<PagedResult<PatientAppointmentDTO>>("Patient not found");
+
+            var authResult = await ValidateOwner(patientUserId);
+
+            if (authResult != null)
+                return authResult;
+
             logger.LogInformation("Starting GetPatientAppointments for PatientId={PatientId}", request.PatientId);
 
             var PatientwithAppointment = await appointmentService.GetPatientAppointmentsAsync(request);

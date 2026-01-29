@@ -7,21 +7,22 @@
         private readonly IPaymentService paymentService;
         private readonly IMedicalRecordService medicalRecordService;
         private readonly ILogger<AppointmentService> logger;
+        private readonly ClinicSettings clinicSettings;
 
-        private readonly TimeSpan DefaultStartTime = new TimeSpan(12, 0, 0); // 12:00 PM
-        private readonly TimeSpan DefaultEndTime = new TimeSpan(22, 0, 0);   // 10:00 PM
-        private const int SlotDurationInMinutes = 15;
-
-        public AppointmentService(IAppointmentNotificationService notification,
-            IUnitOfWork unitOfWork, IPaymentService paymentService, IMedicalRecordService medicalRecordService,
-            ILogger<AppointmentService> logger)
+        public AppointmentService(
+            IAppointmentNotificationService notification,
+            IUnitOfWork unitOfWork,
+            IPaymentService paymentService,
+            IMedicalRecordService medicalRecordService,
+            ILogger<AppointmentService> logger,
+            IOptions<ClinicSettings> clinicSettings)
         {
             this.notification = notification;
             this.unitOfWork = unitOfWork;
-            //this.identityService = identityService;
             this.paymentService = paymentService;
             this.medicalRecordService = medicalRecordService;
             this.logger = logger;
+            this.clinicSettings = clinicSettings.Value;
         }
 
         public async Task<List<Appointment>> GetBookedAppointmentsAsync(int doctorId, DateTime date, CancellationToken cancellationToken = default)
@@ -40,7 +41,7 @@
                 .Select(a => a.AppointmentDate.TimeOfDay)
                 .ToHashSet();
 
-            var allPossibleSlots = GenerateSlots(DefaultStartTime, DefaultEndTime, SlotDurationInMinutes);
+            var allPossibleSlots = GenerateSlots(clinicSettings.DayStartTime, clinicSettings.DayEndTime, clinicSettings.SlotDurationInMinutes);
 
             var availableSlots = allPossibleSlots
             .Where(slot => !bookedTimes.Contains(slot))
@@ -79,10 +80,12 @@
             await unitOfWork.SaveAsync();
         }
 
-        public async Task<Appointment> BookAppointmentAsync(BookAppointmentCommand command, CancellationToken cancellationToken = default)
+        public async Task<Appointment> BookAppointmentAsync(int patientId, int doctorId, DateTime appointmentDate, TimeSpan appointmentTime, CancellationToken cancellationToken = default)
         {
-            logger.LogInformation("Attempting to book appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDate} at {AppointmentTime}",
-                    command.PatientId, command.DoctorId, command.AppointmentDate.ToShortDateString(), command.AppointmentTime);
+            var appointmentDateTime = appointmentDate.Date.Add(appointmentTime);
+
+            logger.LogInformation("Attempting to book appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
+                    patientId, doctorId, appointmentDateTime);
 
             string PatientEmail = string.Empty;
             Appointment appointment2 = null;
@@ -92,11 +95,9 @@
             {
                 try
                 {
-                    var appointmentDateTime = command.AppointmentDate.Date.Add(command.AppointmentTime);
-
                     // 1. *** التحقق الأمني النهائي والمباشر من قاعدة البيانات (Anti-Concurrency) ***
                     var bookedAppointmentsOnDay = await unitOfWork.AppointmentsRepository
-                        .GetBookedAppointmentsAsync(command.DoctorId, command.AppointmentDate, cancellationToken);
+                        .GetBookedAppointmentsAsync(doctorId, appointmentDate, cancellationToken);
 
                     if (appointmentDateTime < DateTime.Now)
                         throw new ValidationException("Cannot book an appointment in the past.");
@@ -107,14 +108,14 @@
                     if (isSlotBooked)
                     {
                         logger.LogError("Failed to book appointment: Slot already booked for DoctorId: {DoctorId} on {AppointmentDateTime}",
-                            command.DoctorId, appointmentDateTime);
+                            doctorId, appointmentDateTime);
                         throw new SlotAlreadyBookedException("The selected time slot is no longer available. Please select another time.");
                     }
 
                     var appointment = new Appointment
                     {
-                        DoctorId = command.DoctorId,
-                        PatientId = command.PatientId,
+                        DoctorId = doctorId,
+                        PatientId = patientId,
                         AppointmentDate = appointmentDateTime, // نستخدم الـ DateTime المدمج
                         Status = AppointmentStatus.Pending,
                     };
@@ -127,7 +128,7 @@
                     if (result == 0)
                     {
                         logger.LogError("Failed to save the new appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
-                            command.PatientId, command.DoctorId, appointmentDateTime);
+                            patientId, doctorId, appointmentDateTime);
                         // إذا فشل الحفظ دون استثناء، يجب رفع استثناء هنا
                         throw new DatabaseSaveException("Failed to save the new appointment to the database.");
                     }
@@ -141,13 +142,13 @@
                     if (result == 0)
                     {
                         logger.LogError("Failed to save the new appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
-                            command.PatientId, command.DoctorId, appointmentDateTime);
+                            patientId, doctorId, appointmentDateTime);
                         // إذا فشل الحفظ دون استثناء، يجب رفع استثناء هنا
                         throw new DatabaseSaveException("Failed to save the new appointment to the database.");
                     }
 
                     logger.LogInformation("Successfully booked appointment with ID: {AppointmentId} for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
-                        appointment.Id, command.PatientId, command.DoctorId, appointmentDateTime);
+                        appointment.Id, patientId, doctorId, appointmentDateTime);
 
 
                     appointment2 = await unitOfWork.AppointmentsRepository.GetAppointmentWithDetailsAsync(appointment.Id, cancellationToken);
@@ -157,7 +158,7 @@
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "An error occurred while booking appointment for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDate} at {AppointmentTime}",
-                        command.PatientId, command.DoctorId, command.AppointmentDate.ToShortDateString(), command.AppointmentTime);
+                        patientId, doctorId, appointmentDate.ToShortDateString(), appointmentTime);
                     throw; // إعادة رمي الاستثناء بعد تسجيله
                 }
             }
@@ -169,6 +170,7 @@
 
         public async Task<Appointment> RescheduleAppointmentAsync(RescheduleAppointmentCommand command, CancellationToken cancellationToken = default)
         {
+
             logger.LogInformation("Attempting to reschedule appointment ID: {AppointmentId} for PatientId: {PatientId} on {AppointmentDate} at {AppointmentTime}",
                 command.AppointmentId, command.PatientId, command.AppointmentDate.ToShortDateString(), command.AppointmentTime);
 
@@ -180,10 +182,12 @@
                 throw new NotFoundException("Appointment not found.");
             }
 
-            var oldAppointmentDate = appointment.AppointmentDate;
 
             if (appointment.PatientId != command.PatientId)
                 throw new UnauthorizedException("You are not authorized to reschedule this appointment.");
+
+
+            var oldAppointmentDate = appointment.AppointmentDate;
 
             var appointmentDateTime = command.AppointmentDate.Date.Add(command.AppointmentTime);
 

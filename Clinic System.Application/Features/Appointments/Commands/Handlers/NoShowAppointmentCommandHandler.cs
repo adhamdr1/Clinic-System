@@ -1,26 +1,35 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class NoShowAppointmentCommandHandler : ResponseHandler, IRequestHandler<NoShowAppointmentCommand, Response<CaneclledAndNoShowAppointmentDTO>>
+    public class NoShowAppointmentCommandHandler : AppRequestHandler<NoShowAppointmentCommand, CaneclledAndNoShowAppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
+        private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
-        private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<NoShowAppointmentCommandHandler> logger;
+
         public NoShowAppointmentCommandHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
+            IDoctorService doctorService, // New
             IMapper mapper,
-            IUnitOfWork unitOfWork,
-            ILogger<NoShowAppointmentCommandHandler> logger)
+            ILogger<NoShowAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
+            this.doctorService = doctorService;
             this.mapper = mapper;
-            this.unitOfWork = unitOfWork;
             this.logger = logger;
         }
 
-        public async Task<Response<CaneclledAndNoShowAppointmentDTO>> Handle(NoShowAppointmentCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<CaneclledAndNoShowAppointmentDTO>> Handle(NoShowAppointmentCommand request, CancellationToken cancellationToken)
         {
-            
+            var doctor = await doctorService.GetDoctorByUserIdAsync(CurrentUserId);
+
+            if (doctor == null)
+                return Unauthorized<CaneclledAndNoShowAppointmentDTO>("User is not registered as a doctor.");
+
+            // 2. املأ الـ Command
+            request.DoctorId = doctor.Id;
+
             Appointment NoShowAppointment = null;
             try
             {

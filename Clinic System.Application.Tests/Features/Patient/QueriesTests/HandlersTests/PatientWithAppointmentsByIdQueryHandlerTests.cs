@@ -4,6 +4,7 @@
     {
         private readonly Mock<IPatientService> _mockPatientService;
         private readonly Mock<IIdentityService> _mockIdentityService;
+        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<ILogger<PatientWithAppointmentsByIdQueryHandler>> _mockLogger;
         private readonly PatientWithAppointmentsByIdQueryHandler _handler;
@@ -11,10 +12,13 @@
         {
             _mockPatientService = new Mock<IPatientService>();
             _mockIdentityService = new Mock<IIdentityService>();
+            _mockCurrentUserService = new Mock<ICurrentUserService>();
             _mockMapper = new Mock<IMapper>();
             _mockLogger = new Mock<ILogger<PatientWithAppointmentsByIdQueryHandler>>();
 
-            _handler = new PatientWithAppointmentsByIdQueryHandler(_mockPatientService.Object,
+            _handler = new PatientWithAppointmentsByIdQueryHandler(
+                _mockCurrentUserService.Object,
+                _mockPatientService.Object,
                 _mockMapper.Object,
                 _mockIdentityService.Object,
                 _mockLogger.Object);

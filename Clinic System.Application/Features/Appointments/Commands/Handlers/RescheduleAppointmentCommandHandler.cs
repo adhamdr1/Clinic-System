@@ -1,25 +1,37 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class RescheduleAppointmentCommandHandler : ResponseHandler, IRequestHandler<RescheduleAppointmentCommand, Response<AppointmentDTO>>
+    public class RescheduleAppointmentCommandHandler : AppRequestHandler<RescheduleAppointmentCommand, AppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IPatientService patientService;
         private readonly ILogger<RescheduleAppointmentCommandHandler> logger;
+
         public RescheduleAppointmentCommandHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
+            IPatientService patientService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            ILogger<RescheduleAppointmentCommandHandler> logger)
+            ILogger<RescheduleAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
+            this.patientService = patientService;
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
         }
 
-        public async Task<Response<AppointmentDTO>> Handle(RescheduleAppointmentCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<AppointmentDTO>> Handle(RescheduleAppointmentCommand request, CancellationToken cancellationToken)
         {
+            var patient = await patientService.GetPatientByUserIdAsync(CurrentUserId);
+
+            if (patient == null)
+                return Unauthorized<AppointmentDTO>("User is not registered as a patient.");
+
+            // 2. املأ الـ Command بالـ ID الحقيقي
+            request.PatientId = patient.Id;
 
             logger.LogInformation("Starting appointment rescheduling for PatientId: {PatientId}", request.PatientId);
 

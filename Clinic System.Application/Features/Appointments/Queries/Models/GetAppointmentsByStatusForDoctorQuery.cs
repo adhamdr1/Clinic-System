@@ -3,6 +3,7 @@
     public class GetAppointmentsByStatusForDoctorQuery : IRequest<Response<PagedResult<DoctorAppointmentDTO>>>
     {
         public AppointmentStatus Status { get; set; }
+        [JsonIgnore]
         public int DoctorId { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }

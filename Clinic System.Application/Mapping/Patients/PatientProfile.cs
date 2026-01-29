@@ -9,7 +9,6 @@
             GetPatientByIdMapping();
             CreatePatientMapping();
             UpdatePatientMapping();
-            UpdateIdentityPatientMapping();
         }
     }
 }

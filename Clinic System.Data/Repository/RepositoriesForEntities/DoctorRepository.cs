@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Data.Repository.RepositoriesForEntities
+﻿using Clinic_System.Data.Repository.UnitOfWork;
+
+namespace Clinic_System.Data.Repository.RepositoriesForEntities
 {
     public class DoctorRepository : GenericRepository<Doctor> , IDoctorRepository
     {
@@ -63,6 +65,15 @@
                 .AsNoTracking()
                 .Where(d => appointmentIds.Contains(d.Id))
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task<string?> GetDoctorUserIdAsync(int doctorId, CancellationToken cancellationToken = default)
+        {
+            return await context.Doctors
+                .AsNoTracking()
+                .Where(d => d.Id == doctorId)
+                .Select(d => d.ApplicationUserId)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<Doctor?> GetDoctorWithAppointmentsByIdAsync(int Id, CancellationToken cancellationToken = default)

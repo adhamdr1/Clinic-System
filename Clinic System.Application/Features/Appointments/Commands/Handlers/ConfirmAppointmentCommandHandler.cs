@@ -1,25 +1,38 @@
 ﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
-    public class ConfirmAppointmentCommandHandler : ResponseHandler, IRequestHandler<ConfirmAppointmentCommand, Response<ConfirmAppointmentDTO>>
+    public class ConfirmAppointmentCommandHandler : AppRequestHandler<ConfirmAppointmentCommand, ConfirmAppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IPatientService patientService;
         private readonly ILogger<ConfirmAppointmentCommandHandler> logger;
+
         public ConfirmAppointmentCommandHandler(
+            ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
+            IPatientService patientService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            ILogger<ConfirmAppointmentCommandHandler> logger)
+            ILogger<ConfirmAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
+            this.patientService = patientService;
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
         }
-
-        public async Task<Response<ConfirmAppointmentDTO>> Handle(ConfirmAppointmentCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<ConfirmAppointmentDTO>> Handle(ConfirmAppointmentCommand request, CancellationToken cancellationToken)
         {
+            var patient = await patientService.GetPatientByUserIdAsync(CurrentUserId);
+
+            if (patient == null)
+                return Unauthorized<ConfirmAppointmentDTO>("User is not registered as a patient.");
+
+            // 2. املأ الـ Command بالـ ID الحقيقي
+            request.PatientId = patient.Id;
+
+
             Appointment ConfirmAppointment = null;
             try
             {

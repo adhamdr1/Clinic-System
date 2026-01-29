@@ -19,6 +19,9 @@
 
             // بيقرأ القسم من الـ JSON ويربطه بالكلاس
             services.Configure<JwtSettings>(configuration.GetSection("JWT"));
+
+            services.Configure<ClinicSettings>(configuration.GetSection("ClinicSettings"));
+
             return services;
         }
     }
