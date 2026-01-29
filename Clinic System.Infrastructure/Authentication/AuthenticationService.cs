@@ -11,7 +11,7 @@
         }
 
         public async Task<(string AccessToken, string RefreshToken, DateTime ExpiresAt, string? userName, string? email, List<string>? Roles)> GenerateJwtTokenAsync(
-             string userId, string userName, string email, List<string> roles)
+             string userId, string userName, string email, List<string> roles, List<Claim>? extraClaims = null)
         {
             // 1. تحويل المفتاح السري (الختم) من نص لمفتاح تشفير
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecritKey));
@@ -28,6 +28,11 @@
             foreach (var role in roles)
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            if (extraClaims != null)
+            {
+                authClaims.AddRange(extraClaims);
             }
 
             // 3. تحديد وقت انتهاء الكارنيه (التوكن)
