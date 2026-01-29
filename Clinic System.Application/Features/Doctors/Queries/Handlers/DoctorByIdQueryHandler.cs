@@ -1,24 +1,28 @@
 ﻿namespace Clinic_System.Application.Features.Doctors.Queries.Handlers
 {
-    public class DoctorByIdQueryHandler : ResponseHandler, IRequestHandler<GetDoctorByIdQuery, Response<GetDoctorDTO>>
+    public class DoctorByIdQueryHandler : AppRequestHandler<GetDoctorByIdQuery, GetDoctorDTO>
     {
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
         private readonly ILogger<DoctorByIdQueryHandler> logger;
 
-        public DoctorByIdQueryHandler(
+        public DoctorByIdQueryHandler(ICurrentUserService currentUserService,
             IDoctorService doctorService,
             IMapper mapper,
-            ILogger<DoctorByIdQueryHandler> logger)
+            ILogger<DoctorByIdQueryHandler> logger) : base(currentUserService)
         {
             this.doctorService = doctorService;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<GetDoctorDTO>> Handle(GetDoctorByIdQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<GetDoctorDTO>> Handle(GetDoctorByIdQuery request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Handling GetDoctorByIdQuery for ID: {Id}", request.Id);
+
+            var authResult = await ValidateDoctorAccess(request.Id);
+            if (authResult != null)
+                return authResult;
 
             var doctor = await doctorService.GetDoctorByIdAsync(request.Id, cancellationToken);
 

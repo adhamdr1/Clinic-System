@@ -1,14 +1,18 @@
 ﻿namespace Clinic_System.Application.Features.Patients.Commands.Handlers
 {
-    public class UpdatePatientCommandHandler : ResponseHandler, IRequestHandler<UpdatePatientCommand, Response<UpdatePatientDTO>>
+    public class UpdatePatientCommandHandler : AppRequestHandler<UpdatePatientCommand, UpdatePatientDTO>
     {
         private readonly IPatientService patientService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<UpdatePatientCommandHandler> logger;
 
-        public UpdatePatientCommandHandler(IPatientService patientService
-            , IMapper mapper, IUnitOfWork unitOfWork, ILogger<UpdatePatientCommandHandler> logger)
+        public UpdatePatientCommandHandler(
+           ICurrentUserService currentUserService, // <--- الجديد
+           IPatientService patientService,
+           IMapper mapper,
+           IUnitOfWork unitOfWork,
+           ILogger<UpdatePatientCommandHandler> logger) : base(currentUserService)
         {
             this.patientService = patientService;
             this.mapper = mapper;
@@ -16,9 +20,15 @@
             this.logger = logger;
         }
 
-        public async Task<Response<UpdatePatientDTO>> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<UpdatePatientDTO>> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Starting update process for Patient profile with Id {PatientId}.", request.Id);
+            
+            var authResult = await ValidatePatientAccess(request.Id);
+            if (authResult != null)
+                return authResult;
+
+
             var patient = await patientService.GetPatientByIdAsync(request.Id);
 
             if (patient == null)

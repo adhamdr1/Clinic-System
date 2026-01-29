@@ -1,8 +1,6 @@
-﻿using Clinic_System.Core.Entities;
-
-namespace Clinic_System.Application.Features.Patients.Queries.Handlers
+﻿namespace Clinic_System.Application.Features.Patients.Queries.Handlers
 {
-    public class PatientWithAppointmentsByIdQueryHandler : ResponseHandler, IRequestHandler<GetPatientWithAppointmentsByIdQuery, Response<GetPatientWhitAppointmentDTO>>
+    public class PatientWithAppointmentsByIdQueryHandler : AppRequestHandler<GetPatientWithAppointmentsByIdQuery, GetPatientWhitAppointmentDTO>
     {
         private readonly IPatientService patientService;
         private readonly IMapper mapper;
@@ -10,10 +8,11 @@ namespace Clinic_System.Application.Features.Patients.Queries.Handlers
         private readonly ILogger<PatientWithAppointmentsByIdQueryHandler> logger;
 
         public PatientWithAppointmentsByIdQueryHandler(
+            ICurrentUserService currentUserService,
             IPatientService patientService,
             IMapper mapper,
             IIdentityService identityService,
-            ILogger<PatientWithAppointmentsByIdQueryHandler> logger)
+            ILogger<PatientWithAppointmentsByIdQueryHandler> logger) : base(currentUserService)
         {
             this.patientService = patientService;
             this.mapper = mapper;
@@ -21,9 +20,12 @@ namespace Clinic_System.Application.Features.Patients.Queries.Handlers
             this.logger = logger;
         }
 
-        public async Task<Response<GetPatientWhitAppointmentDTO>> Handle(GetPatientWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<GetPatientWhitAppointmentDTO>> Handle(GetPatientWithAppointmentsByIdQuery request, CancellationToken cancellationToken)
         {
-            
+            var authResult = await ValidatePatientAccess(request.Id);
+            if (authResult != null)
+                return authResult;
+
             var patient = await patientService.GetPatientWithAppointmentsByIdAsync(request.Id, cancellationToken);
 
             if (patient == null)

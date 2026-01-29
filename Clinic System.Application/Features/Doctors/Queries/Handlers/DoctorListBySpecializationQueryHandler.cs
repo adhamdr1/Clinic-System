@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.Application.Features.Doctors.Queries.Handlers
 {
-    public class DoctorListBySpecializationQueryHandler : ResponseHandler, IRequestHandler<GetDoctorListBySpecializationQuery, Response<List<GetDoctorListDTO>>>
+    public class DoctorListBySpecializationQueryHandler : ResponseHandler, IRequestHandler<GetDoctorListBySpecializationQuery, Response<List<GetDoctorBasicInfoDTO>>>
     {
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
@@ -15,7 +15,7 @@
             this.logger = logger;
         }
 
-        public async Task<Response<List<GetDoctorListDTO>>> Handle(GetDoctorListBySpecializationQuery request, CancellationToken cancellationToken)
+        public async Task<Response<List<GetDoctorBasicInfoDTO>>> Handle(GetDoctorListBySpecializationQuery request, CancellationToken cancellationToken)
         {
             logger.LogInformation("Handling GetDoctorListBySpecializationQuery for Specialization: {Specialization}", request.Specialization);
 
@@ -24,10 +24,10 @@
             if (doctors?.Any() != true)
             {
                 logger.LogWarning("No doctors found for Specialization: {Specialization}", request.Specialization);
-                return NotFound<List<GetDoctorListDTO>>($"No doctors found with specialization: {request.Specialization}");
+                return NotFound<List<GetDoctorBasicInfoDTO>>($"No doctors found with specialization: {request.Specialization}");
             }
 
-            var doctorsMapper = mapper.Map<List<GetDoctorListDTO>>(doctors);
+            var doctorsMapper = mapper.Map<List<GetDoctorBasicInfoDTO>>(doctors);
 
             logger.LogInformation("Found {Count} doctors for Specialization: {Specialization}", doctorsMapper.Count, request.Specialization);
             return Success(doctorsMapper);

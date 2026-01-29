@@ -1,12 +1,13 @@
 ﻿namespace Clinic_System.Application.Mapping.Doctors
 {
-    public partial class MedicalRecordProfile : Profile
+    public partial class DoctorProfile : Profile
     {
-        public MedicalRecordProfile()
+        public DoctorProfile()
         {
             GetDoctorListMapping();
             GetDoctorWithAppointmentsByIdMapping();
             GetDoctorByIdMapping();
+            GetDoctorBasicInfoMapping();
             CreateDoctorMapping();
             UpdateDoctorMapping();
             UpdateIdentityDoctorMapping();

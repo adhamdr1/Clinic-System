@@ -1,16 +1,18 @@
-﻿using Clinic_System.Application.Service.Implemention;
-
-namespace Clinic_System.Application.Features.Patients.Commands.Handlers
+﻿namespace Clinic_System.Application.Features.Patients.Commands.Handlers
 {
-    public class SoftDeletePatientCommandHandler : ResponseHandler, IRequestHandler<SoftDeletePatientCommand, Response<Patient>>
+    public class SoftDeletePatientCommandHandler : AppRequestHandler<SoftDeletePatientCommand, Patient>
     {
         private readonly IPatientService patientService;
         private readonly IIdentityService identityService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<SoftDeletePatientCommandHandler> logger;
 
-        public SoftDeletePatientCommandHandler(IPatientService patientService
-            , IIdentityService identityService, IUnitOfWork unitOfWork, ILogger<SoftDeletePatientCommandHandler> logger)
+        public SoftDeletePatientCommandHandler(
+            ICurrentUserService currentUserService,
+            IPatientService patientService,
+            IIdentityService identityService,
+            IUnitOfWork unitOfWork,
+            ILogger<SoftDeletePatientCommandHandler> logger) : base(currentUserService)
         {
             this.patientService = patientService;
             this.identityService = identityService;
@@ -18,8 +20,14 @@ namespace Clinic_System.Application.Features.Patients.Commands.Handlers
             this.logger = logger;
         }
 
-        public async Task<Response<Patient>> Handle(SoftDeletePatientCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<Patient>> Handle(SoftDeletePatientCommand request, CancellationToken cancellationToken)
         {
+            logger.LogInformation("Handling SoftDeletePatientCommand for Patient Id {PatientId}", request.Id);
+
+            var authResult = await ValidatePatientAccess(request.Id);
+            
+            if (authResult != null)
+                return authResult;
 
             var patient = await patientService.GetPatientByIdAsync(request.Id);
 

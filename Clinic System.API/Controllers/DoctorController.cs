@@ -1,6 +1,6 @@
 ﻿namespace Clinic_System.API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/doctors")]
     [ApiController]
     public class DoctorController : AppControllerBase
@@ -9,6 +9,7 @@
         {
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetDoctorList()
         {
@@ -16,6 +17,7 @@
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("paging")]
         public async Task<IActionResult> GetDoctorListPaging([FromQuery] GetDoctorListPagingQuery query)
         {
@@ -33,6 +35,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetDoctorById(int id)
         {
@@ -43,6 +46,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet("{id:int}/appointments")]
         public async Task<IActionResult> GetDoctorWithAppointmentsById(int id)
         {
@@ -63,6 +67,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorCommand command)
         {
@@ -71,6 +76,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorCommand command)
         {
@@ -83,6 +89,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpPut("{id:int}/identity")]
         public async Task<IActionResult> UpdateIdentityDoctor(int id, [FromBody] UpdateIdentityDoctorCommand command)
         {
@@ -95,6 +102,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> SoftDeleteDoctor(int id)
         {
@@ -105,6 +113,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}/hard")]
         public async Task<IActionResult> HardDeleteDoctor(int id)
         {
