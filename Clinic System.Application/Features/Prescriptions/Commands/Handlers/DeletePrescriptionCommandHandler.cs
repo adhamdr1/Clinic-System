@@ -1,24 +1,36 @@
 ﻿namespace Clinic_System.Application.Features.Prescriptions.Commands.Handlers
 {
-    public class DeletePrescriptionCommandHandler : ResponseHandler, IRequestHandler<DeletePrescriptionCommand, Response<string>>
+    public class DeletePrescriptionCommandHandler : AppRequestHandler<DeletePrescriptionCommand, string>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<DeletePrescriptionCommandHandler> _logger;
-        public DeletePrescriptionCommandHandler(IUnitOfWork unitOfWork, ILogger<DeletePrescriptionCommandHandler> logger)
+        private readonly ILogger<CreatePrescriptionCommandHandler> _logger;
+
+        // 2. تمرير CurrentUserService للـ Base
+        public DeletePrescriptionCommandHandler(ICurrentUserService currentUserService,
+            IUnitOfWork unitOfWork, ILogger<CreatePrescriptionCommandHandler> logger) : base(currentUserService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
-        public async Task<Response<string>> Handle(DeletePrescriptionCommand request, CancellationToken cancellationToken)
+
+        public override async Task<Response<string>> Handle(DeletePrescriptionCommand request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Deleting prescription with ID: {PrescriptionId}", request.PrescriptionId);
             try
             {
-                var prescription = await _unitOfWork.PrescriptionsRepository.GetByIdAsync(request.PrescriptionId);
-                if (prescription == null)
+                var prescription = await _unitOfWork.PrescriptionsRepository.GetPrescriptionWithDetailsAsync(request.PrescriptionId, cancellationToken);
+
+                if (prescription == null) return BadRequest<string>("Not Found");
+
+                var doctorId = prescription.MedicalRecord?.Appointment?.DoctorId;
+                if (doctorId.HasValue)
                 {
-                    _logger.LogWarning("Prescription with ID {PrescriptionId} not found.", request.PrescriptionId);
-                    return BadRequest<string>("Prescription not found.");
+                    var authResult = await ValidateDoctorAccess(doctorId.Value);
+                    if (authResult != null) return authResult;
+                }
+                else
+                {
+                    return BadRequest<string>("Critical Data Integrity Error.");
                 }
 
                 prescription.SoftDelete();

@@ -1,26 +1,37 @@
 ﻿namespace Clinic_System.Application.Features.Prescriptions.Commands.Handlers
 {
-    public class UpdatePrescriptionCommandHandler : ResponseHandler, IRequestHandler<UpdatePrescriptionCommand, Response<PrescriptionDto>>
+    public class UpdatePrescriptionCommandHandler : AppRequestHandler<UpdatePrescriptionCommand, PrescriptionDto>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<UpdatePrescriptionCommandHandler> _logger;
-        public UpdatePrescriptionCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UpdatePrescriptionCommandHandler> logger)
+        public UpdatePrescriptionCommandHandler(ICurrentUserService currentUserService,
+            IUnitOfWork unitOfWork, IMapper mapper,
+            ILogger<UpdatePrescriptionCommandHandler> logger) : base(currentUserService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task<Response<PrescriptionDto>> Handle(UpdatePrescriptionCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<PrescriptionDto>> Handle(UpdatePrescriptionCommand request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Updating prescription with ID: {PrescriptionId}", request.PrescriptionId);
             try
             {
-                var prescription = await _unitOfWork.PrescriptionsRepository.GetByIdAsync(request.PrescriptionId);
-                if (prescription == null)
+                var prescription = await _unitOfWork.PrescriptionsRepository.GetPrescriptionWithDetailsAsync(request.PrescriptionId, cancellationToken);
+
+                if (prescription == null) return BadRequest<PrescriptionDto>("Prescription not found.");
+
+                var doctorId = prescription.MedicalRecord?.Appointment?.DoctorId;
+
+                if (doctorId.HasValue)
                 {
-                    _logger.LogWarning("Prescription with ID {PrescriptionId} not found.", request.PrescriptionId);
-                    return BadRequest<PrescriptionDto>("Prescription not found.");
+                    var authResult = await ValidateDoctorAccess(doctorId.Value);
+                    if (authResult != null) return authResult;
+                }
+                else
+                {
+                    return BadRequest<PrescriptionDto>("Critical Data Integrity Error.");
                 }
 
                 prescription.Update(request.MedicationName, request.Dosage,
@@ -28,7 +39,7 @@
 
                 _unitOfWork.PrescriptionsRepository.Update(prescription);
 
-                var result = await _unitOfWork.SaveAsync();
+                var result = await _unitOfWork.SaveAsync(); 
 
                 if (result == 0)
                 {

@@ -1,5 +1,6 @@
 ﻿namespace Clinic_System.API.Controllers
 {
+    [Authorize(Roles = "Admin,Doctor")]
     [Route("api/prescription")]
     [ApiController]
     public class PrescriptionController : AppControllerBase
@@ -8,29 +9,24 @@
         {
         }
 
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<IActionResult> CreatePrescription([FromBody] CreatePrescriptionCommand command)
         {
             var response = await mediator.Send(command);
             return NewResult(response);
         }
 
-        [HttpPut("update")]
-        public async Task<IActionResult> UpdatePrescription([FromQuery]int id ,[FromBody] UpdatePrescriptionCommand command)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdatePrescription([FromBody] UpdatePrescriptionCommand command)
         {
-            if (id != command.PrescriptionId)
-            {
-                return BadRequest("Prescription ID mismatch.");
-            }
-
             var response = await mediator.Send(command);
             return NewResult(response);
         }
 
-        [HttpDelete("delete")]
-        public async Task<IActionResult> DeletePrescription([FromQuery] DeletePrescriptionCommand command)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeletePrescription([FromRoute] int id)
         {
-            var response = await mediator.Send(command);
+            var response = await mediator.Send(new DeletePrescriptionCommand { PrescriptionId = id });
             return NewResult(response);
         }
     }

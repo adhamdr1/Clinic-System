@@ -1,30 +1,34 @@
 ﻿namespace Clinic_System.Application.Features.Prescriptions.Commands.Handlers
 {
-    public class CreatePrescriptionCommandHandler : ResponseHandler, IRequestHandler<CreatePrescriptionCommand, Response<PrescriptionDto>>
+    public class CreatePrescriptionCommandHandler : AppRequestHandler<CreatePrescriptionCommand, PrescriptionDto>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<CreatePrescriptionCommandHandler> _logger;
 
-        public CreatePrescriptionCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreatePrescriptionCommandHandler> logger)
+        // 2. تمرير CurrentUserService للـ Base
+        public CreatePrescriptionCommandHandler(ICurrentUserService currentUserService,
+            IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreatePrescriptionCommandHandler> logger) : base(currentUserService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
         }
 
-        public async Task<Response<PrescriptionDto>> Handle(CreatePrescriptionCommand request, CancellationToken cancellationToken)
+        public override async Task<Response<PrescriptionDto>> Handle(CreatePrescriptionCommand request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Creating a new prescription for MedicalRecordId: {MedicalRecordId}", request.MedicalRecordId);
             try
             {
-                var record = await _unitOfWork.MedicalRecordsRepository.GetByIdAsync(request.MedicalRecordId);
+                var record = await _unitOfWork.MedicalRecordsRepository.GetMedicalRecordWithAppointmentAsync(request.MedicalRecordId);
 
-                if (record == null)
-                {
-                    _logger.LogWarning("Medical record with ID {MedicalRecordId} not found.", request.MedicalRecordId);
-                    return BadRequest<PrescriptionDto>("Medical record not found.");
-                }
+                if (record == null) return BadRequest<PrescriptionDto>("Medical record not found.");
+
+                if (record.Appointment?.DoctorId == null)
+                    return BadRequest<PrescriptionDto>("Invalid Record Data");
+
+                var authResult = await ValidateDoctorAccess(record.Appointment.DoctorId);
+                if (authResult != null) return authResult;
 
                 var prescription = _mapper.Map<Prescription>(request);
 

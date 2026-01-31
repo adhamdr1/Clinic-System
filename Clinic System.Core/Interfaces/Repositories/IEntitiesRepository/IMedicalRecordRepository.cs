@@ -2,6 +2,7 @@
 {
     public interface IMedicalRecordRepository : IGenericRepository<MedicalRecord>
     {
+        Task<MedicalRecord?> GetMedicalRecordWithAppointmentAsync(int recordId, CancellationToken cancellationToken = default);
         Task<MedicalRecord?> GetMedicalRecordDetailsAsync(int recordId , CancellationToken cancellationToken = default);
         Task<MedicalRecord?> GetMedicalRecordForUpdateAsync(int recordId, CancellationToken cancellationToken = default);
         Task<(List<MedicalRecord> Items, int TotalCount)> GetPatientMedicalHistoryAsync(int patientId, int pageNumber, int pageSize, CancellationToken cancellationToken = default);

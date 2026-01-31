@@ -2,5 +2,6 @@
 {
     public interface IPrescriptionRepository : IGenericRepository<Prescription>
     {
+        Task<Prescription?> GetPrescriptionWithDetailsAsync(int prescriptionId,CancellationToken cancellationToken);
     }
 }

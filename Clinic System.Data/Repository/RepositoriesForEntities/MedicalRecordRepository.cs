@@ -18,6 +18,13 @@
                 .FirstOrDefaultAsync(mr => mr.Id == recordId , cancellationToken);
         }
 
+        public async Task<MedicalRecord?> GetMedicalRecordWithAppointmentAsync(int recordId, CancellationToken cancellationToken = default)
+        {
+            return await context.MedicalRecords
+                .Include(mr => mr.Appointment)
+                .FirstOrDefaultAsync(mr => mr.Id == recordId, cancellationToken);
+        }
+
         public async Task<MedicalRecord?> GetMedicalRecordForUpdateAsync(int recordId, CancellationToken cancellationToken = default)
         {
             return await context.MedicalRecords
