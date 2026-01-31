@@ -1,4 +1,6 @@
-﻿namespace Clinic_System.Application.Tests.Service.Implemention
+﻿using Microsoft.Extensions.Options;
+
+namespace Clinic_System.Application.Tests.Service.Implemention
 {
     public class AppointmentServiceTests
     {
@@ -7,11 +9,13 @@
         private readonly Mock<IMedicalRecordService> _mockMedicalRecordService;
         private readonly Mock<IAppointmentRepository> _mockAppointmentRepository;
         private readonly Mock<ILogger<AppointmentService>> _mockLogger;
+        private readonly Mock<IOptions<ClinicSettings>> _mockClinicsettings;
         private readonly AppointmentService _appointmentService;
 
 
         public AppointmentServiceTests()
         {
+            _mockClinicsettings = new Mock<IOptions<ClinicSettings>>();
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockAppointmentRepository = new Mock<IAppointmentRepository>();
             _mockPaymentService = new Mock<IPaymentService>();
@@ -19,7 +23,7 @@
             _mockLogger = new Mock<ILogger<AppointmentService>>();
             _mockUnitOfWork.SetupGet(u => u.AppointmentsRepository).Returns(_mockAppointmentRepository.Object);
             _appointmentService = new AppointmentService(null,_mockUnitOfWork.Object, _mockPaymentService.Object,
-               _mockMedicalRecordService.Object, _mockLogger.Object);
+               _mockMedicalRecordService.Object, _mockLogger.Object,_mockClinicsettings.Object);
         }
 
         [Fact]
@@ -46,7 +50,7 @@
                 .ReturnsAsync(1);
 
             // Act
-            var result = await _appointmentService.BookAppointmentAsync(command);
+            var result = await _appointmentService.BookAppointmentAsync(command.PatientId, command.DoctorId, command.AppointmentDate, command.AppointmentTime, CancellationToken.None);
 
             // Assert
             result.Should().NotBeNull();
@@ -87,7 +91,8 @@
             // Assert
             await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await _appointmentService.BookAppointmentAsync(command, CancellationToken.None);
+                await _appointmentService.BookAppointmentAsync(command.PatientId,command.DoctorId
+                    ,command.AppointmentDate,command.AppointmentTime, CancellationToken.None);
             });
 
 
@@ -126,7 +131,8 @@
                 .ReturnsAsync(bookedAppointments);
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _appointmentService.BookAppointmentAsync(command));
+            await Assert.ThrowsAsync<Exception>(() => _appointmentService.BookAppointmentAsync(command.PatientId, command.DoctorId
+                    , command.AppointmentDate, command.AppointmentTime, CancellationToken.None));
 
             _mockAppointmentRepository.Verify(r => r.AddAsync(
                  It.IsAny<Appointment>(),

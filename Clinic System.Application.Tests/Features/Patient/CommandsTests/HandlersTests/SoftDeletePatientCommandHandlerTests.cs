@@ -7,14 +7,16 @@
         private readonly Mock<IIdentityService> _mockIdentityService;
         private readonly Mock<ILogger<SoftDeletePatientCommandHandler>> _mockLogger;
         private readonly SoftDeletePatientCommandHandler _handler;
+
+        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
         public SoftDeletePatientCommandHandlerTests()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockPatientService = new Mock<IPatientService>();
             _mockIdentityService = new Mock<IIdentityService>();
             _mockLogger = new Mock<ILogger<SoftDeletePatientCommandHandler>>();
-
-            _handler = new SoftDeletePatientCommandHandler(_mockPatientService.Object,
+            _mockCurrentUserService = new Mock<ICurrentUserService>();
+            _handler = new SoftDeletePatientCommandHandler(_mockCurrentUserService.Object, _mockPatientService.Object,
                 _mockIdentityService.Object,
                 _mockUnitOfWork.Object,
                 _mockLogger.Object);

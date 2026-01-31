@@ -2,6 +2,8 @@
 {
     public class BookAppointmentCommandHandlerTests
     {
+        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
+
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IAppointmentService> _mockAppointmentService;
         private readonly Mock<IMapper> _mockMapper;
@@ -13,8 +15,9 @@
             _mockAppointmentService = new Mock<IAppointmentService>();
             _mockMapper = new Mock<IMapper>();
             _mockLogger = new Mock<ILogger<BookAppointmentCommandHandler>>();
-
-            _handler = new BookAppointmentCommandHandler(_mockAppointmentService.Object,
+            _mockCurrentUserService = new Mock<ICurrentUserService>();
+            _handler = new BookAppointmentCommandHandler(
+                 _mockCurrentUserService.Object, _mockAppointmentService.Object,
                 _mockMapper.Object, _mockUnitOfWork.Object, _mockLogger.Object);
         }
 
@@ -31,7 +34,7 @@
 
             // 1. إعداد الـ Service ليعيد الـ Entity (بدلاً من الافتراضي Null)
             _mockAppointmentService
-                .Setup(s => s.BookAppointmentAsync(command, It.IsAny<CancellationToken>()))
+                .Setup(s => s.BookAppointmentAsync(command.PatientId,command.DoctorId,command.AppointmentDate,command.AppointmentTime, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointmentEntity);
 
             // 2. إعداد الـ Repositories لتعيد بيانات الطبيب والمريض
@@ -51,7 +54,7 @@
             var result = _handler.Handle(command, CancellationToken.None).Result;
 
             // Assert
-            _mockAppointmentService.Verify(s => s.BookAppointmentAsync(command, It.IsAny<CancellationToken>()), Times.Once);
+            _mockAppointmentService.Verify(s => s.BookAppointmentAsync(command.PatientId, command.DoctorId, command.AppointmentDate, command.AppointmentTime, It.IsAny<CancellationToken>()), Times.Once);
 
 
             Assert.True(result.Succeeded);
@@ -78,7 +81,7 @@
 
             // محاكاة رمي استثناء برسائل مختلفة بناءً على الـ InlineData
             _mockAppointmentService
-                .Setup(s => s.BookAppointmentAsync(It.IsAny<BookAppointmentCommand>(), It.IsAny<CancellationToken>()))
+                .Setup(s => s.BookAppointmentAsync(command.PatientId, command.DoctorId, command.AppointmentDate, command.AppointmentTime, It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new Exception(exceptionMessage));
 
             // Act
@@ -113,7 +116,7 @@
             Assert.Equal("Patient account not found.", result.Message);
 
             // التأكد أن الـ Service لم يتم استدعاؤه أبداً توفيراً للأداء وحماية للمنطق
-            _mockAppointmentService.Verify(s => s.BookAppointmentAsync(It.IsAny<BookAppointmentCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+            _mockAppointmentService.Verify(s => s.BookAppointmentAsync(command.PatientId, command.DoctorId, command.AppointmentDate, command.AppointmentTime, It.IsAny<CancellationToken>()), Times.Never);
         }
     }
 }

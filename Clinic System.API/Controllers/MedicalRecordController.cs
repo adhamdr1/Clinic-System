@@ -1,5 +1,6 @@
 ﻿namespace Clinic_System.API.Controllers
 {
+    [Authorize]
     [Route("api/medicalrecords")]
     [ApiController]
     public class MedicalRecordController : AppControllerBase
@@ -27,6 +28,7 @@
             return NewResult(response);
         }
 
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet("doctor")]
         public async Task<IActionResult> GetRecordsByDoctorId([FromQuery] GetRecordsByDoctorIdQuery query)
         {
@@ -34,7 +36,8 @@
             return NewResult(response);
         }
 
-        [HttpPut("update")]
+        [Authorize(Roles = "Admin,Doctor")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateMedicalRecord(int id ,[FromBody] UpdateMedicalRecordCommand command)
         {
             if (id != command.Id)

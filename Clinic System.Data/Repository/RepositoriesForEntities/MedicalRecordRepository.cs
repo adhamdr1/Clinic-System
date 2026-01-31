@@ -13,6 +13,8 @@
                 .Include(mr => mr.Prescriptions) 
                 .Include(mr => mr.Appointment)   
                 .ThenInclude(a => a.Patient)
+                .Include(mr => mr.Appointment)
+                .ThenInclude(a => a.Doctor)
                 .FirstOrDefaultAsync(mr => mr.Id == recordId , cancellationToken);
         }
 

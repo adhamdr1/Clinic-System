@@ -2,6 +2,7 @@
 {
     public class CreateDoctorCommandHandlerTests
     {
+        private readonly Mock<IEmailService> mockEmailService;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<IIdentityService> _mockIdentityService;
@@ -14,11 +15,13 @@
             _mockDoctorService = new Mock<IDoctorService>();
             _mockIdentityService = new Mock<IIdentityService>();
             _mockMapper = new Mock<IMapper>();
+            mockEmailService = new Mock<IEmailService>();
             _mockLogger = new Mock<ILogger<CreateDoctorCommandHandler>>();
 
             _handler = new CreateDoctorCommandHandler(_mockDoctorService.Object,
                 _mockMapper.Object,
                 _mockIdentityService.Object,
+                mockEmailService.Object,
                 _mockUnitOfWork.Object,
                 _mockLogger.Object);
         }

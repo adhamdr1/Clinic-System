@@ -44,16 +44,6 @@
             return new PagedResult<MedicalRecord>(item, total, pageNumber, pageSize);
         }
 
-        public async Task<MedicalRecord> GetRecordByIdAsync(int recordId, CancellationToken cancellationToken = default)
-        {
-            var record = await unitOfWork.MedicalRecordsRepository.GetMedicalRecordDetailsAsync(recordId, cancellationToken);
-            if (record == null)
-            {
-                throw new NotFoundException($"Medical record with ID {recordId} not found.");
-            }
-            return record;
-        }
-
         public async Task<PagedResult<MedicalRecord>> GetRecordsByDoctorIdAsync( int pageNumber, int pageSize, int doctorId, DateTime? start, DateTime? end, CancellationToken cancellationToken = default)
         {
             var (item, total) = await unitOfWork.MedicalRecordsRepository
@@ -61,14 +51,9 @@
             return new PagedResult<MedicalRecord>(item, total, pageNumber, pageSize);
         }
 
-        public async Task<MedicalRecord> UpdateAsync(int recordId,
+        public async Task<MedicalRecord> UpdateAsync(MedicalRecord record,
         string? diagnosis,string? description,string? notes,CancellationToken cancellationToken = default)
         {
-            var record = await unitOfWork.MedicalRecordsRepository.GetMedicalRecordForUpdateAsync(recordId, cancellationToken);
-
-            if (record == null)
-                throw new NotFoundException("Medical record not found");
-
             record.Update(diagnosis, description, notes);
 
             var result = await unitOfWork.SaveAsync();

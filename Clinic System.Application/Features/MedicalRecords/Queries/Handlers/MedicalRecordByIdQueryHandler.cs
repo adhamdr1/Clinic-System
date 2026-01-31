@@ -1,31 +1,56 @@
 ﻿namespace Clinic_System.Application.Features.Doctors.Queries.Handlers
 {
-    public class MedicalRecordByIdQueryHandler : ResponseHandler, IRequestHandler<GetMedicalRecordByIdQuery, Response<MedicalRecordDTO>>
+    public class MedicalRecordByIdQueryHandler : AppRequestHandler<GetMedicalRecordByIdQuery, MedicalRecordDTO>
     {
-        private readonly IMedicalRecordService medicalRecordService;
+        private readonly IUnitOfWork unitOfWork; 
         private readonly IMapper mapper;
         private readonly ILogger<MedicalRecordByIdQueryHandler> logger;
-
         public MedicalRecordByIdQueryHandler(
-            IMedicalRecordService medicalRecordService,
+            ICurrentUserService currentUserService, 
+            IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILogger<MedicalRecordByIdQueryHandler> logger)
+            ILogger<MedicalRecordByIdQueryHandler> logger) : base(currentUserService)
         {
-            this.medicalRecordService = medicalRecordService;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<Response<MedicalRecordDTO>> Handle(GetMedicalRecordByIdQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<MedicalRecordDTO>> Handle(GetMedicalRecordByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var medicalRecord = await medicalRecordService.GetRecordByIdAsync(request.Id, cancellationToken);
-                if (medicalRecord == null)
+                var record = await unitOfWork.MedicalRecordsRepository.GetMedicalRecordDetailsAsync(request.Id, cancellationToken);
+
+                if (record == null)
                 {
                     return NotFound<MedicalRecordDTO>($"Medical record with ID {request.Id} not found.");
                 }
-                var medicalRecordDto = mapper.Map<MedicalRecordDTO>(medicalRecord);
+
+                var doctorId = record.Appointment?.DoctorId;
+                var patientId = record.Appointment?.PatientId;
+
+                var roles = await _currentUserService.GetCurrentUserRolesAsync();
+                if (!roles.Contains("Admin"))
+                {
+                    if (CurrentDoctorId.HasValue)
+                    {
+                        if (doctorId != CurrentDoctorId)
+                            return Unauthorized<MedicalRecordDTO>("Access denied. You can only view your own records.");
+                    }
+                    else if (CurrentPatientId.HasValue)
+                    {
+                        if (patientId != CurrentPatientId)
+                            return Unauthorized<MedicalRecordDTO>("Access denied. You can only view your own records.");
+                    }
+                    else
+                    {
+                        return Unauthorized<MedicalRecordDTO>("Access denied.");
+                    }
+                }
+
+
+                var medicalRecordDto = mapper.Map<MedicalRecordDTO>(record);
                 return Success(medicalRecordDto);
             }
             catch (Exception ex)

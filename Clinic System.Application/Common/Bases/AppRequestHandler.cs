@@ -15,23 +15,6 @@
         protected int? CurrentDoctorId => _currentUserService.DoctorId;
         protected int? CurrentPatientId => _currentUserService.PatientId;
 
-        protected async Task<Response<TResponse>> ValidateOwner(string entityUserId)
-        {
-
-            var roles = await _currentUserService.GetCurrentUserRolesAsync();
-
-            if (roles.Contains("Admin"))
-            {
-                return null;
-            }
-
-            if (entityUserId != CurrentUserId)
-            {
-                return Unauthorized<TResponse>("You do not have permission to access this resource.");
-            }
-            return null;
-        }
-
         protected async Task<Response<TResponse>> ValidateDoctorAccess(int targetDoctorId)
         {
             var roles = await _currentUserService.GetCurrentUserRolesAsync();
@@ -60,13 +43,6 @@
 
         protected async Task<(int TargetId, Response<TResponse>? Error)> GetAuthorizedDoctorId(int? requestDoctorId)
         {
-            // 1. لو دكتور: تجاهل الريكويست وخد الـ ID من التوكن
-            if (CurrentDoctorId.HasValue)
-            {
-                return (CurrentDoctorId.Value, null);
-            }
-
-            // 2. لو مش دكتور: اتأكد إنه أدمن
             var roles = await _currentUserService.GetCurrentUserRolesAsync();
             if (roles.Contains("Admin"))
             {
@@ -76,6 +52,11 @@
                 }
 
                 return (requestDoctorId.Value, null); // error
+            }
+
+            if (CurrentDoctorId.HasValue)
+            {
+                return (CurrentDoctorId.Value, null);
             }
 
             // 3. لو ولا ده ولا ده: رجع Error

@@ -10,6 +10,7 @@
                 .ForMember(dest => dest.AppointmentDateTime,
                            opt => opt.MapFrom(src => src.Appointment.AppointmentDate.ToString("dd/MM/yyyy-HH:mm")))
                 .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Appointment.Patient.FullName))
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Appointment.Doctor.FullName))
                 .ForMember(dest => dest.Diagnosis, opt => opt.MapFrom(src => src.Diagnosis ?? string.Empty))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.DescriptionOfTheVisit ?? string.Empty))
                 .ForMember(dest => dest.AdditionalNotes, opt => opt.MapFrom(src => src.AdditionalNotes ?? string.Empty))

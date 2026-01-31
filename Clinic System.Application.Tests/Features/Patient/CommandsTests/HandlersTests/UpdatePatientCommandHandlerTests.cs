@@ -6,15 +6,20 @@
         private readonly Mock<IPatientService> _mockPatientService;
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<ILogger<UpdatePatientCommandHandler>> _mockLogger;
+
+        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
         private readonly UpdatePatientCommandHandler _handler;
         public UpdatePatientCommandHandlerTests()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockPatientService = new Mock<IPatientService>();
             _mockMapper = new Mock<IMapper>();
+            _mockCurrentUserService = new Mock<ICurrentUserService>();
             _mockLogger = new Mock<ILogger<UpdatePatientCommandHandler>>();
 
-            _handler = new UpdatePatientCommandHandler(_mockPatientService.Object,
+            _handler = new UpdatePatientCommandHandler(
+                _mockCurrentUserService.Object,
+                _mockPatientService.Object,
                 _mockMapper.Object,
                 _mockUnitOfWork.Object,
                 _mockLogger.Object);

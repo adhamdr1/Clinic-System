@@ -668,7 +668,7 @@
         {
             var command = new CreateDoctorCommand { Email = "exists@test.com" };
 
-            _mockIdentityService.Setup(s => s.ExistingEmail(command.Email))
+            _mockIdentityService.Setup(s => s.IsEmailUniqueAsync(command.Email))
                .ReturnsAsync(true);
 
             var result = await _validator.TestValidateAsync(command);
@@ -682,7 +682,7 @@
         {
             var command = new CreateDoctorCommand { Email = "Notexists@test.com" };
 
-            _mockIdentityService.Setup(s => s.ExistingEmail(command.Email))
+            _mockIdentityService.Setup(s => s.IsEmailUniqueAsync(command.Email))
                .ReturnsAsync(false);
 
             var result = await _validator.TestValidateAsync(command);
@@ -695,7 +695,7 @@
         {
             var command = new CreateDoctorCommand { UserName = "Adhamdr1" };
 
-            _mockIdentityService.Setup(s => s.ExistingUserName(command.UserName))
+            _mockIdentityService.Setup(s => s.IsUserNameUniqueAsync(command.UserName))
                .ReturnsAsync(true);
 
             var result = await _validator.TestValidateAsync(command);
@@ -709,7 +709,7 @@
         {
             var command = new CreateDoctorCommand { UserName = "Adhamdr1" };
 
-            _mockIdentityService.Setup(s => s.ExistingUserName(command.UserName))
+            _mockIdentityService.Setup(s => s.IsUserNameUniqueAsync(command.UserName))
                .ReturnsAsync(false);
 
             var result = await _validator.TestValidateAsync(command);

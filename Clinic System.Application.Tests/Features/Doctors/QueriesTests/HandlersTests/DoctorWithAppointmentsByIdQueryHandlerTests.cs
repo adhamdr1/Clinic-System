@@ -2,6 +2,7 @@
 {
     public class DoctorWithAppointmentsByIdQueryHandlerTests
     {
+        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
         private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<IIdentityService> _mockIdentityService;
         private readonly Mock<IMapper> _mockMapper;
@@ -13,8 +14,10 @@
             _mockIdentityService = new Mock<IIdentityService>();
             _mockMapper = new Mock<IMapper>();
             _mockLogger = new Mock<ILogger<DoctorWithAppointmentsByIdQueryHandler>>();
-
-            _handler = new DoctorWithAppointmentsByIdQueryHandler(_mockDoctorService.Object,
+            _mockCurrentUserService = new Mock<ICurrentUserService>();
+            _handler = new DoctorWithAppointmentsByIdQueryHandler(
+                _mockCurrentUserService.Object,
+                _mockDoctorService.Object,
                 _mockMapper.Object,
                 _mockIdentityService.Object,
                 _mockLogger.Object);

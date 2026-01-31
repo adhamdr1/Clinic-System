@@ -2,6 +2,7 @@
 {
     public class BookAppointmentCommandValidatorTests
     {
+        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IDoctorRepository> _mockDoctorRepo;
         private readonly Mock<IPatientRepository> _mockPatientRepo;
@@ -12,13 +13,13 @@
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockDoctorRepo = new Mock<IDoctorRepository>();
             _mockPatientRepo = new Mock<IPatientRepository>();
-
+            _mockCurrentUserService = new Mock<ICurrentUserService>();
             // ربط الـ Repositories بالـ UnitOfWork
             _mockUnitOfWork.SetupGet(u => u.DoctorsRepository).Returns(_mockDoctorRepo.Object);
             _mockUnitOfWork.SetupGet(u => u.PatientsRepository).Returns(_mockPatientRepo.Object);
 
             // إنشاء الـ Validator الفعلي
-            _validator = new BookAppointmentCommandValidator(_mockUnitOfWork.Object);
+            _validator = new BookAppointmentCommandValidator(_mockUnitOfWork.Object, _mockCurrentUserService.Object);
         }
 
         [Fact]
