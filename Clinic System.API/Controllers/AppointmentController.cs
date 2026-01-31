@@ -92,9 +92,6 @@
         [HttpPut("complete")]
         public async Task<IActionResult> CompleteAppointment([FromBody] CompleteAppointmentCommand command)
         {
-            // حقن الـ ID في الـ command قبل إرساله للـ Handler
-            command.DoctorId = 1;
-
             var response = await mediator.Send(command);
             return NewResult(response);
         }
