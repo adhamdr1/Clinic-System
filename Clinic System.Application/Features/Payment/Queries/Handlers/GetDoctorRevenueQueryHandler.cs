@@ -1,28 +1,36 @@
 ﻿namespace Clinic_System.Application.Features.Payments.Queries.Handlers
 {
-    public class GetDoctorRevenueQueryHandler : ResponseHandler, IRequestHandler<GetDoctorRevenueQuery, Response<DoctorRevenueDTO>>
+    public class GetDoctorRevenueQueryHandler : AppRequestHandler<GetDoctorRevenueQuery, DoctorRevenueDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<GetDoctorRevenueQueryHandler> _logger;
 
-        public GetDoctorRevenueQueryHandler(IUnitOfWork unitOfWork, ILogger<GetDoctorRevenueQueryHandler> logger)
+        // 2. تمرير ICurrentUserService للـ Base Class
+        public GetDoctorRevenueQueryHandler(
+            ICurrentUserService currentUserService,
+            IUnitOfWork unitOfWork,
+            ILogger<GetDoctorRevenueQueryHandler> logger) : base(currentUserService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
-        public async Task<Response<DoctorRevenueDTO>> Handle(GetDoctorRevenueQuery request, CancellationToken cancellationToken)
+        public override async Task<Response<DoctorRevenueDTO>> Handle(GetDoctorRevenueQuery request, CancellationToken cancellationToken)
         {
+            var (authorizedId, errorResponse) = await GetAuthorizedDoctorId(request.DoctorId);
+
+            if (errorResponse != null) return errorResponse;
+
+            request.DoctorId = authorizedId;
+
             _logger.LogInformation("Calculating revenue for Doctor ID: {DoctorId}", request.DoctorId);
 
-            // 1. تحديد التواريخ الافتراضية (اليوم)
-            // إذا كان FromDate فارغاً، نأخذ بداية اليوم (الساعة 00:00:00)
+            
             var from = request.FromDate ?? DateTime.Today;
 
             // إذا كان ToDate فارغاً، نأخذ نهاية اليوم (الساعة 23:59:59)
             var to = request.ToDate ?? DateTime.Today.AddDays(1).AddTicks(-1);
 
-            // 2. التحقق من وجود الدكتور
             var doctor = await _unitOfWork.DoctorsRepository.GetByIdAsync(request.DoctorId);
 
             if (doctor == null)
