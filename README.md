@@ -29,7 +29,7 @@
 - [⚙️ Configuration](#️-configuration)
 - [🔮 Future Enhancements](#-future-enhancements)
 - [🤝 Contributing](#-contributing)
-- [👨‍💻 Author](#author)
+- [👨‍💻 Author](#-author)
 <!--
 - [🔑 Default Seeded Users](#-default-seeded-users)
 - [📸 Screenshots](#-screenshots)
@@ -1419,7 +1419,7 @@ Contributions are welcome! Here's how you can help:
 - 🎓 Computer Science Student
 - 📧 Email: adhamdr32@gmail.com
 - 🌐 GitHub: [@adhamdr1](https://github.com/adhamdr1)
-- 💼 LinkedIn: [Adham Mohamed](https://linkedin.com/in/adhamdr1)
+- 💼 LinkedIn: [Adham Mohamed](https://www.linkedin.com/in/adham-mohamed74/)
 
 ---
 
