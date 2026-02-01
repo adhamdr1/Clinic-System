@@ -21,19 +21,20 @@
 - [🎯 Overview](#-overview)
 - [✨ Key Features](#-key-features)
 - [🏗️ Architecture](#️-architecture)
-- [🛠️ Technologies Used](#-technologies-used)
-- [🗄️ Database Schema](#-database-schema)
+- [🛠️ Technologies Used](#️-technologies-used)
+- [🗄️ Database Schema](#️-database-schema)
 - [🔐 Authentication & Authorization](#-authentication--authorization)
 - [🌐 API Endpoints](#-api-endpoints)
 - [💻 Installation](#-installation)
 - [⚙️ Configuration](#️-configuration)
-- [🔑 Default Seeded Users](#-default-seeded-users)
-- [📸 Screenshots](#-screenshots)
 - [🔮 Future Enhancements](#-future-enhancements)
 - [🤝 Contributing](#-contributing)
+- [👨‍💻 Author](#author)
+<!--
+- [🔑 Default Seeded Users](#-default-seeded-users)
+- [📸 Screenshots](#-screenshots)
 - [📄 License](#-license)
-- [👨‍💻 Author](#-author)
-
+-->
 ---
 
 ## 🎯 Overview
@@ -1236,7 +1237,7 @@ Serilog logging settings:
 ```
 
 ---
-
+<!--
 ## 🔑 Default Seeded Users
 
 The system comes pre-loaded with test users for immediate testing:
@@ -1332,7 +1333,7 @@ Role: Patient
 
 ### Pagination Feature
 ![Pagination](./image/Paging.png)
-
+-->
 ---
 
 ## 🔮 Future Enhancements
@@ -1346,7 +1347,6 @@ The following features are planned for future releases:
 
 ### 📱 Communication
 - [ ] **SMS Notifications** - Appointment reminders via SMS (Twilio integration)
-- [ ] **Push Notifications** - Real-time mobile notifications
 - [ ] **WhatsApp Integration** - Automated messages via WhatsApp Business API
 
 ### 🐳 DevOps & Deployment
@@ -1356,26 +1356,29 @@ The following features are planned for future releases:
   - Hangfire dashboard container
 - [ ] **CI/CD Pipeline** - Automated builds and deployments (GitHub Actions)
 - [ ] **Kubernetes** - Orchestration for scalability
-
+<!--
 ### 📊 Analytics & Reporting
 - [ ] **Analytics Dashboard** - Visual charts and statistics
 - [ ] **Revenue Reports** - Detailed financial reporting
 - [ ] **Patient Analytics** - Demographics and visit patterns
 - [ ] **Doctor Performance Metrics** - Appointment statistics and ratings
-
+-->
 ### 🎨 Frontend
 - [ ] **Admin Dashboard** - React/Angular admin panel
 - [ ] **Patient Portal** - Self-service patient website
-- [ ] **Mobile App** - Cross-platform mobile application (Flutter/React Native)
+<!-- - [ ] **Mobile App** - Cross-platform mobile application (Flutter/React Native)-->
 
 ### 🔧 Technical Improvements
 - [ ] **Caching** - Redis integration for performance
-- [ ] **Rate Limiting** - API throttling and abuse prevention
-- [ ] **GraphQL Support** - Alternative to REST API
 - [ ] **SignalR** - Real-time updates for appointments
+<!-- 
+- [ ] **Rate Limiting** - API throttling and abuse prevention 
+- [ ] **GraphQL Support** - Alternative to REST API
 - [ ] **Multi-tenancy** - Support multiple clinic branches
-- [ ] **Audit Logging** - Complete action history tracking
+- [ ] **Audit Logging** - Complete action history tracking 
+-->
 
+<!-- 
 ### 🏥 Medical Features
 - [ ] **Lab Results** - Integration with lab systems
 - [ ] **Medical Imaging** - DICOM image support
@@ -1383,7 +1386,7 @@ The following features are planned for future releases:
 - [ ] **E-Prescriptions** - Electronic prescription submission to pharmacies
 - [ ] **Inventory Management** - Medicine and equipment tracking
 - [ ] **Insurance Claims** - Automated insurance processing
-
+-->
 ---
 
 ## 🤝 Contributing
@@ -1407,63 +1410,16 @@ Contributions are welcome! Here's how you can help:
    ```
 5. **Open a Pull Request**
 
-### Contribution Guidelines
-
-- ✅ Follow C# coding conventions and best practices
-- ✅ Write clear, concise commit messages
-- ✅ Add unit tests for new features
-- ✅ Update documentation for API changes
-- ✅ Ensure all tests pass before submitting PR
-- ✅ Keep PRs focused on a single feature or fix
-
-### Code of Conduct
-
-- Be respectful and inclusive
-- Provide constructive feedback
-- Focus on the code, not the person
-- Help others learn and grow
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2026 Adham Adel
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
 
 ## 👨‍💻 Author
 
-**Adham Adel**
+**Adham Mohamed**
 
 - 💼 Backend Developer specializing in ASP.NET Core
 - 🎓 Computer Science Student
 - 📧 Email: adhamdr32@gmail.com
 - 🌐 GitHub: [@adhamdr1](https://github.com/adhamdr1)
-- 💼 LinkedIn: [Adham Adel](https://linkedin.com/in/adhamdr1)
+- 💼 LinkedIn: [Adham Mohamed](https://linkedin.com/in/adhamdr1)
 
 ---
 
@@ -1479,21 +1435,9 @@ Special thanks to:
 
 ---
 
-## 📞 Support
-
-If you have any questions, issues, or suggestions:
-
-- 📧 **Email**: adhamdr32@gmail.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/adhamdr1/Clinic-System/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/adhamdr1/Clinic-System/discussions)
-
----
-
 <div align="center">
 
 ### ⭐ Star this repository if you find it helpful!
-
-**Built with ❤️ using ASP.NET Core**
 
 [Back to Top ↑](#-elite-clinic-management-system)
 
