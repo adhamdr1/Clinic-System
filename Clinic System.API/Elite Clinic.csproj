@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Clinic_System.API</RootNamespace>
+    <UserSecretsId>de8c9e95-8afb-4ba2-a96d-726f9b00456e</UserSecretsId>
   </PropertyGroup>
 
 	<ItemGroup>
