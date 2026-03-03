@@ -28,6 +28,10 @@ global using System.Security.Cryptography;
 global using Clinic_System.Core.Interfaces.UnitOfWork;
 global using Microsoft.AspNetCore.WebUtilities;
 global using Microsoft.AspNetCore.Http;
+global using System.Text.Json;
+global using Microsoft.Extensions.Logging;
+global using StackExchange.Redis; // دي اللي جواها الـ ConnectionMultiplexer
+
 
 
 

@@ -29,8 +29,8 @@
                     new Patient { Id = 1, FullName = "Dr. Smith" },
                     new Patient { Id = 2, FullName = "Dr. Jones" }
                 },
-                count: 2,
-                pageIndex: 1,
+                totalCount: 2,
+                currentPage: 1,
                 pageSize: 10
             );
             _mockPatientService.Setup(s => s.GetPatientsListPagingAsync(request.PageNumber, request.PageSize, It.IsAny<CancellationToken>()))
@@ -57,7 +57,7 @@
         {
             // Arrange
             var request = new GetPatientListPagingQuery { PageNumber = 1, PageSize = 10 };
-            var Patients = new PagedResult<Patient>(new List<Patient>(), count: 0, pageIndex: 1, pageSize: 10);
+            var Patients = new PagedResult<Patient>(new List<Patient>(), totalCount: 0, currentPage: 1, pageSize: 10);
 
             _mockPatientService.Setup(s => s.GetPatientsListPagingAsync(request.PageNumber, request.PageSize, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Patients);
@@ -118,8 +118,8 @@
                 {
                     new Patient { Id = 1, FullName = "Dr. Smith" }
                 },
-                count: 1,
-                pageIndex: 1,
+                totalCount: 1,
+                currentPage: 1,
                 pageSize: 10
             );
             _mockPatientService.Setup(s => s.GetPatientsListPagingAsync(request.PageNumber, request.PageSize, It.IsAny<CancellationToken>()))

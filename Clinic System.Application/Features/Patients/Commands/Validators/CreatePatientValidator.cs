@@ -65,7 +65,7 @@
                     // Check if email exists
                     bool exists = await _identityService.IsEmailUniqueAsync(email);
                     // Return true if NOT exists (Valid), false if exists (Invalid)
-                    return !exists;
+                    return exists;
                 })
                 .WithMessage("Email is already exists");
 
@@ -75,7 +75,7 @@
                 .MustAsync(async (userName, cancellationToken) =>
                 {
                     bool exists = await _identityService.IsUserNameUniqueAsync(userName);
-                    return !exists;
+                    return exists;
                 })
                 .WithMessage("Username is already exists");
 

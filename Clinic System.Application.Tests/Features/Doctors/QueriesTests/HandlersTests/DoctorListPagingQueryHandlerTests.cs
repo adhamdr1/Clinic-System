@@ -4,17 +4,20 @@
     {
         private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<ICacheService> _mockCache;
         private readonly Mock<ILogger<DoctorListPagingQueryHandler>> _mockLogger;
         private readonly DoctorListPagingQueryHandler _handler;
         public DoctorListPagingQueryHandlerTests()
         {
             _mockDoctorService = new Mock<IDoctorService>();
             _mockMapper = new Mock<IMapper>();
+            _mockCache = new Mock<ICacheService>();
             _mockLogger = new Mock<ILogger<DoctorListPagingQueryHandler>>();
 
             _handler = new DoctorListPagingQueryHandler(_mockDoctorService.Object,
                 _mockMapper.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockCache.Object);
         }
 
         [Fact]
@@ -29,8 +32,8 @@
                     new Doctor { Id = 1, FullName = "Dr. Smith" },
                     new Doctor { Id = 2, FullName = "Dr. Jones" }
                 },
-                count: 2,
-                pageIndex: 1,
+                totalCount: 2,
+                currentPage: 1,
                 pageSize: 10
             );
             _mockDoctorService.Setup(s => s.GetDoctorsListPagingAsync(request.PageNumber, request.PageSize, It.IsAny<CancellationToken>()))
@@ -57,7 +60,7 @@
         {
             // Arrange
             var request = new GetDoctorListPagingQuery { PageNumber = 1, PageSize = 10 };
-            var doctors = new PagedResult<Doctor>(new List<Doctor>(), count: 0, pageIndex: 1, pageSize: 10);
+            var doctors = new PagedResult<Doctor>(new List<Doctor>(), currentPage: 1, totalCount: 0, pageSize: 10);
 
             _mockDoctorService.Setup(s => s.GetDoctorsListPagingAsync(request.PageNumber, request.PageSize, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctors);
@@ -118,8 +121,8 @@
                 {
                     new Doctor { Id = 1, FullName = "Dr. Smith" }
                 },
-                count: 1,
-                pageIndex: 1,
+                totalCount: 1,
+                currentPage: 1,
                 pageSize: 10
             );
             _mockDoctorService.Setup(s => s.GetDoctorsListPagingAsync(request.PageNumber, request.PageSize, It.IsAny<CancellationToken>()))

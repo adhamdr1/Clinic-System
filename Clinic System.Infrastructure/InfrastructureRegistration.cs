@@ -21,6 +21,23 @@
 
             // بيقرأ القسم من الـ JSON ويربطه بالكلاس
             services.Configure<JwtSettings>(configuration.GetSection("JWT"));
+
+
+            var redisConnectionString = configuration.GetSection("Redis:ConnectionString").Value;
+
+            if (!string.IsNullOrEmpty(redisConnectionString))
+            {
+                // 2. تظبيط إعدادات الاتصال (زي الـ Retries)
+                var redisConfiguration = ConfigurationOptions.Parse(redisConnectionString);
+                redisConfiguration.ReconnectRetryPolicy = new ExponentialRetry(500, 2000);
+
+                // 3. تسجيل مأمور السنترال (ConnectionMultiplexer) كـ Singleton
+                services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConfiguration));
+            }
+
+            // 4. تسجيل الـ Cache Service بتاعتنا عشان الـ Application Layer تعرف تشوفها
+            services.AddScoped<ICacheService, RedisCacheService>();
+
             return services;
         }
     }
