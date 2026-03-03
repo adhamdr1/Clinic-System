@@ -1,4 +1,4 @@
-﻿namespace Clinic_System.Infrastructure.Helpers
+﻿namespace Clinic_System.Infrastructure.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
