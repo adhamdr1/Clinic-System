@@ -9,7 +9,8 @@
             new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = false
+                WriteIndented = false,
+                PropertyNameCaseInsensitive = true
             };
 
         public RedisCacheService(IConnectionMultiplexer connectionMultiplexer, ILogger<RedisCacheService> logger)
@@ -83,6 +84,34 @@
             catch (Exception ex) when (ex is RedisConnectionException || ex is RedisTimeoutException)
             {
                 _logger.LogWarning(ex, "Redis is down! Failed to REMOVE key: {Key}", key);
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveByPrefixAsync(string prefixKey)
+        {
+            try
+            {
+                // 1. بنجيب الـ EndPoint اللي إحنا متصلين بيها (عشان ندور في الـ Server كله)
+                var endpoint = _db.Multiplexer.GetEndPoints().First();
+                var server = _db.Multiplexer.GetServer(endpoint);
+
+                // 2. بندور على كل الـ Keys اللي بتبدأ بالكلمة اللي بعتناها (مثلاً: DoctorsList*)
+                var keys = server.Keys(pattern: $"{prefixKey}*").ToArray();
+
+                if (keys.Any())
+                {
+                    // 3. لو لقينا مفاتيح، نمسحها كلها بضربة واحدة
+                    await _db.KeyDeleteAsync(keys);
+                    _logger.LogInformation("Cache invalidated! Deleted {Count} keys starting with '{Prefix}'", keys.Length, prefixKey);
+                    return true;
+                }
+
+                return false; // مفيش حاجة اتمسحت لأن الكاش كان فاضي أصلاً
+            }
+            catch (Exception ex) when (ex is RedisConnectionException || ex is RedisTimeoutException)
+            {
+                _logger.LogWarning(ex, "Redis is down! Failed to REMOVE keys by prefix: {Prefix}", prefixKey);
                 return false;
             }
         }

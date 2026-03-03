@@ -8,14 +8,15 @@
         private readonly IEmailService emailService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CreateDoctorCommandHandler> logger;
-
+        private readonly ICacheService cacheService;
         public CreateDoctorCommandHandler(
             IDoctorService doctorService,
             IMapper mapper,
             IIdentityService identityService,
             IEmailService emailService,
             IUnitOfWork unitOfWork,
-            ILogger<CreateDoctorCommandHandler> logger
+            ILogger<CreateDoctorCommandHandler> logger,
+            ICacheService cacheService
         )
         {
             this.doctorService = doctorService;
@@ -24,6 +25,7 @@
             this.emailService = emailService;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
+            this.cacheService = cacheService;
         }
 
         public async Task<Response<CreateDoctorDTO>> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
@@ -55,6 +57,9 @@
                         return BadRequest<CreateDoctorDTO>("Failed to create doctor");
                     }
                     transaction.Complete();
+
+                    logger.LogInformation("Invalidating doctors cache after creating a new doctor.");
+                    await cacheService.RemoveByPrefixAsync("DoctorsList");
                 }
                 catch (Exception ex)
                 {

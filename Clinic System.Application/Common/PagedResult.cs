@@ -11,15 +11,16 @@
         public bool HasPrevious => CurrentPage > 1;
         public bool HasNext => CurrentPage < TotalPages;
 
-        // 💡 التعديل المقترح: Constructor يحسب TotalPages تلقائياً
-        public PagedResult(IEnumerable<T> items, int count, int pageIndex, int pageSize)
+        [JsonConstructor]
+        public PagedResult(IEnumerable<T> items, int totalCount, int currentPage, int pageSize)
         {
-            CurrentPage = pageIndex;
+            CurrentPage = currentPage;
             PageSize = pageSize;
-            TotalCount = count;
-            Items = items;
-            // حساب إجمالي الصفحات (باستخدام Math.Ceiling لتأمين الحساب لأي باقي)
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            TotalCount = totalCount;
+            Items = items ?? new List<T>();
+
+            // حساب إجمالي الصفحات
+            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
         }
     }
 }

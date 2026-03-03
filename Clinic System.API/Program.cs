@@ -200,3 +200,7 @@ namespace Clinic_System.API
         }
     }
 }
+//{
+//    "emailOrUserName": "dr.ahmed@clinic.com",
+//  "password": "Doctor@123"
+//}
