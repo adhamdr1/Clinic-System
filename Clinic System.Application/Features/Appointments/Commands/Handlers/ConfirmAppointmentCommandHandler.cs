@@ -5,17 +5,20 @@
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICacheService cacheService;
         private readonly ILogger<ConfirmAppointmentCommandHandler> logger;
         public ConfirmAppointmentCommandHandler(
             ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
+            ICacheService cacheService,
             IUnitOfWork unitOfWork,
             ILogger<ConfirmAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
+            this.cacheService = cacheService;
             this.logger = logger;
         }
 
@@ -46,6 +49,14 @@
                 var ConfirmAppointmentDTO = mapper.Map<ConfirmAppointmentDTO>(ConfirmAppointment);
 
                 logger.LogInformation("Appointment Confirmed successfully for PatientId: {PatientId}, DoctorId: {DoctorId}", ConfirmAppointment.PatientId, ConfirmAppointment.DoctorId);
+
+                await cacheService.RemoveByPrefixAsync(
+                    $"UpcomingAppts_Patient_{ConfirmAppointment.PatientId}",
+                    $"UpcomingAppts_Doctor_{ConfirmAppointment.DoctorId}",
+                    $"DoctorApptsByStatus_{ConfirmAppointment.DoctorId}",
+                    "AdminApptsByStatus",
+                    "AdminStats"
+                );
 
                 return Success(ConfirmAppointmentDTO, "Appointment Confirmed successfully.");
 
