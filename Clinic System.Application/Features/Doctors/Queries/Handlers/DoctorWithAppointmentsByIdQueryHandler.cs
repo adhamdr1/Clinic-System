@@ -5,6 +5,7 @@
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
         private readonly IIdentityService identityService;
+        private readonly ICacheService cacheService;
         private readonly ILogger<DoctorWithAppointmentsByIdQueryHandler> logger;
 
         public DoctorWithAppointmentsByIdQueryHandler(
@@ -12,11 +13,13 @@
             IDoctorService doctorService,
             IMapper mapper,
             IIdentityService identityService,
+            ICacheService cacheService,
             ILogger<DoctorWithAppointmentsByIdQueryHandler> logger) : base(currentUserService)
         {
             this.doctorService = doctorService;
             this.mapper = mapper;
             this.identityService = identityService;
+            this.cacheService = cacheService;
             this.logger = logger;
         }
 
@@ -25,6 +28,19 @@
             var authResult = await ValidateDoctorAccess(request.Id);
             if (authResult != null)
                 return authResult;
+
+            // أ. بناء مفتاح مميز للصفحة دي تحديداً
+            var cacheKey = $"DoctorWithAppointmentsById:{request.Id}";
+
+            // ب. نسأل الـ Redis: "هل عندك الداتا دي؟"
+            var cachedDoctor = await cacheService.GetDataAsync<GetDoctorWhitAppointmentDTO>(cacheKey);
+
+            // ج. لو الداتا موجودة في الكاش، هنرجعها فوراً ومش هنكمل باقي الكود (وفرنا رحلة للداتابيز)
+            if (cachedDoctor != null)
+            {
+                logger.LogInformation("Successfully retrieved doctor with appointments from CACHE for {CacheKey}", cacheKey);
+                return Success(cachedDoctor); // هنرجع نفس نوع الـ Response اللي الفرونت مستنيه
+            }
 
             var doctor = await doctorService.GetDoctorWithAppointmentsByIdAsync(request.Id, cancellationToken);
 
@@ -50,6 +66,8 @@
             }
 
             logger.LogInformation("Successfully retrieved doctor with appointments, ID: {Id}", request.Id);
+
+            await cacheService.SetDataAsync(cacheKey, doctorsMapper, TimeSpan.FromMinutes(10)); 
 
             return Success(doctorsMapper);
         }

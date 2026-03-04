@@ -5,14 +5,16 @@
         private readonly IDoctorService doctorService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICacheService cacheService;
         private readonly ILogger<UpdateDoctorCommandHandler> logger;
 
         public UpdateDoctorCommandHandler(IDoctorService doctorService, ICurrentUserService currentUserService
-            , IMapper mapper, IUnitOfWork unitOfWork, ILogger<UpdateDoctorCommandHandler> logger) : base(currentUserService) //
+            , IMapper mapper, IUnitOfWork unitOfWork, ICacheService cacheService, ILogger<UpdateDoctorCommandHandler> logger) : base(currentUserService) //
         {  
             this.doctorService = doctorService;
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
+            this.cacheService = cacheService;
             this.logger = logger;
         }
 
@@ -32,6 +34,9 @@
                 return NotFound<UpdateDoctorDTO>($"Doctor with Id {request.Id} not found");
             }
 
+            // 1. امسك التخصص القديم قبل التعديل
+            var oldSpecialization = doctor.Specialization.Trim().ToLower();
+
             mapper.Map(request, doctor);
 
             await doctorService.UpdateDoctor(doctor, cancellationToken);
@@ -45,8 +50,19 @@
             }
 
             var doctorsMapper = mapper.Map<UpdateDoctorDTO>(doctor);
+            var newSpecialization = doctorsMapper.Specialization.Trim().ToLower();
+
 
             logger.LogInformation("Doctor profile with Id {DoctorId} updated successfully.", request.Id);
+
+            await cacheService.RemoveByPrefixAsync(
+                "DoctorsList",                                  // 1. بيمسح كل صفحات ليستة الدكاترة
+                $"DoctorListBySpecialization:{oldSpecialization}", // 2. بيمسح كل صفحات التخصصات القديمة
+                $"DoctorListBySpecialization:{newSpecialization}", // 2. بيمسح كل صفحات التخصصات الجديدة
+                $"DoctorProfile_{request.Id}",                  // 3. بيمسح البروفايل القديم بتاع الدكتور ده
+                $"DoctorWithAppointmentsById:{request.Id}"      // 4. بيمسح مواعيد الدكتور ده
+            );
+
             return Success<UpdateDoctorDTO>(doctorsMapper, "Doctor updated successfully");
         }
     }
