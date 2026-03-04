@@ -3,7 +3,6 @@
     public class CancelAppointmentCommand : IRequest<Response<CaneclledAndNoShowAppointmentDTO>>
     {
         public int AppointmentId { get; set; }
-        [JsonIgnore]
         public int PatientId { get; set; }
     }
 }

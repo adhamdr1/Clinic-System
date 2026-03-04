@@ -3,7 +3,6 @@
     public class RescheduleAppointmentCommand : IRequest<Response<AppointmentDTO>>
     {
         public int AppointmentId { get; set; }
-        [JsonIgnore]
         public int PatientId { get; set; }
         public DateTime AppointmentDate { get; set; }
         public TimeSpan AppointmentTime { get; set; }

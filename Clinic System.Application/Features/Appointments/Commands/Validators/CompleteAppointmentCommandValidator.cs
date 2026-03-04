@@ -2,11 +2,19 @@
 {
     public class CompleteAppointmentCommandValidator : AbstractValidator<CompleteAppointmentCommand>
     {
-        public CompleteAppointmentCommandValidator()
+        private readonly ICurrentUserService _currentUserService;
+
+        public CompleteAppointmentCommandValidator(ICurrentUserService currentUserService)
         {
+            _currentUserService = currentUserService;
+
             RuleFor(x => x.AppointmentId)
                 .GreaterThan(0)
                 .WithMessage("AppointmentId must be greater than 0.");
+
+            RuleFor(x => x.DoctorId)
+                .GreaterThan(0).WithMessage("Invalid Doctor ID.")
+                .When(x => _currentUserService.DoctorId == null);
 
             RuleFor(x => x.Diagnosis)
                 .NotEmpty()
