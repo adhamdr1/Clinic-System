@@ -88,7 +88,7 @@
             }
         }
 
-        public async Task<bool> RemoveByPrefixAsync(string prefixKey)
+        public async Task<bool> RemoveByPrefixAsync(params string[] prefixKeys)
         {
             try
             {
@@ -96,14 +96,23 @@
                 var endpoint = _db.Multiplexer.GetEndPoints().First();
                 var server = _db.Multiplexer.GetServer(endpoint);
 
-                // 2. بندور على كل الـ Keys اللي بتبدأ بالكلمة اللي بعتناها (مثلاً: DoctorsList*)
-                var keys = server.Keys(pattern: $"{prefixKey}*").ToArray();
+                // هنعمل ليست نجمع فيها كل المفاتيح اللي لقيناها
+                var allKeysToDelete = new List<RedisKey>();
 
-                if (keys.Any())
+                // نلف على كل الـ Prefixes اللي إنت بعتها (مثلاً: Profile_5, DoctorsList)
+                foreach (var prefix in prefixKeys)
+                {
+                    var keys = server.Keys(pattern: $"{prefix}*").ToArray();
+                    allKeysToDelete.AddRange(keys);
+                }
+
+                if (allKeysToDelete.Any())
                 {
                     // 3. لو لقينا مفاتيح، نمسحها كلها بضربة واحدة
-                    await _db.KeyDeleteAsync(keys);
-                    _logger.LogInformation("Cache invalidated! Deleted {Count} keys starting with '{Prefix}'", keys.Length, prefixKey);
+                    await _db.KeyDeleteAsync(allKeysToDelete.ToArray());
+
+                    _logger.LogInformation("Cache invalidated! Deleted {Count} keys based on {PrefixCount} prefixes.",
+                              allKeysToDelete.Count, prefixKeys.Length);
                     return true;
                 }
 
@@ -111,7 +120,7 @@
             }
             catch (Exception ex) when (ex is RedisConnectionException || ex is RedisTimeoutException)
             {
-                _logger.LogWarning(ex, "Redis is down! Failed to REMOVE keys by prefix: {Prefix}", prefixKey);
+                _logger.LogWarning(ex, "Redis is down! Failed to REMOVE keys by prefixs");
                 return false;
             }
         }

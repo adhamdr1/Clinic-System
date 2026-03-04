@@ -11,6 +11,6 @@
         // بنمسح الداتا من الكاش (لو حصل Update في الداتابيز)
         Task<bool> RemoveDataAsync(string key);
 
-        Task<bool> RemoveByPrefixAsync(string prefixKey);
+        Task<bool> RemoveByPrefixAsync(params string[] prefixKeys);
     }
 }

@@ -59,7 +59,9 @@
                     transaction.Complete();
 
                     logger.LogInformation("Invalidating doctors cache after creating a new doctor.");
-                    await cacheService.RemoveByPrefixAsync("DoctorsList");
+
+                    await cacheService.RemoveByPrefixAsync("DoctorsList",
+                        $"DoctorListBySpecialization:{request.Specialization.Trim().ToLower()}");
                 }
                 catch (Exception ex)
                 {

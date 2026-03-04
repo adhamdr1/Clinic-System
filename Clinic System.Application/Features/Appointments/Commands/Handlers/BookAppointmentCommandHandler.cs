@@ -4,17 +4,20 @@
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
+        private readonly ICacheService cacheService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<BookAppointmentCommandHandler> logger;
         public BookAppointmentCommandHandler(
             ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
+            ICacheService cacheService,
             IUnitOfWork unitOfWork,
             ILogger<BookAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
+            this.cacheService = cacheService;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
         }
@@ -42,6 +45,14 @@
                 var appointmentDto = mapper.Map<AppointmentDTO>(newAppointment);
     
                 logger.LogInformation("Appointment booked successfully for PatientId: {PatientId}, DoctorId: {DoctorId}", request.PatientId, request.DoctorId);
+
+                await cacheService.RemoveByPrefixAsync(
+                    $"UpcomingAppts_Patient_{newAppointment.PatientId}",  // تحديث مواعيد المريض
+                    $"UpcomingAppts_Doctor_{newAppointment.DoctorId}",    // تحديث مواعيد الدكتور
+                    $"DoctorApptsByStatus_{newAppointment.DoctorId}",     // تحديث قوائم حالات الدكتور
+                    "AdminApptsByStatus",                                 // تحديث قوائم حالات الأدمن
+                    "AdminStats"                                          // تحديث إحصائيات الداشبورد
+                );
 
                 return Created(appointmentDto, "Appointment booked successfully.");
             }

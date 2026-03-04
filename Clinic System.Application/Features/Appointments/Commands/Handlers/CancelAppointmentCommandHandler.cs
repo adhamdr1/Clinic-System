@@ -4,11 +4,13 @@
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
+        private readonly ICacheService cacheService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CancelAppointmentCommandHandler> logger;
         public CancelAppointmentCommandHandler(
             IAppointmentService appointmentService,
             IMapper mapper,
+            ICacheService cacheService,
             IUnitOfWork unitOfWork,
            ILogger<CancelAppointmentCommandHandler> logger,
             ICurrentUserService currentUserService) : base(currentUserService)
@@ -16,6 +18,7 @@
             this.appointmentService = appointmentService;
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
+            this.cacheService = cacheService;
             this.logger = logger;
         }
 
@@ -44,6 +47,16 @@
                 var CaneclledAndNoShowAppointmentDTO = mapper.Map<CaneclledAndNoShowAppointmentDTO>(CancelAppointment);
 
                 logger.LogInformation("Appointment Cancelled successfully for PatientId: {PatientId}, DoctorId: {DoctorId}", CancelAppointment.PatientId, CancelAppointment.DoctorId);
+
+                await cacheService.RemoveByPrefixAsync(
+                    $"UpcomingAppts_Patient_{CancelAppointment.PatientId}",
+                    $"PastAppts_Patient_{CancelAppointment.PatientId}",      // مسحنا الماضي كمان لأنه ممكن يظهر فيه كـ ملغي
+                    $"UpcomingAppts_Doctor_{CancelAppointment.DoctorId}",
+                    $"PastAppts_Doctor_{CancelAppointment.DoctorId}",        // مسحنا الماضي
+                    $"DoctorApptsByStatus_{CancelAppointment.DoctorId}",
+                    "AdminApptsByStatus",
+                    "AdminStats"
+                );
 
                 return Success(CaneclledAndNoShowAppointmentDTO, "Appointment Cancelled successfully.");
 

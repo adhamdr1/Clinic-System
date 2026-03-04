@@ -4,16 +4,19 @@
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
+        private readonly ICacheService cacheService;
         private readonly ILogger<PastAppointmentsForPatientQueryHandler> logger;
 
         public PastAppointmentsForPatientQueryHandler(
             ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
+            ICacheService cacheService,
             ILogger<PastAppointmentsForPatientQueryHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
+            this.cacheService = cacheService;
             this.logger = logger;
         }
 
@@ -27,6 +30,12 @@
 
             request.PatientId = authorizedId;
 
+            string cacheKey = $"PastAppts_Patient_{request.PatientId}_Page_{request.PageNumber}_Size_{request.PageSize}";
+
+            var cachedResult = await cacheService.GetDataAsync<PagedResult<PatientAppointmentDTO>>(cacheKey);
+            if (cachedResult != null)
+                return Success(cachedResult);
+
             var PatientwithAppointment = await appointmentService.GetPastAppointmentsForPatientAsync(request);
 
             var PatientwithAppointmentmapper = mapper.Map<List<PatientAppointmentDTO>>(PatientwithAppointment.Items);
@@ -35,6 +44,8 @@
                 PatientwithAppointment.CurrentPage, PatientwithAppointment.PageSize);
 
             logger.LogInformation("Successfully retrieved {Count} appointments for PageNumber={PageNumber}, PageSize={PageSize}", PatientwithAppointment.Items.Count(), request.PageNumber, request.PageSize);
+
+            await cacheService.SetDataAsync(cacheKey, pagedResult, TimeSpan.FromMinutes(60));
 
             return Success(pagedResult);
         }

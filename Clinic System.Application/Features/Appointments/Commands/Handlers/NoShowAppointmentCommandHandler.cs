@@ -5,11 +5,13 @@
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICacheService cacheService;
         private readonly ILogger<NoShowAppointmentCommandHandler> logger;
         public NoShowAppointmentCommandHandler(
              ICurrentUserService currentUserService,
             IAppointmentService appointmentService, 
             IMapper mapper,
+            ICacheService cacheService,
             IUnitOfWork unitOfWork,
             ILogger<NoShowAppointmentCommandHandler> logger) : base(currentUserService)
         {
@@ -17,6 +19,7 @@
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
+            this.cacheService = cacheService;
         }
 
         public override async Task<Response<CaneclledAndNoShowAppointmentDTO>> Handle(NoShowAppointmentCommand request, CancellationToken cancellationToken)
@@ -45,6 +48,16 @@
                 var CaneclledAndNoShowAppointmentDTO = mapper.Map<CaneclledAndNoShowAppointmentDTO>(NoShowAppointment);
 
                 logger.LogInformation("Appointment NoShowed successfully for PatientId: {PatientId}, DoctorId: {DoctorId}", NoShowAppointment.PatientId, NoShowAppointment.DoctorId);
+
+                await cacheService.RemoveByPrefixAsync(
+                    $"UpcomingAppts_Patient_{NoShowAppointment.PatientId}",
+                    $"PastAppts_Patient_{NoShowAppointment.PatientId}",      // مسحنا الماضي كمان لأنه ممكن يظهر فيه كـ ملغي
+                    $"UpcomingAppts_Doctor_{NoShowAppointment.DoctorId}",
+                    $"PastAppts_Doctor_{NoShowAppointment.DoctorId}",        // مسحنا الماضي
+                    $"DoctorApptsByStatus_{NoShowAppointment.DoctorId}",
+                    "AdminApptsByStatus",
+                    "AdminStats"
+                );
 
                 return Success(CaneclledAndNoShowAppointmentDTO, "Appointment NoShowed successfully.");
 

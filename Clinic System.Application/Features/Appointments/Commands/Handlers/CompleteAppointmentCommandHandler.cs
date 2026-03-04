@@ -1,24 +1,24 @@
-﻿using Clinic_System.Application.Service.Interface;
-using Clinic_System.Core.Entities;
-
-namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
+﻿namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
 {
     public class CompleteAppointmentCommandHandler : AppRequestHandler<CompleteAppointmentCommand, CompleteAppointmentDTO>
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
+        private readonly ICacheService cacheService;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILogger<CompleteAppointmentCommandHandler> logger;
         public CompleteAppointmentCommandHandler(
             ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
+            ICacheService cacheService,
             IUnitOfWork unitOfWork,
             ILogger<CompleteAppointmentCommandHandler> logger) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
+            this.cacheService = cacheService;
             this.logger = logger;
         }
 
@@ -47,6 +47,17 @@ namespace Clinic_System.Application.Features.Appointments.Commands.Handlers
                 var CompleteAppointmentDTO = mapper.Map<CompleteAppointmentDTO>(CompleteAppointment);
 
                 logger.LogInformation("Appointment Completeed successfully for PatientId: {PatientId}, DoctorId: {DoctorId}", CompleteAppointment.PatientId, CompleteAppointment.DoctorId);
+
+
+                await cacheService.RemoveByPrefixAsync(
+                    $"UpcomingAppts_Patient_{CompleteAppointment.PatientId}",
+                    $"PastAppts_Patient_{CompleteAppointment.PatientId}",      // مسحنا الماضي كمان لأنه ممكن يظهر فيه كـ ملغي
+                    $"UpcomingAppts_Doctor_{CompleteAppointment.DoctorId}",
+                    $"PastAppts_Doctor_{CompleteAppointment.DoctorId}",        // مسحنا الماضي
+                    $"DoctorApptsByStatus_{CompleteAppointment.DoctorId}",
+                    "AdminApptsByStatus",
+                    "AdminStats"
+                );
 
                 return Success(CompleteAppointmentDTO, "Appointment Completeed successfully.");
 

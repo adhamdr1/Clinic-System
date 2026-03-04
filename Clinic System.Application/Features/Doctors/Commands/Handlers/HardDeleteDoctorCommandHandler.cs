@@ -5,13 +5,15 @@
         private readonly IDoctorService doctorService;
         private readonly IIdentityService identityService;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ICacheService cacheService;
         private readonly ILogger<HardDeleteDoctorCommandHandler> logger;
         public HardDeleteDoctorCommandHandler(IDoctorService doctorService
-            , IIdentityService identityService, IUnitOfWork unitOfWork, ILogger<HardDeleteDoctorCommandHandler> logger)
+            , IIdentityService identityService, IUnitOfWork unitOfWork, ICacheService cacheService, ILogger<HardDeleteDoctorCommandHandler> logger)
         {
             this.doctorService = doctorService;
             this.identityService = identityService;
             this.unitOfWork = unitOfWork;
+            this.cacheService = cacheService;
             this.logger = logger;
         }
 
@@ -25,6 +27,8 @@
                 logger.LogWarning("Doctor with Id {DoctorId} not found", request.Id);
                 return NotFound<string>($"Doctor with Id {request.Id} not found");
             }
+
+            var Specialization = doctor.Specialization.Trim().ToLower();
 
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
@@ -49,6 +53,13 @@
                     }
 
                     transaction.Complete();
+
+                    await cacheService.RemoveByPrefixAsync(
+                        "DoctorsList",                                  // 1. بيمسح كل صفحات ليستة الدكاترة
+                        $"DoctorListBySpecialization:{Specialization}", // 2. بيمسح كل صفحات التخصصات
+                        $"DoctorProfile_{request.Id}",                  // 3. بيمسح البروفايل القديم بتاع الدكتور ده
+                        $"DoctorWithAppointmentsById:{request.Id}"      // 4. بيمسح مواعيد الدكتور ده
+                    );
                 }
                 catch (Exception ex)
                 {
