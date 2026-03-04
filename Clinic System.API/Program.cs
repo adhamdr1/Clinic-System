@@ -1,4 +1,4 @@
-﻿using Clinic_System.Infrastructure.Authentication.Models;
+﻿using Clinic_System.API.Extensions;
 
 namespace Clinic_System.API
 {
@@ -144,6 +144,8 @@ namespace Clinic_System.API
                     });
                 });
 
+                builder.Services.AddCustomRateLimiting();
+
                 builder.Services.AddPersistenceDependencies();
                 builder.Services.AddApplicationDependencies();
                 builder.Services.AddInfrastructureDependencies(builder.Configuration);
@@ -178,6 +180,7 @@ namespace Clinic_System.API
                 app.UseCors("AllowAll");
 
                 app.UseAuthentication();
+                app.UseRateLimiter();
                 app.UseAuthorization();
 
 

@@ -71,6 +71,7 @@
 
         [AllowAnonymous]
         [HttpPost("create")]
+        [EnableRateLimiting("AuthLimiter")]
         public async Task<IActionResult> CreatePatient([FromBody] CreatePatientCommand command)
         {
             command.BaseUrl = $"{Request.Scheme}://{Request.Host.Value}";
