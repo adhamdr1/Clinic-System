@@ -1,6 +1,4 @@
-﻿using Clinic_System.API.Extensions;
-
-namespace Clinic_System.API
+﻿namespace Clinic_System.API
 {
     public class Program
     {
@@ -24,140 +22,24 @@ namespace Clinic_System.API
                     .ReadFrom.Services(services);
                 });
 
-
                 var connectionString = builder.Configuration.GetSection("constr").Value;
 
-                // Database Configuration
                 builder.Services.AddDbContext<AppDbContext>(options =>
                 {
                     options.UseLazyLoadingProxies().UseSqlServer(connectionString);
                 });
 
-                // إضافة Hangfire Services
-                builder.Services.AddHangfire(config =>
-                               config.UseSqlServerStorage(connectionString));
-
-                builder.Services.AddHangfireServer(); // تشغيل الـ Server المسؤول عن تنفيذ المهام
-
-                // Identity Configuration
-                builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-                {
-                    // Password settings
-                    options.Password.RequireDigit = true;
-                    options.Password.RequireLowercase = true;
-                    options.Password.RequireUppercase = true;
-                    options.Password.RequireNonAlphanumeric = true;
-                    options.Password.RequiredLength = 8;
-
-                    // User settings
-                    options.User.RequireUniqueEmail = true;
-                    options.SignIn.RequireConfirmedEmail = true;
-
-                    // Lockout settings
-                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                    options.Lockout.MaxFailedAccessAttempts = 5;
-                    options.Lockout.AllowedForNewUsers = true;
-                })
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-
-                // JWT Authentication
-                var jwtSettings = builder.Configuration.GetSection("JWT").Get<JwtSettings>();
-
-                builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.SaveToken = true;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtSettings.IssuerIP,
-                        ValidAudience = jwtSettings.AudienceIP,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecritKey!))
-                        //ClockSkew = TimeSpan.Zero
-                    };
-                });
-
-                builder.Services.AddControllers();
-
-                // Swagger/OpenAPI Configuration
-                builder.Services.AddEndpointsApiExplorer();
-                builder.Services.AddSwaggerGen(c =>
-                {
-                    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Elite Clinic", Version = "v1" });
-                    c.EnableAnnotations();
-
-                    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-                    {
-                        // الاسم الرسمي للهيدر في بروتوكول HTTP
-                        Name = "Authorization",
-
-                        // وصف بسيط ومختصر يطمن المستخدم إنه يحط التوكن بس
-                        Description = "Enter your JWT Access Token directly (No need to type 'Bearer').",
-
-                        // مكان التوكن
-                        In = ParameterLocation.Header,
-
-                        // التغيير المهم هنا: Http بدلاً من ApiKey
-                        Type = SecuritySchemeType.Http,
-
-                        // بنحدد السكيما إنها Bearer
-                        Scheme = JwtBearerDefaults.AuthenticationScheme,
-
-                        // مجرد توضيح إن التوكن نوعها JWT
-                        BearerFormat = "JWT"
-                    });
-
-                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                    {
-                    {
-                          new OpenApiSecurityScheme
-                          {
-                              Reference = new OpenApiReference
-                              {
-                                  Type = ReferenceType.SecurityScheme,
-                                  Id = JwtBearerDefaults.AuthenticationScheme
-                              }
-                          },
-                          Array.Empty<string>()
-                    }
-                   });
-                });
-
-                // CORS Configuration
-                builder.Services.AddCors(options =>
-                {
-                    options.AddPolicy("AllowAll", policy =>
-                    {
-                        policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                    });
-                });
-
+                builder.Services.AddHangfireServices(connectionString);
+                builder.Services.AddIdentityServices(builder.Configuration);
+                builder.Services.AddSwaggerDocumentation();
+                builder.Services.AddCorsPolicies();
                 builder.Services.AddCustomRateLimiting();
 
                 builder.Services.AddPersistenceDependencies();
                 builder.Services.AddApplicationDependencies();
                 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
-                if (string.IsNullOrWhiteSpace(jwtSettings.SecritKey))
-                    throw new Exception("JWT SecretKey is missing in appsettings.json");
-
-                if (string.IsNullOrWhiteSpace(jwtSettings.IssuerIP))
-                    throw new Exception("JWT IssuerIP is missing");
-
-                if (string.IsNullOrWhiteSpace(jwtSettings.AudienceIP))
-                    throw new Exception("JWT AudienceIP is missing");
+                builder.Services.AddControllers();
 
                 var app = builder.Build();
 
@@ -179,6 +61,8 @@ namespace Clinic_System.API
 
                 app.UseCors("AllowAll");
 
+                app.UseRouting();
+
                 app.UseAuthentication();
                 app.UseRateLimiter();
                 app.UseAuthorization();
@@ -187,7 +71,6 @@ namespace Clinic_System.API
                 app.MapControllers();
 
                 app.UseHangfireDashboard();
-
                 JobScheduler.ScheduleRecurringJobs(app);
 
                 app.Run();

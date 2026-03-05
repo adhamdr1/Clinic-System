@@ -49,6 +49,8 @@ global using Clinic_System.Infrastructure.Authentication.Models;
 global using System.Threading.RateLimiting;
 global using Microsoft.AspNetCore.RateLimiting;
 global using System.Security.Claims;
+global using Clinic_System.API.Extensions;
+
 
 
 
