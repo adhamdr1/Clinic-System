@@ -9,6 +9,7 @@
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("AuthLimiter")]
         public async Task<IActionResult> Login([FromBody] LoginCommand command)
         {
             var response = await mediator.Send(command);
@@ -30,6 +31,7 @@
         }
 
         [HttpPost("resend-confirmation-email")]
+        [EnableRateLimiting("AuthLimiter")]
         public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailCommand command)
         {
             command.BaseUrl = $"{Request.Scheme}://{Request.Host}";
@@ -38,6 +40,7 @@
         }
 
         [HttpPost("send-reset-password")]
+        [EnableRateLimiting("AuthLimiter")]
         public async Task<IActionResult> SendResetPassword([FromBody] SendResetPasswordCommand command)
         {
             command.BaseUrl = $"{Request.Scheme}://{Request.Host}";
@@ -47,6 +50,7 @@
         }
 
         [HttpPost("reset-password")]
+        [EnableRateLimiting("AuthLimiter")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
             var response = await mediator.Send(command);
