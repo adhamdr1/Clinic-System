@@ -78,6 +78,36 @@
 
 ---
 
+### 🧠 Caching (Redis) for Faster Responses
+
+The system uses **Redis caching** to reduce database load and speed up frequently requested data:
+
+- A dedicated `ICacheService` abstraction is used in the **Application Layer**.
+- `RedisCacheService` implements the caching logic using `StackExchange.Redis`.
+- Query handlers first try to read from cache, and if missing, they fetch from the database and store the result with a **TTL** (e.g., 5/30/60 minutes depending on the scenario).
+- Supports cache invalidation:
+  - Remove a single key
+  - Remove multiple keys by prefix (useful after updates that affect cached lists)
+    
+---
+
+### 🚦 Rate Limiting (API Protection & Anti‑Brute Force)
+
+To protect the API from abuse and brute‑force attempts, the system uses **ASP.NET Core Rate Limiting**:
+
+- **Global limiter** is enabled for all requests in the pipeline via `app.UseRateLimiter()`.
+- Requests are partitioned to enforce fair limits:
+  - **Authenticated users** are rate-limited by **User ID**
+  - **Anonymous users** are rate-limited by **IP address**
+- A dedicated `AuthLimiter` policy (Sliding Window) is applied to sensitive endpoints (e.g., login / account actions):
+  - **5 requests per minute per IP**
+  - `QueueLimit = 0` (reject immediately once limit is exceeded)
+- Unified rejection response:
+  - Returns **HTTP 429 (Too Many Requests)**
+  - JSON response with a clear message
+
+---
+
 ### 👥 Patient Management
 
 **Complete Patient Lifecycle:**
