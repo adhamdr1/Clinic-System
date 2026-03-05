@@ -24,8 +24,52 @@
                     // بيكتب الـ JSON ده في الرد اللي راجع لليوزر
                     await context.HttpContext.Response.WriteAsJsonAsync(errorResponse, token);
                 };
+               
+                
+                // 2. الحماية العامة (Global Limiter) - بيطبق على أي ريكويست
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                {
+                    // بنسأل: هل اليوزر ده مسجل دخول (معاه توكن سليم)؟
+                    var isAuthenticated = context.User.Identity?.IsAuthenticated ?? false;
 
-                // 2. إنشاء سياسة حماية الـ Auth (باستخدام Sliding Window)
+                    if (isAuthenticated)
+                    {
+                        // لو مسجل، بنجيب الـ ID بتاعه من التوكن
+                        var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                     ?? context.User.Identity?.Name
+                                     ?? "unknown_user";
+
+                        // بنعمله جردل خاص بيه باسمه
+                        return RateLimitPartition.GetTokenBucketLimiter(
+                            partitionKey: $"User_{userId}",
+                            factory: _ => new TokenBucketRateLimiterOptions
+                            {
+                                TokenLimit = 100, // مسموحله بـ 100 ريكويست في الدقيقة
+                                ReplenishmentPeriod = TimeSpan.FromMinutes(1), // الجردل بيتملي كل دقيقة
+                                TokensPerPeriod = 100, // بنحطله 100 عملة جديدة
+                                QueueLimit = 0,
+                                AutoReplenishment = true
+                            });
+                    }
+                    else
+                    {
+                        // لو مش مسجل دخول، بنعامله بالـ IP وبنديله ليميت أقل (60 بس)
+                        var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown_ip";
+                        return RateLimitPartition.GetTokenBucketLimiter(
+                            partitionKey: $"IP_{ip}",
+                            factory: _ => new TokenBucketRateLimiterOptions
+                            {
+                                TokenLimit = 60, // الزائر العادي آخره 60 ريكويست
+                                ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+                                TokensPerPeriod = 60,
+                                QueueLimit = 0,
+                                AutoReplenishment = true
+                            });
+                    }
+                });
+
+               
+                // 3. إنشاء سياسة حماية الـ Auth (باستخدام Sliding Window)
                 options.AddPolicy("AuthLimiter", httpContext =>
 
                     // هنا بنعمل Partition (تقسيم). بنقوله افصل العدادات بناءً على الـ IP Address
