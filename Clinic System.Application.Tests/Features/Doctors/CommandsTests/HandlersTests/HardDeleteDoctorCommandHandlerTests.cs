@@ -5,18 +5,21 @@
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<IIdentityService> _mockIdentityService;
+        private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<ILogger<HardDeleteDoctorCommandHandler>> _mockLogger;
         private readonly HardDeleteDoctorCommandHandler _handler;
         public HardDeleteDoctorCommandHandlerTests()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockDoctorService = new Mock<IDoctorService>();
+            _mockCacheService = new Mock<ICacheService>();
             _mockIdentityService = new Mock<IIdentityService>();
             _mockLogger = new Mock<ILogger<HardDeleteDoctorCommandHandler>>();
 
             _handler = new HardDeleteDoctorCommandHandler(_mockDoctorService.Object,
                 _mockIdentityService.Object,
                 _mockUnitOfWork.Object,
+                _mockCacheService.Object,
                 _mockLogger.Object);
         }
 

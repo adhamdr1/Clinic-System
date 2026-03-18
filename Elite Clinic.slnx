@@ -5,4 +5,7 @@
   <Project Path="Clinic System.Core/Elite Clinic.Core.csproj" />
   <Project Path="Clinic System.Data/Elite Clinic.Data.csproj" />
   <Project Path="Clinic System.Infrastructure/Elite Clinic.Infrastructure.csproj" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
 </Solution>

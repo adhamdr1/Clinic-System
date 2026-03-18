@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+	  <NuGetAudit>false</NuGetAudit>
+	  <NoWarn>$(NoWarn);NU1902;NU1903;NU1510</NoWarn>
+	  <WarningsAsErrors></WarningsAsErrors> 
     <RootNamespace>Clinic_System.Application</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>

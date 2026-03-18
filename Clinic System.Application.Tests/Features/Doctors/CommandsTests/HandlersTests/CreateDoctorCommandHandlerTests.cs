@@ -7,6 +7,7 @@
         private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<IIdentityService> _mockIdentityService;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<ILogger<CreateDoctorCommandHandler>> _mockLogger;
         private readonly CreateDoctorCommandHandler _handler;
         public CreateDoctorCommandHandlerTests()
@@ -15,6 +16,7 @@
             _mockDoctorService = new Mock<IDoctorService>();
             _mockIdentityService = new Mock<IIdentityService>();
             _mockMapper = new Mock<IMapper>();
+            _mockCacheService = new Mock<ICacheService>();
             mockEmailService = new Mock<IEmailService>();
             _mockLogger = new Mock<ILogger<CreateDoctorCommandHandler>>();
 
@@ -23,7 +25,8 @@
                 _mockIdentityService.Object,
                 mockEmailService.Object,
                 _mockUnitOfWork.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,
+                _mockCacheService.Object);
         }
 
         [Fact]
