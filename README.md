@@ -86,25 +86,26 @@ The system uses **Redis caching** to reduce database load and speed up frequentl
 - `RedisCacheService` implements the caching logic using `StackExchange.Redis`.
 - Query handlers first try to read from cache, and if missing, they fetch from the database and store the result with a **TTL** (e.g., 5/30/60 minutes depending on the scenario).
 - Supports cache invalidation:
-  - Remove a single key
-  - Remove multiple keys by prefix (useful after updates that affect cached lists)
+  - Remove a single key.
+  - Remove multiple keys by prefix (useful after updates that affect cached lists).
     
 ---
 
-### 🚦 Rate Limiting (API Protection & Anti‑Brute Force)
+### 🚦 Rate Limiting & Security Auditing (API Protection)
 
-To protect the API from abuse and brute‑force attempts, the system uses **ASP.NET Core Rate Limiting**:
+To protect the API from abuse and brute‑force attempts, the system uses **ASP.NET Core Rate Limiting** combined with **Redis** for threat tracking:
 
 - **Global limiter** is enabled for all requests in the pipeline via `app.UseRateLimiter()`.
 - Requests are partitioned to enforce fair limits:
-  - **Authenticated users** are rate-limited by **User ID**
-  - **Anonymous users** are rate-limited by **IP address**
+  - **Authenticated users** are rate-limited by **User ID** (e.g., 100 requests/min).
+  - **Anonymous users** are rate-limited by **IP address** (e.g., 60 requests/min).
 - A dedicated `AuthLimiter` policy (Sliding Window) is applied to sensitive endpoints (e.g., login / account actions):
-  - **5 requests per minute per IP**
-  - `QueueLimit = 0` (reject immediately once limit is exceeded)
-- Unified rejection response:
-  - Returns **HTTP 429 (Too Many Requests)**
-  - JSON response with a clear message
+  - **5 requests per minute per IP**.
+  - `QueueLimit = 0` (reject immediately once limit is exceeded).
+- **Unified Rejection & Threat Tracking (OnRejected):**
+  - Returns **HTTP 429 (Too Many Requests)** with a standard JSON response.
+  - **Security Auditing:** Blocked requests are dynamically intercepted. Attacker metadata (IP address, UserID, Target Endpoint, and Timestamp) is immediately logged via Serilog.
+  - **Blacklist Tracking:** The attacker's record is temporarily stored in **Redis** with a 24-hour TTL, laying the groundwork for real-time admin monitoring dashboards.
 
 ---
 
