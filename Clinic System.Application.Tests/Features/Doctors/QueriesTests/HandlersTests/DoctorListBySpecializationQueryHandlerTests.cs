@@ -4,17 +4,19 @@
     {
         private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<ILogger<DoctorListBySpecializationQueryHandler>> _mockLogger;
         private readonly DoctorListBySpecializationQueryHandler _handler;
         public DoctorListBySpecializationQueryHandlerTests()
         {
             _mockDoctorService = new Mock<IDoctorService>();
             _mockMapper = new Mock<IMapper>();
+            _mockCacheService = new Mock<ICacheService>();
             _mockLogger = new Mock<ILogger<DoctorListBySpecializationQueryHandler>>();
 
             _handler = new DoctorListBySpecializationQueryHandler(_mockDoctorService.Object,
                 _mockMapper.Object,
-                _mockLogger.Object);
+                _mockLogger.Object,_mockCacheService.Object);
         }
 
         [Fact]
