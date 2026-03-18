@@ -7,25 +7,43 @@
         {
             services.AddRateLimiter(options =>
             {
-                // 1. إيه اللي يحصل لما البودي جارد يرفض حد؟ (OnRejected)
                 options.OnRejected = async (context, token) =>
                 {
-                    // بنقوله رجع كود 429 اللي معناه (Too Many Requests)
+                    var ip = context.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown_IP";
+                    var path = context.HttpContext.Request.Path.ToString();
+                    var method = context.HttpContext.Request.Method;
+                    var userId = context.HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "Guest";
+
+                    var cacheService = context.HttpContext.RequestServices.GetRequiredService<ICacheService>();
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+                    logger.LogWarning("Rate Limit Exceeded! IP: {IP}, User: {UserId}, Tried to attack: {Method} {Path}", ip, userId, method, path);
+
+                    string cacheKey = $"BlockedTracker_{ip}_{DateTime.UtcNow.Ticks}";
+
+                    var crimeData = new
+                    {
+                        AttackerIP = ip,
+                        AttackerId = userId,
+                        TargetEndpoint = path,
+                        AttackTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
+                    };
+
+                    await cacheService.SetDataAsync(cacheKey, crimeData, TimeSpan.FromHours(24));
+
                     context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                    // بنفهمه إننا هنرجع الداتا على هيئة JSON
                     context.HttpContext.Response.ContentType = "application/json";
 
                     var errorResponse = new
                     {
-                        message = "Too many requests. Please try again later.",
+                        message = "Too many requests. You have been flagged. Please try again later.",
                         statusCode = 429
                     };
 
-                    // بيكتب الـ JSON ده في الرد اللي راجع لليوزر
                     await context.HttpContext.Response.WriteAsJsonAsync(errorResponse, token);
                 };
-               
-                
+
+
                 // 2. الحماية العامة (Global Limiter) - بيطبق على أي ريكويست
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
                 {
