@@ -108,6 +108,35 @@ To protect the API from abuse and brute‑force attempts, the system uses **ASP.
 
 ---
 
+## 🐳 Docker (SQL Server + Redis)
+
+This project includes a `docker-compose.yml` to quickly run the required infrastructure services:
+
+- **SQL Server 2022** container (persistent data via a named volume)
+- **Redis** container (used for caching)
+
+### Run containers
+
+> Make sure you have `SQL_PORT`, `SQL_PASSWORD`, and `REDIS_PORT` set (e.g., in your shell environment).
+
+```bash
+docker compose up -d
+```
+
+### Stop containers
+
+```bash
+docker compose down
+```
+
+### Notes
+
+- SQL Server runs on: `${SQL_PORT}:1433`
+- Redis runs on: `${REDIS_PORT}:6379`
+- SQL Server data is stored in the `sql_data_new` volume.
+
+---
+
 ### 👥 Patient Management
 
 **Complete Patient Lifecycle:**
@@ -1380,12 +1409,10 @@ The following features are planned for future releases:
 - [ ] **WhatsApp Integration** - Automated messages via WhatsApp Business API
 
 ### 🐳 DevOps & Deployment
-- [ ] **Docker Support** - Containerization with Docker Compose
-  - API container
+- ✅ **Docker Support** - Containerization with Docker Compose
   - SQL Server container
-  - Hangfire dashboard container
+  - Redis container
 - [ ] **CI/CD Pipeline** - Automated builds and deployments (GitHub Actions)
-- [ ] **Kubernetes** - Orchestration for scalability
 <!--
 ### 📊 Analytics & Reporting
 - [ ] **Analytics Dashboard** - Visual charts and statistics
