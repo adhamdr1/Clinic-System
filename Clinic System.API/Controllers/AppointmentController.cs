@@ -119,5 +119,14 @@
             var response = await mediator.Send(command);
             return NewResult(response);
         }
+
+        [Authorize(Roles = "Admin,Doctor")]
+        [HttpPost("call/{appointmentId}")]
+        public async Task<IActionResult> CallPatient([FromRoute] int appointmentId)
+        {
+            var command = new CallPatientCommand { AppointmentId = appointmentId };
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
     }
 }

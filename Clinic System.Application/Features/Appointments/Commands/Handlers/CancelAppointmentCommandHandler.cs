@@ -6,13 +6,17 @@
         private readonly IMapper mapper;
         private readonly ICacheService cacheService;
         private readonly IUnitOfWork unitOfWork;
+        private readonly INotificationsService notificationsService;
+        private readonly IDoctorService doctorService;
         private readonly ILogger<CancelAppointmentCommandHandler> logger;
         public CancelAppointmentCommandHandler(
             IAppointmentService appointmentService,
             IMapper mapper,
             ICacheService cacheService,
             IUnitOfWork unitOfWork,
-           ILogger<CancelAppointmentCommandHandler> logger,
+            INotificationsService notificationsService,
+            IDoctorService doctorService,
+            ILogger<CancelAppointmentCommandHandler> logger,
             ICurrentUserService currentUserService) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
@@ -20,11 +24,13 @@
             this.unitOfWork = unitOfWork;
             this.cacheService = cacheService;
             this.logger = logger;
+            this.notificationsService = notificationsService;
+            this.doctorService = doctorService;
         }
 
         public override async Task<Response<CaneclledAndNoShowAppointmentDTO>> Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Starting appointment rescheduling for PatientId: {PatientId}", request.PatientId);
+            logger.LogInformation("Starting appointment Cancelling for PatientId: {PatientId}", request.PatientId);
 
             var appointment = await unitOfWork.AppointmentsRepository.GetByIdAsync(request.AppointmentId);
 
@@ -57,6 +63,23 @@
                     "AdminApptsByStatus",
                     "AdminStats"
                 );
+
+                string doctorIdentityUserId = await doctorService.GetDoctorUserIdAsync(CancelAppointment.DoctorId, cancellationToken);
+
+                var notificationDto = new NotificationDTO
+                {
+                    Title = "Appointment Canceled",
+                    Message = $"The appointment for patient '{CaneclledAndNoShowAppointmentDTO.PatientName}' on {CancelAppointment.AppointmentDate.ToString("dd/MM/yyyy at hh:mm tt")} has been canceled.",
+                    NotificationType = "AppointmentCanceled",
+                    RelatedEntityId = CancelAppointment.Id
+                };
+
+                if (!string.IsNullOrEmpty(doctorIdentityUserId))
+                {
+                    await notificationsService.SendToUserAsync(doctorIdentityUserId, notificationDto);
+                }
+
+                await notificationsService.SendToGroupAsync("Admins", notificationDto);
 
                 return Success(CaneclledAndNoShowAppointmentDTO, "Appointment Cancelled successfully.");
 

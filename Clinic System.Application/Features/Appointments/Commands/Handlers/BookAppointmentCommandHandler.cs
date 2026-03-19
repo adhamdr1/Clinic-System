@@ -4,19 +4,25 @@
     {
         private readonly IAppointmentService appointmentService;
         private readonly IMapper mapper;
+        private readonly IDoctorService doctorService;
         private readonly ICacheService cacheService;
         private readonly IUnitOfWork unitOfWork;
+        private readonly INotificationsService notificationsService;
         private readonly ILogger<BookAppointmentCommandHandler> logger;
         public BookAppointmentCommandHandler(
             ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
+            IDoctorService doctorService,
             ICacheService cacheService,
             IUnitOfWork unitOfWork,
-            ILogger<BookAppointmentCommandHandler> logger) : base(currentUserService)
+            ILogger<BookAppointmentCommandHandler> logger,
+            INotificationsService notificationsService) : base(currentUserService)
         {
             this.appointmentService = appointmentService;
             this.mapper = mapper;
+            this.doctorService = doctorService;
+            this.notificationsService = notificationsService;
             this.cacheService = cacheService;
             this.unitOfWork = unitOfWork;
             this.logger = logger;
@@ -53,6 +59,24 @@
                     "AdminApptsByStatus",                                 // تحديث قوائم حالات الأدمن
                     "AdminStats"                                          // تحديث إحصائيات الداشبورد
                 );
+
+                string doctorIdentityUserId = await doctorService.GetDoctorUserIdAsync(newAppointment.DoctorId,cancellationToken);
+
+
+                var notificationDto = new NotificationDTO
+                {
+                    Title = "New Appointment Booking",
+                    Message = $"A new appointment has been booked for patient '{appointmentDto.PatientName}' on {newAppointment.AppointmentDate.ToString("dd/MM/yyyy at hh:mm tt")}",
+                    NotificationType = "AppointmentCreated",
+                    RelatedEntityId = newAppointment.Id 
+                };
+
+                if (!string.IsNullOrEmpty(doctorIdentityUserId))
+                {
+                    await notificationsService.SendToUserAsync(doctorIdentityUserId, notificationDto);
+                }
+
+                await notificationsService.SendToGroupAsync("Admins", notificationDto);
 
                 return Created(appointmentDto, "Appointment booked successfully.");
             }

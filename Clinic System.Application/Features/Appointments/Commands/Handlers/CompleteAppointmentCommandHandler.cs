@@ -6,11 +6,13 @@
         private readonly IMapper mapper;
         private readonly ICacheService cacheService;
         private readonly IUnitOfWork unitOfWork;
+        private readonly INotificationsService notificationsService;
         private readonly ILogger<CompleteAppointmentCommandHandler> logger;
         public CompleteAppointmentCommandHandler(
             ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
             IMapper mapper,
+            INotificationsService notificationService,
             ICacheService cacheService,
             IUnitOfWork unitOfWork,
             ILogger<CompleteAppointmentCommandHandler> logger) : base(currentUserService)
@@ -19,6 +21,7 @@
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
             this.cacheService = cacheService;
+            this.notificationsService = notificationService;
             this.logger = logger;
         }
 
@@ -58,6 +61,16 @@
                     "AdminApptsByStatus",
                     "AdminStats"
                 );
+
+                var notificationDto = new NotificationDTO
+                {
+                    Title = "Prescription & Record Ready",
+                    Message = $"Doctor has completed the appointment for '{CompleteAppointmentDTO.PatientName}'. Medical record and prescription are ready.",
+                    NotificationType = "AppointmentCompleted",
+                    RelatedEntityId = CompleteAppointment.Id
+                };
+
+                await notificationsService.SendToGroupAsync("Admins", notificationDto);
 
                 return Success(CompleteAppointmentDTO, "Appointment Completeed successfully.");
 

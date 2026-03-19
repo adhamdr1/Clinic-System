@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Common\" />
     <Folder Include="Features\Authentication\Queries\Validators\" />
     <Folder Include="Features\Authorization\Commands\Validators\" />
     <Folder Include="Features\Authorization\Queries\Handlers\" />
