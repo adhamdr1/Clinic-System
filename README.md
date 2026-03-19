@@ -138,6 +138,18 @@ docker compose down
 
 ---
 
+### ⚡ Real-Time Notifications & Live Queue (SignalR)
+
+The system uses **SignalR (WebSockets)** to provide instant updates and automate clinic workflows without client-side polling:
+
+- A dedicated `INotificationsService` abstraction is used in the **Application Layer**.
+- **Targeted Delivery:** Uses `Clients.User(IdentityUserId)` to securely send private alerts (e.g., new/canceled bookings) ONLY to the specific doctor.
+- **Role-Based Broadcasting:** Uses `Clients.Group("Admins")` to instantly notify reception staff when a doctor completes an appointment and the prescription is ready.
+- **Stateless Live Queue:** Introduced a `CallPatientCommand` that broadcasts a payload directly to `"WaitingRoomScreens"` for audiovisual alerts without database overhead.
+- **Unified Payload:** All events share a standard `NotificationDTO` contract (`Title`, `Message`, `NotificationType`, `RelatedEntityId`) to seamlessly drive frontend UI state.
+
+---
+
 ### 👥 Patient Management
 
 **Complete Patient Lifecycle:**
