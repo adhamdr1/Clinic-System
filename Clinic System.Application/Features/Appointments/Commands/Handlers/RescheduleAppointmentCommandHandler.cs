@@ -6,11 +6,15 @@
         private readonly IMapper mapper;
         private readonly ICacheService cacheService;
         private readonly IUnitOfWork unitOfWork;
+        private readonly INotificationsService notificationsService;
+        private readonly IDoctorService doctorService;
         private readonly ILogger<RescheduleAppointmentCommandHandler> logger;
         public RescheduleAppointmentCommandHandler(
             ICurrentUserService currentUserService,
             IAppointmentService appointmentService,
-                ICacheService cacheService,
+            ICacheService cacheService,
+            INotificationsService notificationsService, 
+            IDoctorService doctorService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
             ILogger<RescheduleAppointmentCommandHandler> logger) : base(currentUserService)
@@ -20,6 +24,8 @@
             this.unitOfWork = unitOfWork;
             this.cacheService = cacheService;
             this.logger = logger;
+            this.notificationsService = notificationsService;
+            this.doctorService = doctorService;
         }
 
         public override async Task<Response<AppointmentDTO>> Handle(RescheduleAppointmentCommand request, CancellationToken cancellationToken)
@@ -59,6 +65,23 @@
                     "AdminApptsByStatus",
                     "AdminStats"
                 );
+
+                string doctorIdentityUserId = await doctorService.GetDoctorUserIdAsync(RescheduleAppointment.DoctorId, cancellationToken);
+
+                var notificationDto = new NotificationDTO
+                {
+                    Title = "Appointment Rescheduled",
+                    Message = $"The appointment for patient '{appointmentDto.PatientName}' has been rescheduled to {RescheduleAppointment.AppointmentDate.ToString("dd/MM/yyyy at hh:mm tt")}.",
+                    NotificationType = "AppointmentRescheduled",
+                    RelatedEntityId = RescheduleAppointment.Id
+                };
+
+                if (!string.IsNullOrEmpty(doctorIdentityUserId))
+                {
+                    await notificationsService.SendToUserAsync(doctorIdentityUserId, notificationDto);
+                }
+
+                await notificationsService.SendToGroupAsync("Admins", notificationDto);
 
                 return Success(appointmentDto, "Appointment rescheduled successfully.");
 

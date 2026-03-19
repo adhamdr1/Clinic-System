@@ -1,4 +1,7 @@
-﻿namespace Clinic_System.API
+﻿using Clinic_System.API.Hubs;
+using Clinic_System.API.Services;
+
+namespace Clinic_System.API
 {
     public class Program
     {
@@ -34,7 +37,9 @@
                 builder.Services.AddSwaggerDocumentation();
                 builder.Services.AddCorsPolicies();
                 builder.Services.AddCustomRateLimiting();
+                builder.Services.AddSignalRServices();
 
+                builder.Services.AddTransient<INotificationsService, NotificationsService>();
                 builder.Services.AddPersistenceDependencies();
                 builder.Services.AddApplicationDependencies();
                 builder.Services.AddInfrastructureDependencies(builder.Configuration);
@@ -84,6 +89,8 @@
 
 
                 app.MapControllers();
+
+                app.MapHub<NotificationHub>("/hubs/notifications");
 
                 app.UseHangfireDashboard();
                 JobScheduler.ScheduleRecurringJobs(app);
