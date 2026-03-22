@@ -19,5 +19,7 @@ namespace Clinic_System.Application.Service.Interface
         Task<(bool Succeeded, string Error)> ResetPasswordAsync(string email, string decodedToken, string newPassword);
         Task<(string UserId, string UserName,string Role, string Token, string Error)> GenerateTokenForResendEmailConfirmationAsync(string email);
         Task<(string Email, string UserName)> GetUserEmailAndUserNameAsync(string userId, CancellationToken cancellationToken = default);
+        Task<(bool Exists, string Id, string UserName, List<string> Roles)> GetUserDetailsByEmailForGoogleAsync(string email);
+        Task<string> CreateUserForGoogleAsync(string userName, string email, string role, CancellationToken cancellationToken = default);
     }
 }

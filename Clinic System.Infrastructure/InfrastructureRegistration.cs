@@ -16,6 +16,7 @@
             services.AddScoped<IAppointmentNotificationService, AppointmentEmailNotificationService>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
             services.Configure<ClinicSettings>(configuration.GetSection("ClinicSettings"));
 

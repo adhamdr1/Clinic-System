@@ -16,6 +16,22 @@
             return NewResult(response);
         }
 
+        [HttpPost("google-login")]
+        [EnableRateLimiting("AuthLimiter")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginCommand command)
+        {
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
+        [HttpPost("complete-google-registration")]
+        [EnableRateLimiting("AuthLimiter")]
+        public async Task<IActionResult> CompleteGoogleRegistration([FromBody] CompleteGoogleRegistrationCommand command)
+        {
+            var response = await mediator.Send(command);
+            return NewResult(response);
+        }
+
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command)
         {

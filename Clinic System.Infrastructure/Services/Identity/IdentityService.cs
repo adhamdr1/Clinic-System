@@ -50,6 +50,42 @@ namespace Clinic_System.Infrastructure.Services
             return user.Id;
         }
 
+        public async Task<string> CreateUserForGoogleAsync(string userName, string email, string role, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+                throw new DomainException("User name cannot be empty");
+
+            if (string.IsNullOrWhiteSpace(email))
+                throw new DomainException("Email cannot be empty");
+
+            var user = new ApplicationUser
+            {
+                UserName = userName,
+                Email = email,
+                EmailConfirmed = true 
+            };
+
+            var result = await _userManager.CreateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new DomainException($"Failed to create Google user: {errors}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                var roleResult = await _userManager.AddToRoleAsync(user, role);
+                if (!roleResult.Succeeded)
+                {
+                    var roleErrors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                    throw new DomainException($"Failed to assign role: {roleErrors}");
+                }
+            }
+
+            return user.Id;
+        }
+
         public async Task<bool> SoftDeleteUserAsync(string userId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(userId))
@@ -299,6 +335,20 @@ namespace Clinic_System.Infrastructure.Services
             if (user == null) return true;
             if (excludeUserId != null && user.Id == excludeUserId) return true;
             return false;
+        }
+
+        public async Task<(bool Exists, string Id, string UserName, List<string> Roles)> GetUserDetailsByEmailForGoogleAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            // ·Ê «·ÌÊ“— „‘ „ÊÃÊœ
+            if (user == null)
+                return (false, string.Empty, string.Empty, new List<string>());
+
+            // ·Ê „ÊÃÊœ° ‰ÃÌ» «·’·«ÕÌ«  » «⁄ Â
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return (true, user.Id, user.UserName ?? string.Empty, roles.ToList());
         }
     }
 }

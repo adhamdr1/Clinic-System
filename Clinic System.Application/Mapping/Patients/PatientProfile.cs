@@ -9,6 +9,7 @@
             GetPatientByIdMapping();
             CreatePatientMapping();
             UpdatePatientMapping();
+            CompleteGoogleRegistrationMapping();
         }
     }
 }

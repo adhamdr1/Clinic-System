@@ -7,20 +7,25 @@
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IAppointmentService> _mockAppointmentService;
         private readonly Mock<IMapper> _mockMapper;
+        private readonly Mock<IDoctorService> _mockDoctorService;
         private readonly Mock<ICacheService> _mockCacheService;
         private readonly Mock<ILogger<BookAppointmentCommandHandler>> _mockLogger;
+        private readonly Mock<INotificationsService> _mockNotificationsService;
         private readonly BookAppointmentCommandHandler _handler;
         public BookAppointmentCommandHandlerTests()
         {
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockAppointmentService = new Mock<IAppointmentService>();
             _mockMapper = new Mock<IMapper>();
+            _mockDoctorService = new Mock<IDoctorService>();
             _mockCacheService = new Mock<ICacheService>();
+            _mockNotificationsService = new Mock<INotificationsService>();
             _mockLogger = new Mock<ILogger<BookAppointmentCommandHandler>>();
             _mockCurrentUserService = new Mock<ICurrentUserService>();
             _handler = new BookAppointmentCommandHandler(
                  _mockCurrentUserService.Object, _mockAppointmentService.Object,
-                _mockMapper.Object, _mockCacheService.Object, _mockUnitOfWork.Object, _mockLogger.Object);
+                _mockMapper.Object, _mockDoctorService.Object, _mockCacheService.Object, _mockUnitOfWork.Object,
+                _mockLogger.Object, _mockNotificationsService.Object);
         }
 
         [Fact]
