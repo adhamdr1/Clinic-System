@@ -78,6 +78,16 @@
 
 ---
 
+### 🔐 Single Sign-On & Smart Onboarding (Google OAuth 2.0)
+
+The system integrates **Google OAuth 2.0** to provide frictionless patient access while strictly maintaining database integrity for medical records:
+
+- **Two-Step Onboarding (Data Integrity):** Solves the "missing provider data" problem. If a new Google user logs in, the system halts creation and returns a `RequiresCompletion` flag, ensuring mandatory clinic fields (Phone, DateOfBirth, ...) are captured via a dedicated command before generating the JWT.
+- **Smart Account Linking:** Automatically detects if a Google email matches an existing traditionally-registered account and authenticates the user instantly without duplicating records.
+- **Passwordless Provisioning:** Dynamically provisions verified ASP.NET Identity users (`EmailConfirmed = true`) purely for the `"Patient"` role, without requiring dummy passwords or breaking existing validation rules.
+
+---
+
 ### 🧠 Caching (Redis) for Faster Responses
 
 The system uses **Redis caching** to reduce database load and speed up frequently requested data:
@@ -1441,9 +1451,9 @@ The following features are planned for future releases:
 ### 🔧 Technical Improvements
 - ✅ **Caching** - Redis integration for performance
 - ✅ **Rate Limiting** - API throttling and abuse prevention
-- [ ] **SignalR** - Real-time updates for appointments
+- ✅ **SignalR** - Real-time updates for appointments
+- ✅ **Google OAuth 2.0** - register for google-email
 <!-- 
-- [ ] **Rate Limiting** - API throttling and abuse prevention 
 - [ ] **GraphQL Support** - Alternative to REST API
 - [ ] **Multi-tenancy** - Support multiple clinic branches
 - [ ] **Audit Logging** - Complete action history tracking 
