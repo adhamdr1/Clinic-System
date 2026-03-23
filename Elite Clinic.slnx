@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/ci.yml" />
+  </Folder>
   <Project Path="Clinic System.API/Elite Clinic.csproj" />
   <Project Path="Clinic System.Application.Tests/Elite Clinic.Application.Tests.csproj" Id="f8442c65-a6cd-4065-ade1-0dbe3a75822e" />
   <Project Path="Clinic System.Application/Elite Clinic.Application.csproj" />
