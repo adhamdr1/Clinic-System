@@ -19,10 +19,10 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore "Elite Clinic.sln"
+      run: dotnet restore "Elite Clinic.slnx"
       
     - name: Build
-      run: dotnet build "Elite Clinic.sln" --no-restore
+      run: dotnet build "Elite Clinic.slnx" --no-restore
       
     - name: Test
-      run: dotnet test "Elite Clinic.sln" --no-build --verbosity normal
+      run: dotnet test "Elite Clinic.slnx" --no-build --verbosity normal
