@@ -19,10 +19,10 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore "Clinic System.API.sln"
+      run: dotnet restore "Elite Clinic.sln"
       
     - name: Build
-      run: dotnet build "Clinic System.API.sln" --no-restore
+      run: dotnet build "Elite Clinic.sln" --no-restore
       
     - name: Test
-      run: dotnet test "Clinic System.API.sln" --no-build --verbosity normal
+      run: dotnet test "Elite Clinic.sln" --no-build --verbosity normal
