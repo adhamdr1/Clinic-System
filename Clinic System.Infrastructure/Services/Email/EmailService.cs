@@ -41,7 +41,7 @@
 
                     await client.SendAsync(message);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // هنا لازم تعمل Log للخطأ عشان لو الإيميل مفشلش تعرف السبب (باسورد غلط مثلاً)
                     throw;

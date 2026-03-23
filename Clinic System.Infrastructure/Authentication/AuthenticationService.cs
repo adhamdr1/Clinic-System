@@ -74,7 +74,7 @@
             if (principal == null) return default; 
 
             var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId!);
 
             // 2. التحقق من وجود المستخدم والتوكن في الداتابيز
             if (user == null) return default;
@@ -90,7 +90,7 @@
 
             // 5. توليد طقم توكنات جديد
             var roles = (await _userManager.GetRolesAsync(user)).ToList();
-            var result = await GenerateJwtTokenAsync(user.Id, user.UserName, user.Email, roles, extraClaims);
+            var result = await GenerateJwtTokenAsync(user.Id, user.UserName!, user.Email!, roles, extraClaims);
 
             return (result.AccessToken, result.RefreshToken, result.ExpiresAt);
         }
