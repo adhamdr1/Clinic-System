@@ -148,6 +148,15 @@ docker compose down
 
 ---
 
+### 🚀 Continuous Integration & Deployment (CI/CD Pipeline)
+
+The project utilizes **GitHub Actions** to automate the development lifecycle, ensuring strict code quality and preparing for rapid delivery:
+
+- **Automated Guardrails (CI):** Every push or Pull Request automatically triggers an isolated cloud runner to build and test the `.slnx` solution, preventing broken code or syntax errors from merging into the `main` branch.
+- **Future-Ready Delivery (CD):** The workflow architecture is structured to support Continuous Deployment. Once a production server is provisioned, verified builds will be automatically deployed to the live environment, eliminating manual deployment bottlenecks and human errors.
+
+---
+
 ### ⚡ Real-Time Notifications & Live Queue (SignalR)
 
 The system uses **SignalR (WebSockets)** to provide instant updates and automate clinic workflows without client-side polling:
@@ -1435,7 +1444,7 @@ The following features are planned for future releases:
 - ✅ **Docker Support** - Containerization with Docker Compose
   - SQL Server container
   - Redis container
-- [ ] **CI/CD Pipeline** - Automated builds and deployments (GitHub Actions)
+- ✅ **CI/CD Pipeline** - Automated builds and deployments (GitHub Actions)
 <!--
 ### 📊 Analytics & Reporting
 - [ ] **Analytics Dashboard** - Visual charts and statistics
