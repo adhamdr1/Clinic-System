@@ -73,9 +73,9 @@
 - Refresh Token: Long-lived (default: 30 days) with database storage
 - Email confirmation required before account activation
 - Encrypted tokens for password reset with URL-safe encoding
-
+<!--
 ![Authorization Roles](./image/Authorization.png)
-
+-->
 ---
 
 ### 🔐 Single Sign-On & Smart Onboarding (Google OAuth 2.0)
