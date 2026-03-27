@@ -78,7 +78,7 @@
 -->
 ---
 
-### 🔐 Single Sign-On & Smart Onboarding (Google OAuth 2.0)
+## 🔐 Single Sign-On & Smart Onboarding (Google OAuth 2.0)
 
 The system integrates **Google OAuth 2.0** to provide frictionless patient access while strictly maintaining database integrity for medical records:
 
@@ -102,7 +102,7 @@ In this project, **Redis** is used for two main reasons: to make the API run muc
 
 ---
 
-### 🚦 Rate Limiting & Security Auditing (API Protection)
+## 🚦 Rate Limiting & Security Auditing (API Protection)
 
 To protect the API from abuse and brute‑force attempts, the system uses **ASP.NET Core Rate Limiting** combined with **Redis** for threat tracking:
 
@@ -166,7 +166,7 @@ Below is a snapshot of our RabbitMQ Management Dashboard, actively monitoring me
 
 ---
 
-### 🚀 Continuous Integration & Deployment (CI/CD Pipeline)
+## 🚀 Continuous Integration & Deployment (CI/CD Pipeline)
 
 The project utilizes **GitHub Actions** to automate the development lifecycle, ensuring strict code quality and preparing for rapid delivery:
 
@@ -175,7 +175,7 @@ The project utilizes **GitHub Actions** to automate the development lifecycle, e
 
 ---
 
-### ⚡ Real-Time Notifications & Live Queue (SignalR)
+## ⚡ Real-Time Notifications & Live Queue (SignalR)
 
 The system uses **SignalR (WebSockets)** to provide instant updates and automate clinic workflows without client-side polling:
 
