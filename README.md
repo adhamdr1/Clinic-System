@@ -98,6 +98,8 @@ In this project, **Redis** is used for two main reasons: to make the API run muc
 * **Blocking Attackers (Rate Limiting):** Redis is used to track user requests. If an IP address or a specific user sends too many requests quickly (like trying to guess a password), the system blocks them. Their IP is added to a "Blacklist" in Redis for 24 hours to stop brute-force attacks.
 * **Safe Reconnection:** If the Redis server temporarily disconnects, the application automatically tries to reconnect safely without crashing the whole system.
 
+![Redis](./image/Redis.png)
+
 ---
 
 ### 🚦 Rate Limiting & Security Auditing (API Protection)
