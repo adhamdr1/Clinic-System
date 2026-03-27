@@ -148,6 +148,23 @@ docker compose down
 
 ---
 
+## 🐇 Event-Driven Architecture (RabbitMQ & MassTransit)
+
+To ensure high performance, reliability, and loose coupling, the system implements an **Event-Driven Architecture** utilizing **RabbitMQ** as the message broker, orchestrated by **MassTransit**. This transitions the application from a traditional synchronous request-response monolith to a highly scalable, distributed system.
+
+### ✨ Key Implementations & Features:
+* **Asynchronous Processing:** Time-consuming infrastructure tasks, such as sending emails (e.g., User Registration, Password Reset, Appointment Confirmations, and Medical Reports), are entirely offloaded to background consumers. This drastically reduced API response times from several seconds to a few milliseconds.
+* **Fault Tolerance & Resilience (Retry Policy):** Implemented a robust **Incremental Retry Policy**. If a third-party service (like an SMTP server) experiences a transient network drop, the system automatically retries processing the message with exponential backoff, ensuring zero data loss.
+* **Smart Error Handling:** Permanent logical errors (e.g., `ArgumentNullException`) explicitly bypass the retry mechanism and are routed directly to a Dead Letter Queue (Error Queue), conserving CPU resources and keeping logs clean.
+* **Architectural Decoupling:** Adhering strictly to Clean Architecture, the Application layer only publishes "Fat Events" containing plain data state. It is completely unaware of how emails are constructed or sent, leaving template rendering and SMTP communication exclusively to the Infrastructure's consumer layer.
+
+### 📊 Live Traffic Monitoring
+Below is a snapshot of our RabbitMQ Management Dashboard, actively monitoring message queues, throughput rates, and consumer acknowledgments:
+
+![RabbitMQ Dashboard Live Traffic](./image/RabbitMQ.png)
+
+---
+
 ### 🚀 Continuous Integration & Deployment (CI/CD Pipeline)
 
 The project utilizes **GitHub Actions** to automate the development lifecycle, ensuring strict code quality and preparing for rapid delivery:
