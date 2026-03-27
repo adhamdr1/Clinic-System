@@ -6,7 +6,7 @@
         private readonly IMapper mapper;
         private readonly IIdentityService identityService;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IEmailService emailService;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly ILogger<CreatePatientCommandHandler> logger;
 
         public CreatePatientCommandHandler(
@@ -14,14 +14,14 @@
             IMapper mapper,
             IIdentityService identityService,
             IUnitOfWork unitOfWork,
-            IEmailService emailService,
+            IMessagePublisher messagePublisher,
             ILogger<CreatePatientCommandHandler> logger)
         {
             this.patientService = patientService;
             this.mapper = mapper;
             this.identityService = identityService;
             this.unitOfWork = unitOfWork;
-            this.emailService = emailService;
+            this._messagePublisher = messagePublisher;
             this.logger = logger;
         }
         public async Task<Response<CreatePatientDTO>> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
@@ -69,23 +69,24 @@
 
                 var confirmationLink = $"{request.BaseUrl}/api/authentication/confirm-email?UserId={userId}&Code={encodedToken}";
 
-                var emailBody = EmailTemplates.GetEmailConfirmationTemplate(
-                                    request.FullName,
-                                    request.UserName,
-                                    request.Email,
-                                    confirmationLink,
-                                    "Patient"
-                                );
-
                 // 4. الإرسال
-                await emailService.SendEmailAsync(request.Email, "Welcome to Elite Clinic - Confirm Your Email", emailBody);
+                await _messagePublisher.PublishAsync(new UserRegisteredEvent
+                {
+                    UserId = userId,
+                    FullName = request.FullName,
+                    UserName = request.UserName,
+                    Email = request.Email,
+                    ConfirmationLink = confirmationLink,
+                    UserRole = "Patient",
+                    Specialty = null // المريض ملوش تخصص
+                }, cancellationToken);
 
                 logger.LogInformation("Confirmation email sent to {Email}", request.Email);
             }
             catch (Exception ex)
             {
                 // لو فشل الإيميل مش بنوقف العملية، بس بنسجل تحذير
-                logger.LogWarning(ex, "Patient created but failed to send confirmation email to {Email}", request.Email);
+                logger.LogWarning(ex, "Patient created but failed to publish registration event for {Email}", request.Email);
             }
 
             var patientsMapper = mapper.Map<CreatePatientDTO>(patient);

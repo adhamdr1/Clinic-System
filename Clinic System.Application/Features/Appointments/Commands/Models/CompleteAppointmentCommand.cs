@@ -5,8 +5,8 @@
         public int AppointmentId { get; set; }
         [JsonIgnore]
         public int DoctorId { get; set; }
-        public string Diagnosis { get; set; }
-        public string Description { get; set; }
+        public required string Diagnosis { get; set; }
+        public required string Description { get; set; }
         public string? AdditionalNotes { get; set; } = null!;
         public List<PrescriptionDto> Medicines { get; set; } = new();
     }

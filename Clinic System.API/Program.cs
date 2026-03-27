@@ -38,6 +38,7 @@ namespace Clinic_System.API
                 builder.Services.AddCorsPolicies();
                 builder.Services.AddCustomRateLimiting();
                 builder.Services.AddSignalRServices();
+                builder.Services.AddMessageBrokerServices(builder.Configuration);
 
                 builder.Services.AddTransient<INotificationsService, NotificationsService>();
                 builder.Services.AddPersistenceDependencies();

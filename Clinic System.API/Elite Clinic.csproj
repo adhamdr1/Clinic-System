@@ -18,6 +18,7 @@
 		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.22" />
 		<PackageReference Include="Hangfire.Core" Version="1.8.22" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.22" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="9.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.1" />
 		<PackageReference Include="Microsoft.OpenApi" Version="1.6.17" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />

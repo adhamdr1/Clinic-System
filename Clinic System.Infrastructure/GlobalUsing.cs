@@ -29,8 +29,12 @@ global using Microsoft.AspNetCore.WebUtilities;
 global using Microsoft.AspNetCore.Http;
 global using System.Text.Json;
 global using Microsoft.Extensions.Logging;
-global using StackExchange.Redis; 
+global using StackExchange.Redis;
 global using Google.Apis.Auth;
+global using MassTransit;
+global using Clinic_System.Infrastructure.MessageBroker;
+global using Clinic_System.Application.Events;
+
 
 
 

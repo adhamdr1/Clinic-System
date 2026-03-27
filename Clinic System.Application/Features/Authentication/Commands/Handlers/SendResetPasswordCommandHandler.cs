@@ -3,16 +3,16 @@
     public class SendResetPasswordCommandHandler : ResponseHandler, IRequestHandler<SendResetPasswordCommand, Response<string>>
     {
         private readonly IIdentityService _identityService;
-        private readonly IEmailService _emailService;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly ILogger<SendResetPasswordCommandHandler> _logger;
 
         public SendResetPasswordCommandHandler(
             IIdentityService identityService,
-            IEmailService emailService,
+            IMessagePublisher messagePublisher,
             ILogger<SendResetPasswordCommandHandler> logger)
         {
             _identityService = identityService;
-            _emailService = emailService;
+            _messagePublisher = messagePublisher;
             _logger = logger;
         }
 
@@ -31,11 +31,11 @@
                 // 3. تجهيز اللينك
                 var resetLink = $"{request.BaseUrl}/api/authentication/reset-password?email={request.Email}&code={encodedToken}";
 
-                // 4. تجهيز التيمبليت
-                var emailBody = EmailTemplates.GetResetPasswordTemplate(request.Email, resetLink);
-
-                // 5. الإرسال
-                await _emailService.SendEmailAsync(request.Email, "Elite Clinic - Password Reset Request", emailBody);
+                await _messagePublisher.PublishAsync(new PasswordResetRequestedEvent
+                {
+                    Email = request.Email,
+                    ResetLink = resetLink
+                }, cancellationToken);
 
                 _logger.LogInformation("Password reset email sent successfully to: {Email}", request.Email);
 

@@ -3,16 +3,16 @@
     public class ResendConfirmationEmailCommandHandler : ResponseHandler, IRequestHandler<ResendConfirmationEmailCommand, Response<string>>
     {
         private readonly IIdentityService _identityService;
-        private readonly IEmailService _emailService;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly ILogger<ResendConfirmationEmailCommandHandler> _logger;
 
         public ResendConfirmationEmailCommandHandler(
             IIdentityService identityService,
-            IEmailService emailService,
+            IMessagePublisher messagePublisher,
             ILogger<ResendConfirmationEmailCommandHandler> logger)
         {
             _identityService = identityService;
-            _emailService = emailService;
+            _messagePublisher = messagePublisher;
             _logger = logger;
         }
 
@@ -30,15 +30,18 @@
                 var confirmationLink = $"{request.BaseUrl}/api/authentication/confirm-email?userId={userId}&code={encodedToken}";
 
 
-                var emailBody = EmailTemplates.GetEmailConfirmationTemplate(
-                    userName, 
-                    userName, 
-                    request.Email,
-                    confirmationLink,
-                    role
-                );
+                await _messagePublisher.PublishAsync(new UserRegisteredEvent
+                {
+                    UserId = userId,
+                    FullName = userName, // بنستخدم الـ UserName كاسم مبدئي هنا
+                    UserName = userName,
+                    Email = request.Email,
+                    ConfirmationLink = confirmationLink,
+                    UserRole = role,
+                    Specialty = null
+                }, cancellationToken);
 
-                await _emailService.SendEmailAsync(request.Email, "Resend Confirmation - Elite Clinic", emailBody);
+                _logger.LogInformation("Resend confirmation event published to RabbitMQ for {Email}", request.Email);
 
                 return Success("Confirmation email sent successfully.");
             }

@@ -53,7 +53,8 @@ global using Clinic_System.API.Extensions;
 global using Microsoft.AspNetCore.SignalR;
 global using Clinic_System.API.Hubs;
 global using Clinic_System.Application.DTOs;
-
+global using Clinic_System.Infrastructure.MessageBroker.Consumers;
+global using MassTransit;
 
 
 
