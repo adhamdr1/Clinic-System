@@ -88,17 +88,16 @@ The system integrates **Google OAuth 2.0** to provide frictionless patient acces
 
 ---
 
-### 🧠 Caching (Redis) for Faster Responses
+## ⚡ Redis Caching & API Security
 
-The system uses **Redis caching** to reduce database load and speed up frequently requested data:
+In this project, **Redis** is used for two main reasons: to make the API run much faster and to protect it from hackers.
 
-- A dedicated `ICacheService` abstraction is used in the **Application Layer**.
-- `RedisCacheService` implements the caching logic using `StackExchange.Redis`.
-- Query handlers first try to read from cache, and if missing, they fetch from the database and store the result with a **TTL** (e.g., 5/30/60 minutes depending on the scenario).
-- Supports cache invalidation:
-  - Remove a single key.
-  - Remove multiple keys by prefix (useful after updates that affect cached lists).
-    
+### Key Features:
+* **Faster Responses (Caching):** Frequently requested data (like available doctor appointments) is saved in Redis. This means the API doesn't have to query the SQL database every time, reducing response times to just a few milliseconds.
+* **Smart Cache Updates:** When new data is added (like booking a new appointment), the system only deletes the specific cached data related to it using key prefixes, instead of clearing the whole cache.
+* **Blocking Attackers (Rate Limiting):** Redis is used to track user requests. If an IP address or a specific user sends too many requests quickly (like trying to guess a password), the system blocks them. Their IP is added to a "Blacklist" in Redis for 24 hours to stop brute-force attacks.
+* **Safe Reconnection:** If the Redis server temporarily disconnects, the application automatically tries to reconnect safely without crashing the whole system.
+
 ---
 
 ### 🚦 Rate Limiting & Security Auditing (API Protection)
