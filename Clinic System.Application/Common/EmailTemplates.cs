@@ -222,7 +222,7 @@
             </div>";
         }
 
-        public static string GetMedicalReportEmail(string patientName, string doctorName, string specialty, string diagnosis, string description, List<Prescription> medicines, string? additionalNotes)
+        public static string GetMedicalReportEmail(string patientName, string doctorName, string specialty, string diagnosis, string description, List<MedicationInfo> medicines, string? additionalNotes)
         {
             // 1. بناء جدول الأدوية (الروشتة) مع المواعيد والمدة
             var medicinesRows = new StringBuilder();

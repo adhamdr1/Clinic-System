@@ -41,6 +41,8 @@ global using Clinic_System.Application.Features.Authentication.Queries.Models;
 global using System.Text;
 global using System.Security.Claims;
 global using Microsoft.Extensions.Options;
+global using Clinic_System.Application.Events;
+
 
 
 

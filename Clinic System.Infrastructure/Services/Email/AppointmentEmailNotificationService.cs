@@ -3,148 +3,130 @@
     public class AppointmentEmailNotificationService: IAppointmentNotificationService
     {
         private readonly IEmailService _emailService;
-        private readonly IBackgroundJobService _jobService;
         private readonly IIdentityService _identityService;
 
         public AppointmentEmailNotificationService(
             IEmailService emailService,
-            IBackgroundJobService jobService,
             IIdentityService identityService)
         {
             _emailService = emailService;
-            _jobService = jobService;
             _identityService = identityService;
         }
 
-        private async Task EnqueueEmailAsync(
+        private async Task SendEmailDirectlyAsync(
             string userId,
             string subject,
             string body)
         {
             var email = await _identityService.GetUserEmailAsync(userId);
 
-            _jobService.Enqueue(() =>
-                _emailService.SendEmailAsync(email, subject, body));
+            await _emailService.SendEmailAsync(email, subject, body);
         }
 
-        public async Task SendBookingConfirmationAsync(Appointment appointment)
+        public async Task SendBookingConfirmationAsync(string patientUserId, string patientName, string doctorName, string specialization, DateTime appointmentDate)
         {
             var subject = "Your Appointment is Booked - Elite Clinic";
 
             var body = EmailTemplates.GetBookingConfirmation(
-                appointment.Patient.FullName,
-                appointment.Doctor.FullName,
-                appointment.Doctor.Specialization,
-                appointment.AppointmentDate);
+                patientName,
+                doctorName,
+                specialization,
+                appointmentDate);
 
-            await EnqueueEmailAsync(
-                appointment.Patient.ApplicationUserId,
-                subject,
-                body);
+            await SendEmailDirectlyAsync(patientUserId, subject, body);
         }
 
-        public async Task SendCancellationAsync(Appointment appointment)
+        public async Task SendCancellationAsync(string patientUserId, string patientName, string doctorName, string specialization, DateTime appointmentDate)
         {
             var subject = "Your Appointment is Cancelled - Elite Clinic";
 
             var body = EmailTemplates.GetPatientCancellationEmail(
-                appointment.Patient.FullName,
-                appointment.Doctor.FullName,
-                appointment.Doctor.Specialization,
-                appointment.AppointmentDate);
+                patientName,
+                doctorName,
+                specialization,
+                appointmentDate);
 
-            await EnqueueEmailAsync(
-                appointment.Patient.ApplicationUserId,
-                subject,
-                body);
+            await SendEmailDirectlyAsync(patientUserId, subject, body);
         }
 
-        public async Task SendRescheduleAsync(Appointment appointment, DateTime oldDate)
+        public async Task SendRescheduleAsync(string patientUserId, string patientName, string doctorName, string specialization, DateTime oldDate, DateTime newDate)
         {
             var subject = "Your Appointment is Rescheduled - Elite Clinic";
 
             var body = EmailTemplates.GetReschedulingConfirmation(
-                appointment.Patient.FullName,
-                appointment.Doctor.FullName,
-                appointment.Doctor.Specialization,
+                patientName,
+                doctorName,
+                specialization,
                 oldDate,
-                appointment.AppointmentDate);
+                newDate);
 
-            await EnqueueEmailAsync(
-                appointment.Patient.ApplicationUserId,
-                subject,
-                body);
+            await SendEmailDirectlyAsync(patientUserId, subject, body);
         }
 
-        public async Task SendNoShowAsync(Appointment appointment)
+        public async Task SendNoShowAsync(string patientUserId, string patientName, string doctorName, string specialization, DateTime appointmentDate)
         {
-            var subject = $"Missed Appointment with Dr. {appointment.Doctor.FullName} - Elite Clinic";
+            var subject = $"Missed Appointment with Dr. {doctorName} - Elite Clinic";
 
             var body = EmailTemplates.GetNoShowNotice(
-                appointment.Patient.FullName,
-                appointment.Doctor.FullName,
-                appointment.Doctor.Specialization,
-                appointment.AppointmentDate);
+                patientName,
+                doctorName,
+                specialization,
+                appointmentDate);
 
-            await EnqueueEmailAsync(
-                appointment.Patient.ApplicationUserId,
-                subject,
-                body);
+            await SendEmailDirectlyAsync(patientUserId, subject, body);
         }
 
-        public async Task SendPaymentConfirmationAsync(Appointment appointment)
+        public async Task SendPaymentConfirmationAsync(string patientUserId, string patientName, string doctorName, string specialization, DateTime appointmentDate, decimal amountPaid, string paymentMethod, int transactionId)
         {
             var subject = "Your Appointment is Confirmed - Elite Clinic";
 
             var body = EmailTemplates.GetPaymentAndBookingConfirmation(
-                appointment.Patient.FullName,
-                appointment.Doctor.FullName,
-                appointment.Doctor.Specialization,
-                appointment.AppointmentDate,
-                appointment.Payment.AmountPaid,
-                appointment.Payment.PaymentMethod.ToString(),
-                appointment.Payment.Id);
+                patientName,
+                doctorName,
+                specialization,
+                appointmentDate,
+                amountPaid,
+                paymentMethod,
+                transactionId);
 
-            await EnqueueEmailAsync(
-                appointment.Patient.ApplicationUserId,
-                subject,
-                body);
+            await SendEmailDirectlyAsync(patientUserId, subject, body);
         }
 
-        public async Task SendMedicalReportAsync(Appointment appointment)
+        public async Task SendMedicalReportAsync(
+            string patientUserId,
+            string patientName,
+            string doctorName,
+            string specialty,
+            string diagnosis,
+            string description,
+            List<MedicationInfo> medicines,
+            string? additionalNotes)
         {
-            var subject = $"Medical Report & Prescription | Dr. {appointment.Doctor.FullName} - Elite Clinic";
+            var subject = $"Medical Report & Prescription | Dr. {doctorName} - Elite Clinic";
 
             var body = EmailTemplates.GetMedicalReportEmail(
-                appointment.Patient.FullName,
-                appointment.Doctor.FullName,
-                appointment.Doctor.Specialization,
-                appointment.MedicalRecord.Diagnosis,
-                appointment.MedicalRecord.DescriptionOfTheVisit,
-                appointment.MedicalRecord.Prescriptions.ToList(),
-                appointment.MedicalRecord.AdditionalNotes);
+                patientName,
+                doctorName,
+                specialty,
+                diagnosis,
+                description,
+                medicines,
+                additionalNotes);
 
-            await EnqueueEmailAsync(
-                appointment.Patient.ApplicationUserId,
-                subject,
-                body);
+            await SendEmailDirectlyAsync(patientUserId, subject, body);
         }
 
-        public async Task SendAutoCancellationAsync(Appointment appointment)
+        public async Task SendAutoCancellationAsync(string patientUserId, string patientName, string doctorName, string specialization, DateTime appointmentDate)
         {
             var subject = "Your Appointment Reservation has Expired";
 
             var body = EmailTemplates.GetAutoCancellationEmail(
-                appointment.Patient.FullName,
-                appointment.Doctor.FullName,
-                appointment.Doctor.Specialization,
-                appointment.AppointmentDate);
+                patientName,
+                doctorName,
+                specialization,
+                appointmentDate);
 
-            await EnqueueEmailAsync(
-                appointment.Patient.ApplicationUserId,
-                subject,
-                body);
+            await SendEmailDirectlyAsync(patientUserId, subject, body);
         }
-
     }
 }

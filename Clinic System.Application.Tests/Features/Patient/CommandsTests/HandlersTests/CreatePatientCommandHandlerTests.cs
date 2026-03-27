@@ -2,7 +2,7 @@
 {
     public class CreatePatientCommandHandlerTests
     {
-        private readonly Mock<IEmailService> mockEmailService;
+        private readonly Mock<IMessagePublisher> _mockmessagePublisher;
         private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IPatientService> _mockPatientService;
         private readonly Mock<IIdentityService> _mockIdentityService;
@@ -11,7 +11,7 @@
         private readonly CreatePatientCommandHandler _handler;
         public CreatePatientCommandHandlerTests()
         {
-            mockEmailService = new Mock<IEmailService>();
+            _mockmessagePublisher = new Mock<IMessagePublisher>();
             _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockPatientService = new Mock<IPatientService>();
             _mockIdentityService = new Mock<IIdentityService>();
@@ -23,7 +23,7 @@
                 _mockMapper.Object,
                 _mockIdentityService.Object,
                 _mockUnitOfWork.Object,
-                mockEmailService.Object,
+                _mockmessagePublisher.Object,
                 _mockLogger.Object);
         }
 

@@ -16,7 +16,7 @@
         public IMediator mediator => _mediator;
 
         #region Actions
-        public ObjectResult NewResult<T>(Response<T> response)
+        public ObjectResult NewResult<T>(Application.Common.Bases.Response<T> response)
         {
             switch (response.StatusCode)
             {

@@ -2,21 +2,21 @@
 {
     public class AppointmentService : IAppointmentService
     {
-        private readonly IAppointmentNotificationService notification;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly IUnitOfWork unitOfWork;
         private readonly IPaymentService paymentService;
         private readonly IMedicalRecordService medicalRecordService;
         private readonly ILogger<AppointmentService> logger;
         private readonly ClinicSettings clinicSettings;
         public AppointmentService(
-            IAppointmentNotificationService notification,
+            IMessagePublisher messagePublisher,
             IUnitOfWork unitOfWork,
             IPaymentService paymentService,
             IMedicalRecordService medicalRecordService,
             ILogger<AppointmentService> logger,
             IOptions<ClinicSettings> clinicSettings)
         {
-            this.notification = notification;
+            _messagePublisher = messagePublisher;
             this.unitOfWork = unitOfWork;
             this.paymentService = paymentService;
             this.medicalRecordService = medicalRecordService;
@@ -72,7 +72,15 @@
                     appointment.Payment.MarkAsCancelling("Appointment cancelled");
                 }
 
-                await notification.SendAutoCancellationAsync(appointment);
+                await _messagePublisher.PublishAsync(new AppointmentAutoCancelledEvent
+                {
+                    AppointmentId = appointment.Id,
+                    PatientUserId = appointment.Patient.ApplicationUserId,
+                    PatientName = appointment.Patient.FullName,
+                    DoctorName = appointment.Doctor.FullName,
+                    DoctorSpecialization = appointment.Doctor.Specialization,
+                    AppointmentDate = appointment.AppointmentDate
+                });
             }
 
             // 2. حفظ كل التغييرات مرة واحدة
@@ -162,7 +170,15 @@
                 }
             }
 
-            await notification.SendBookingConfirmationAsync(appointment2);
+            await _messagePublisher.PublishAsync(new AppointmentBookedEvent
+            {
+                AppointmentId = appointment2.Id,
+                PatientUserId = appointment2.Patient.ApplicationUserId,
+                PatientName = appointment2.Patient.FullName,
+                DoctorName = appointment2.Doctor.FullName,
+                DoctorSpecialization = appointment2.Doctor.Specialization,
+                AppointmentDate = appointment2.AppointmentDate
+            }, cancellationToken);
 
             return appointment2;
         }
@@ -215,8 +231,17 @@
             logger.LogInformation("Successfully rescheduled appointment with ID: {AppointmentId} for PatientId: {PatientId} with DoctorId: {DoctorId} on {AppointmentDateTime}",
                 appointment.Id, command.PatientId, appointment.DoctorId, appointmentDateTime);
 
-            await notification.SendRescheduleAsync(appointment, oldAppointmentDate);
-            
+            await _messagePublisher.PublishAsync(new AppointmentRescheduledEvent
+            {
+                AppointmentId = appointment.Id,
+                PatientUserId = appointment.Patient.ApplicationUserId,
+                PatientName = appointment.Patient.FullName,
+                DoctorName = appointment.Doctor.FullName,
+                DoctorSpecialization = appointment.Doctor.Specialization,
+                OldDate = oldAppointmentDate,
+                NewDate = appointmentDateTime
+            }, cancellationToken);
+
             return appointment;
         }
         
@@ -252,7 +277,15 @@
             logger.LogInformation("Successfully Cancelled appointment with ID: {AppointmentId} for PatientId: {PatientId}",
                 appointment.Id, command.PatientId);
 
-            await notification.SendCancellationAsync(appointment);
+            await _messagePublisher.PublishAsync(new AppointmentCancelledEvent
+            {
+                AppointmentId = appointment.Id,
+                PatientUserId = appointment.Patient.ApplicationUserId,
+                PatientName = appointment.Patient.FullName,
+                DoctorName = appointment.Doctor.FullName,
+                DoctorSpecialization = appointment.Doctor.Specialization,
+                AppointmentDate = appointment.AppointmentDate
+            }, cancellationToken);
 
             return appointment;
         }
@@ -306,7 +339,18 @@
                 }
             }
 
-            await notification.SendPaymentConfirmationAsync(appointment);
+            await _messagePublisher.PublishAsync(new AppointmentConfirmedEvent
+            {
+                AppointmentId = appointment.Id,
+                PatientUserId = appointment.Patient.ApplicationUserId,
+                PatientName = appointment.Patient.FullName,
+                DoctorName = appointment.Doctor.FullName,
+                DoctorSpecialization = appointment.Doctor.Specialization,
+                AppointmentDate = appointment.AppointmentDate,
+                AmountPaid = appointment.Payment.AmountPaid,
+                PaymentMethod = appointment.Payment.PaymentMethod.ToString(),
+                TransactionId = appointment.Payment.Id
+            }, cancellationToken);
 
             return appointment;
         }
@@ -339,7 +383,15 @@
             logger.LogInformation("Successfully marked No-Show for appointment with ID: {AppointmentId} for DoctorId: {DoctorId}",
                 appointment.Id, command.DoctorId);
 
-            await notification.SendNoShowAsync(appointment);
+            await _messagePublisher.PublishAsync(new AppointmentNoShowEvent
+            {
+                AppointmentId = appointment.Id,
+                PatientUserId = appointment.Patient.ApplicationUserId,
+                PatientName = appointment.Patient.FullName,
+                DoctorName = appointment.Doctor.FullName,
+                DoctorSpecialization = appointment.Doctor.Specialization,
+                AppointmentDate = appointment.AppointmentDate
+            }, cancellationToken);
 
             return appointment;
         }
@@ -394,7 +446,28 @@
                 }
             }
 
-            await notification.SendMedicalReportAsync(appointment);
+            await _messagePublisher.PublishAsync(new MedicalReportGeneratedEvent
+            {
+                AppointmentId = appointment.Id,
+                PatientUserId = appointment.Patient.ApplicationUserId,
+                PatientName = appointment.Patient.FullName,
+                DoctorName = appointment.Doctor.FullName,
+                DoctorSpecialization = appointment.Doctor.Specialization,
+                Diagnosis = command.Diagnosis,
+                Description = command.Description,
+                // بننقل الداتا الخام بس للـ Event
+                Medicines = command.Medicines.Select(m => new MedicationInfo
+                {
+                    MedicationName = m.MedicationName,
+                    Dosage = m.Dosage,
+                    Frequency = m.Frequency,
+                    SpecialInstructions = m.SpecialInstructions,
+                    StartDate = m.StartDate,
+                    EndDate = m.EndDate
+                }).ToList(),
+
+                AdditionalNotes = command.AdditionalNotes!
+            }, cancellationToken);
 
             return appointment;
         }

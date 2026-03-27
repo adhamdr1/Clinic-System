@@ -28,7 +28,7 @@
                 response.ContentType = "application/json";
 
                 // تجهيز الرد الموحد (Response<T>)
-                var responseModel = new Response<string>()
+                var responseModel = new Application.Common.Bases.Response<string>()
                 {
                     Succeeded = false, 
                     Message = error.Message
